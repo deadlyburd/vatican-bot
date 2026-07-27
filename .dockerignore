@@ -1,0 +1,25 @@
+# Docker build context exclusions
+**/node_modules
+**/.next
+**/out
+**/.git
+**/venv
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.*
+**/google_credentials.json
+**/*.tar.gz
+**/*.zip
+**/*.log
+**/*.sqlite3
+**/hetzner_key*
+**/.DS_Store
+**/Thumbs.db
+**/.idea
+**/.vscode
+**/dist
+**/staticfiles
+**/chrome-profiles
+**/*.png
+**/*.jpg

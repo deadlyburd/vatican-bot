@@ -1,0 +1,83 @@
+╔══════════════════════════════════════════════════════════════╗
+║                  VATICAN BOT - QUICK DEPLOY                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ LOCAL TESTING COMPLETE
+   • 264 Vatican bookings found
+   • Google Sheets API working
+   • Vatican API working
+   • All tests passed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 DEPLOY NOW (ONE COMMAND):
+
+   ./deploy_and_setup.sh
+
+   This will:
+   1. Copy files to server
+   2. Start all services
+   3. Create 264 monitoring tasks
+   4. Start monitoring Vatican API
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 WHAT WILL HAPPEN:
+
+   Server: 178.105.157.86
+   Services: 6 (PostgreSQL, Redis, Backend, Worker, Beat, Telegram)
+   Tasks: 264 Vatican bookings
+   Monitoring: Every 5-10 minutes
+   Notifications: Telegram (your phone)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 MONITOR LOGS:
+
+   ssh -i hetzner_key root@178.105.157.86
+   cd /root/vatican-bot
+   docker-compose -f docker-compose.server.yml logs -f worker_vatican
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 TELEGRAM NOTIFICATIONS:
+
+   You'll receive messages like:
+
+   🎫 Vatican Tickets Available!
+   Booking: GET-92289600
+   Date: 19/06/2026
+   Visitors: 9
+   Available Slots: 09:00, 09:30, 10:00...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛠️ USEFUL COMMANDS:
+
+   # Check status
+   docker-compose -f docker-compose.server.yml ps
+
+   # View logs
+   docker-compose -f docker-compose.server.yml logs -f
+
+   # Restart
+   docker-compose -f docker-compose.server.yml restart
+
+   # Stop
+   docker-compose -f docker-compose.server.yml down
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION:
+
+   • READY_TO_DEPLOY.md - Complete deployment guide
+   • TESTING_COMPLETE.md - Test results
+   • LOCAL_TEST_GUIDE.md - Local testing guide
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ READY TO GO!
+
+   Just run: ./deploy_and_setup.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

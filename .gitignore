@@ -1,0 +1,78 @@
+# Environment variables
+.env
+.env.local
+.env.*
+
+# Logs
+*.log
+*.txt
+!QUICK_COMMANDS.txt
+!QUICK_DEPLOY.txt
+!README.md
+
+# Docker
+.docker_id
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+*.egg-info/
+
+# Node/Next.js
+node_modules/
+.next/
+out/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.sqlite3
+
+# Secrets and credentials
+google_credentials.json
+*.pem
+hetzner_key
+hetzner_key.pub
+
+# Session and Private Data
+vatican_session.json
+agent_config.json
+*.har
+snipe_result.json
+extension_target.json
+target_slot.json
+
+# Archives
+*.tar.gz
+*.zip
+*.tgz
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary and Output Files
+*.png
+*.jpg
+!captcha_*.png
+dist/
+VaticanAgent.spec
+
+# Docker backup files
+docker-compose.yml.backup
+
+# Disabled migration files
+*.disabled
+
+# Password reset files
+reset_passwords.sql
+gen_pw_sql.py
+.claude/

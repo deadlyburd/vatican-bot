@@ -1,0 +1,44 @@
+{
+  "16/03/2026": {
+    "standard": {
+      "total_slots": 0,
+      "available_times": [],
+      "slot_1730_found": false,
+      "slot_1730_details": null
+    },
+    "guided": {
+      "total_slots": 0,
+      "available_times": [],
+      "slot_1730_found": false,
+      "slot_1730_details": null
+    }
+  },
+  "28/03/2026": {
+    "standard": {
+      "total_slots": 0,
+      "available_times": [],
+      "slot_1730_found": false,
+      "slot_1730_details": null
+    },
+    "guided": {
+      "total_slots": 0,
+      "available_times": [],
+      "slot_1730_found": false,
+      "slot_1730_details": null
+    }
+  },
+  "04/04/2026": {
+    "standard": {
+      "total_slots": 0,
+      "available_times": [],
+      "slot_1730_found": false,
+      "slot_1730_details": null
+    },
+    "guided": {
+      "total_slots": 0,
+      "available_times": [],
+      "slot_1730_found": false,
+      "slot_1730_details": null
+    }
+  }
+}

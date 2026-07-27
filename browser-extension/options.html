@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vatican Ticket Monitor - Settings</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 20px;
+      color: #667eea;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+
+    .info-box h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #1976d2;
+    }
+
+    .info-box p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚙️ Advanced Settings</h1>
+      <p>Configure your Vatican ticket monitoring preferences</p>
+    </header>
+
+    <div class="content">
+      <div class="section">
+        <h2>Notification Settings</h2>
+        
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="soundEnabled" checked>
+            <label for="soundEnabled">Enable notification sound</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="desktopNotifications" checked>
+            <label for="desktopNotifications">Enable desktop notifications</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="notificationFrequency">Notification Frequency:</label>
+          <select id="notificationFrequency">
+            <option value="always">Every time slots are found</option>
+            <option value="once">Only once per monitoring session</option>
+            <option value="hourly">Maximum once per hour</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Monitoring Preferences</h2>
+        
+        <div class="form-group">
+          <label for="maxRetries">Maximum Retries (on API error):</label>
+          <input type="number" id="maxRetries" min="1" max="10" value="3">
+        </div>
+
+        <div class="form-group">
+          <label for="timeout">Request Timeout (seconds):</label>
+          <input type="number" id="timeout" min="5" max="60" value="10">
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="autoStop">
+            <label for="autoStop">Auto-stop after finding available slots</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Data Management</h2>
+        
+        <div class="form-group">
+          <label for="historyLimit">Keep last N results:</label>
+          <input type="number" id="historyLimit" min="10" max="100" value="50">
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="autoCleanup" checked>
+            <label for="autoCleanup">Auto-cleanup old results (older than 7 days)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🧪 Testing & Debugging</h2>
+        
+        <div class="form-group">
+          <label>Test Auto-Booking Feature:</label>
+          <p style="font-size: 13px; color: #666; margin-bottom: 10px;">
+            Create a test slot to verify the extension will automatically open booking windows.
+          </p>
+          <button id="createTestSlotBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            🧪 Create Test Slot
+          </button>
+          <button id="deleteTestSlotBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); margin-left: 10px;">
+            🗑️ Delete Test Slot
+          </button>
+        </div>
+
+        <div id="testMessage" style="margin-top: 15px; padding: 12px; border-radius: 8px; display: none;"></div>
+
+        <div class="info-box" style="margin-top: 15px; background: #fff3cd; border-left-color: #ffc107;">
+          <h3>How to Test:</h3>
+          <p>
+            1. Make sure Backend Listener Mode is enabled<br>
+            2. Click "Create Test Slot" button above<br>
+            3. Within 10 seconds, an incognito window should open automatically<br>
+            4. The window will navigate to Vatican booking page<br>
+            5. Click "Delete Test Slot" to clean up after testing
+          </p>
+        </div>
+      </div>
+
+      <button id="saveBtn" class="btn btn-primary">Save Settings</button>
+      <div id="successMessage" class="success-message">
+        ✅ Settings saved successfully!
+      </div>
+
+      <div class="info-box">
+        <h3>ℹ️ About This Extension</h3>
+        <p>
+          <strong>Vatican Ticket Monitor</strong> helps you find available Vatican Museums tickets by automatically checking the official website at your specified intervals.
+        </p>
+        <p style="margin-top: 10px;">
+          <strong>How it works:</strong><br>
+          1. Select your desired date and number of visitors<br>
+          2. Click "Start Monitoring"<br>
+          3. The extension checks availability in the background<br>
+          4. You'll receive a notification when tickets become available
+        </p>
+        <p style="margin-top: 10px;">
+          <strong>Privacy:</strong> All data is stored locally on your device. No information is sent to external servers.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

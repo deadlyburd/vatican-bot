@@ -1,0 +1,58 @@
+
+
+services:
+  # ... existing services from main docker-compose.yml ...
+
+  ai_agent_monitor:
+    build: .
+    restart: always
+    command: python -m ai_agents.monitor_agent
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - AI_AGENT_MODE=continuous
+      - MONITOR_INTERVAL=30
+      - MAX_CONCURRENT_HOLDS=10
+      - PYTHONPATH=/app/backend:/app
+    depends_on:
+      - db
+      - redis
+      - backend
+
+  ai_agent_sniper:
+    build: .
+    restart: always
+    command: python -m ai_agents.sniper_agent
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - AI_AGENT_MODE=on_demand
+      - SNIPER_TIMEOUT=300
+      - PYTHONPATH=/app/backend:/app
+    depends_on:
+      - db
+      - redis
+      - backend
+
+  ai_agent_health:
+    build: .
+    restart: always
+    command: python -m ai_agents.health_agent
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - HEALTH_CHECK_INTERVAL=60
+      - MAX_FAILURES=3
+      - PYTHONPATH=/app/backend:/app
+    depends_on:
+      - db
+      - redis
+      - backend

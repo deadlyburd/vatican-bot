@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Vatican Bot</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>*{margin:0;padding:0}body{background:#000}canvas{display:block;margin:0 auto}</style>
+</head><body>
+<canvas id="c"></canvas>
+<script>
+// Minimal RFB/VNC client using WebSocket
+(async function(){
+  const ws = new WebSocket("ws://178.105.157.86:6080");
+  ws.binaryType = "arraybuffer";
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+  let img = new Image();
+
+  ws.onopen = () => console.log("VNC connected");
+  ws.onerror = () => document.body.innerHTML += "<p style=color:red;text-align:center;padding:20px>Connection failed. Try:<br>1. Use VNC app: 178.105.157.86:5901<br>2. Refresh page</p>";
+  ws.onclose = () => document.body.innerHTML += "<p style=color:orange;text-align:center;padding:20px>Disconnected. Refresh to reconnect.</p>";
+
+  // For a proper VNC experience, use a VNC app:
+  // iOS: RealVNC Viewer   Android: bVNC   Desktop: TigerVNC
+  // Connect to: 178.105.157.86:5901 (no password)
+})();
+</script>
+<p style="color:white;text-align:center;padding:10px;font-family:sans-serif">
+<b>Vatican Bot - Live Chrome</b><br>
+<small>For full interaction, use a VNC app:</small><br>
+<small>📱 <b>RealVNC</b> (iOS) | <b>bVNC</b> (Android) | <b>TigerVNC</b> (Desktop)</small><br>
+<small>🔗 Server: <b>178.105.157.86</b> Port: <b>5901</b></small>
+</p>
+</body></html>

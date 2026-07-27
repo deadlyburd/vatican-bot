@@ -1,0 +1,178 @@
+
+
+# ============================================================================
+# VATICAN BOT - CLEAN CONFIGURATION (No Colosseum)
+# ============================================================================
+# This is a cleaned version with only Vatican-related services.
+# Colosseum solver/harvester services have been removed.
+# ============================================================================
+
+services:
+  # ============================================================================
+  # DATABASE
+  # ============================================================================
+  db:
+    image: postgres:15
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=ticketbot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  # ============================================================================
+  # REDIS (Cache & Message Broker)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis-data:/data
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru --save "" --appendonly no
+    mem_limit: 1g
+    memswap_limit: 1g
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ============================================================================
+  # BACKEND (Django API)
+  # ============================================================================
+  backend:
+    build: .
+    restart: always
+    ports:
+      - "0.0.0.0:8000:8000"
+    command: sh -c "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:8000 --timeout 120"
+    volumes:
+      - .:/app
+      - static_volume:/app/backend/staticfiles
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - PYTHONPATH=/app/backend:/app
+      - STATIC_ROOT=/app/backend/staticfiles
+      - ALLOWED_HOSTS=localhost,127.0.0.1,${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+    depends_on:
+      - db
+      - redis
+
+  # ============================================================================
+  # WORKER (Vatican Monitoring)
+  # ============================================================================
+  worker_vatican:
+    build: .
+    restart: always
+    command: celery -A backend.core worker -l info -Q snipe,vatican,celery --concurrency=8 --max-tasks-per-child=100
+    volumes:
+      - .:/app
+    mem_limit: 3g
+    memswap_limit: 3g
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - PYTHONPATH=/app/backend:/app
+      - OXYLABS_USERNAME=${OXYLABS_USERNAME}
+      - OXYLABS_PASSWORD=${OXYLABS_PASSWORD}
+      - TWOCAPTCHA_API_KEY=${TWOCAPTCHA_API_KEY}
+      - VATICAN_CONCURRENCY=${VATICAN_CONCURRENCY:-4}
+      - VATICAN_RPS=${VATICAN_RPS:-5}
+      - VATICAN_VISITORS=${VATICAN_VISITORS:-2}
+    depends_on:
+      - db
+      - redis
+
+  # ============================================================================
+  # BEAT (Celery Scheduler)
+  # ============================================================================
+  beat:
+    build: .
+    restart: always
+    command: celery -A backend.core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - PYTHONPATH=/app/backend:/app
+    depends_on:
+      - db
+      - redis
+
+  # ============================================================================
+  # TELEGRAM BOT (Notifications)
+  # ============================================================================
+  telegram_bot:
+    build: .
+    restart: always
+    command: python /app/backend/telegram_bot.py
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
+      - PYTHONPATH=/app/backend:/app
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - SERVER_BASE_URL=${SERVER_BASE_URL:-http://localhost:8000}
+    depends_on:
+      - db
+      - redis
+      - backend
+
+  # ============================================================================
+  # FRONTEND (Next.js Web Interface)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=/api/v1
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+
+  # ============================================================================
+  # NGINX (Reverse Proxy)
+  # ============================================================================
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.local.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/static:ro
+    depends_on:
+      - backend
+      - frontend
+
+  # ============================================================================
+  # REMOVED SERVICES (Colosseum - Not Needed for Vatican)
+  # ============================================================================
+  # solver:       ❌ Removed - Only for Colosseum Queue-it bypass
+  # harvester:    ❌ Removed - Only for Colosseum cookie harvesting
+  # ============================================================================
+
+volumes:
+  postgres_data:
+    external: true
+    name: root_postgres_data
+  static_volume:
+    external: true
+    name: root_static_volume
+  redis-data:

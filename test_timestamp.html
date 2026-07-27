@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vatican Timestamp Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .result {
+            background: #2d2d2d;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4ec9b0;
+        }
+        .error {
+            border-left-color: #f48771;
+        }
+        .success {
+            border-left-color: #4ec9b0;
+        }
+        button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1177bb;
+        }
+        input {
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            padding: 8px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🕐 Vatican Timestamp Calculator</h1>
+    <p>Test timestamp generation for Vatican deep links</p>
+    
+    <div>
+        <label>Date (DD/MM/YYYY): </label>
+        <input type="text" id="dateInput" value="13/08/2026" />
+        <button onclick="calculateTimestamp()">Calculate</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        function getRomeTimezoneOffset(year, month, day) {
+            const date = new Date(year, month - 1, day);
+            const monthNum = date.getMonth();
+            const dayNum = date.getDate();
+            
+            // DST: April-September
+            if (monthNum >= 3 && monthNum <= 8) {
+                return 120; // UTC+2
+            }
+            
+            // No DST: November-February
+            if (monthNum <= 1 || monthNum >= 10) {
+                return 60; // UTC+1
+            }
+            
+            // March: DST starts last Sunday
+            if (monthNum === 2) {
+                const lastDay = new Date(year, 3, 0).getDate();
+                const lastSunday = lastDay - new Date(year, 3, 0).getDay();
+                if (dayNum >= lastSunday) return 120;
+                return 60;
+            }
+            
+            // October: DST ends last Sunday
+            if (monthNum === 9) {
+                const lastDay = new Date(year, 10, 0).getDate();
+                const lastSunday = lastDay - new Date(year, 10, 0).getDay();
+                if (dayNum >= lastSunday) return 60;
+                return 120;
+            }
+            
+            return 60;
+        }
+        
+        function calculateTimestamp() {
+            const dateStr = document.getElementById('dateInput').value;
+            const [day, month, year] = dateStr.split('/');
+            
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+            
+            // Method 1: Local timezone (WRONG)
+            const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 0, 0, 0);
+            const localTimestamp = localDate.getTime();
+            
+            // Method 2: Rome timezone (CORRECT)
+            const dateIso = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`;
+            const utcDate = new Date(dateIso + 'Z');
+            const romeOffset = getRomeTimezoneOffset(parseInt(year), parseInt(month), parseInt(day));
+            const romeTimestamp = utcDate.getTime() - (romeOffset * 60 * 1000);
+            
+            // Build URLs
+            const localUrl = `https://tickets.museivaticani.va/home/fromtag/1/${localTimestamp}/MV-Biglietti/1`;
+            const romeUrl = `https://tickets.museivaticani.va/home/fromtag/1/${romeTimestamp}/MV-Biglietti/1`;
+            
+            results.innerHTML = `
+                <div class="result error">
+                    <h3>❌ Method 1: Local Timezone (WRONG)</h3>
+                    <p><strong>Timestamp:</strong> ${localTimestamp}</p>
+                    <p><strong>Date:</strong> ${localDate.toISOString()}</p>
+                    <p><strong>URL:</strong> <a href="${localUrl}" target="_blank">${localUrl}</a></p>
+                    <p style="color: #f48771;">⚠️ This will be off by 1-2 hours depending on your timezone!</p>
+                </div>
+                
+                <div class="result success">
+                    <h3>✅ Method 2: Rome Timezone (CORRECT)</h3>
+                    <p><strong>Timestamp:</strong> ${romeTimestamp}</p>
+                    <p><strong>Date:</strong> ${new Date(romeTimestamp).toISOString()}</p>
+                    <p><strong>Rome Offset:</strong> UTC${romeOffset >= 0 ? '+' : ''}${romeOffset / 60} hours</p>
+                    <p><strong>URL:</strong> <a href="${romeUrl}" target="_blank">${romeUrl}</a></p>
+                    <p style="color: #4ec9b0;">✅ This is the correct timestamp for Vatican's system!</p>
+                </div>
+                
+                <div class="result">
+                    <h3>📊 Comparison</h3>
+                    <p><strong>Difference:</strong> ${Math.abs(localTimestamp - romeTimestamp)} ms (${Math.abs(localTimestamp - romeTimestamp) / 1000 / 60 / 60} hours)</p>
+                    <p><strong>Test the Rome URL:</strong> Click the link above to verify it opens the correct date on Vatican's website</p>
+                </div>
+            `;
+        }
+        
+        // Calculate on load
+        calculateTimestamp();
+    </script>
+</body>
+</html>

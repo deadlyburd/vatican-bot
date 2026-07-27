@@ -1,0 +1,50 @@
+{
+  "no_proxy": {
+    "slots_found": 0,
+    "all_slots": [],
+    "slot_1730_found": false,
+    "slot_1730_details": null
+  },
+  "with_proxy": {
+    "slots_found": 0,
+    "all_slots": [],
+    "slot_1730_found": false,
+    "slot_1730_details": null
+  },
+  "nearby_dates": {
+    "26/03/2026": {
+      "slots_found": 0,
+      "slot_1730_found": false
+    },
+    "27/03/2026": {
+      "slots_found": 0,
+      "slot_1730_found": false
+    },
+    "29/03/2026": {
+      "slots_found": 0,
+      "slot_1730_found": false
+    },
+    "30/03/2026": {
+      "slots_found": 10,
+      "slot_1730_found": false
+    }
+  },
+  "visitor_counts": {
+    "1_visitors": {
+      "slots_found": 0,
+      "slot_1730_found": false
+    },
+    "2_visitors": {
+      "slots_found": 0,
+      "slot_1730_found": false
+    },
+    "3_visitors": {
+      "slots_found": 0,
+      "slot_1730_found": false
+    },
+    "4_visitors": {
+      "slots_found": 0,
+      "slot_1730_found": false
+    }
+  }
+}

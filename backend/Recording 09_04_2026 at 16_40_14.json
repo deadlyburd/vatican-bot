@@ -1,0 +1,836 @@
+{
+    "title": "Recording 09/04/2026 at 16:40:14",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1173,
+            "height": 911,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "navigate",
+            "url": "https://tickets.museivaticani.va/home/visit/1/1779746400000/1",
+            "assertedEvents": [
+                {
+                    "type": "navigation",
+                    "url": "https://tickets.museivaticani.va/home/visit/1/1779746400000/1",
+                    "title": "Musei Vaticani"
+                }
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "#ticket_207169913 div.muvaTicketMainDivImage > img"
+                ],
+                [
+                    "xpath///*[@id=\"ticket_207169913\"]/div/div[1]/img"
+                ],
+                [
+                    "pierce/#ticket_207169913 div.muvaTicketMainDivImage > img"
+                ]
+            ],
+            "offsetY": 140,
+            "offsetX": 624.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='bookTicket_1640409407']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"bookTicket_1640409407\"]"
+                ],
+                [
+                    "pierce/[data-cy='bookTicket_1640409407']"
+                ]
+            ],
+            "offsetY": 31.3125,
+            "offsetX": 85.1875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "app-ticket-price-list > div.ng-untouched > div > div:nth-of-type(1) [data-cy='ticketQuantity']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"ticketQuantity\"]"
+                ],
+                [
+                    "pierce/app-ticket-price-list > div.ng-untouched > div > div:nth-of-type(1) [data-cy='ticketQuantity']"
+                ]
+            ],
+            "offsetY": 19,
+            "offsetX": 29.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "app-ticket-price-list > div.ng-untouched > div > div:nth-of-type(1) [data-cy='ticketQuantitySection']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"ticketQuantitySection\"]"
+                ],
+                [
+                    "pierce/app-ticket-price-list > div.ng-untouched > div > div:nth-of-type(1) [data-cy='ticketQuantitySection']"
+                ]
+            ],
+            "offsetY": 10,
+            "offsetX": 22.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "html > body > app-root > app-main-layout > mat-sidenav-container > mat-sidenav-content > app-visit > div > div.flex-column-center > div > div > app-ticket > #ticket_1640409407 > app-ticket-details > #muvaTicketDetailContainer_1640409407 > form > div:nth-of-type(4) > div.timeTablesContainerOutSide > div > app-ticket-time > div > div > div.showGTMobile > app-ticket-time-table > div > [data-cy='time'] > div.muvaCalendarNumber"
+                ],
+                [
+                    "xpath///*[@data-cy=\"time\"]/div[1]"
+                ],
+                [
+                    "pierce/html > body > app-root > app-main-layout > mat-sidenav-container > mat-sidenav-content > app-visit > div > div.flex-column-center > div > div > app-ticket > #ticket_1640409407 > app-ticket-details > #muvaTicketDetailContainer_1640409407 > form > div:nth-of-type(4) > div.timeTablesContainerOutSide > div > app-ticket-time > div > div > div.showGTMobile > app-ticket-time-table > div > [data-cy='time'] > div.muvaCalendarNumber"
+                ]
+            ],
+            "offsetY": 0,
+            "offsetX": 105.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/PROCEDI"
+                ],
+                [
+                    "[data-cy='bookVisit']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"bookVisit\"]"
+                ],
+                [
+                    "pierce/[data-cy='bookVisit']"
+                ],
+                [
+                    "text/PROCEDI"
+                ]
+            ],
+            "offsetY": 11,
+            "offsetX": 74.328125
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Accetto le  Norme Generali d’Acquisto  (l’accettazione è obbigliatoria per procedere all’Acquisto)"
+                ],
+                [
+                    "#mat-mdc-checkbox-6-input"
+                ],
+                [
+                    "xpath///*[@id=\"mat-mdc-checkbox-6-input\"]"
+                ],
+                [
+                    "pierce/#mat-mdc-checkbox-6-input"
+                ]
+            ],
+            "offsetY": 18,
+            "offsetX": 15.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/[role=\"dialog\"]",
+                    "aria/[role=\"image\"]"
+                ],
+                [
+                    "div.cdk-overlay-container mat-icon"
+                ],
+                [
+                    "xpath///*[@data-cy=\"purchase-rules-close-btn\"]/mat-icon"
+                ],
+                [
+                    "pierce/div.cdk-overlay-container mat-icon"
+                ],
+                [
+                    "text/close"
+                ]
+            ],
+            "offsetY": 1.5,
+            "offsetX": 10.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Accetto di ricevere informazioni sulle offerte di visite gestite dai Musei Vaticani e sulle offerte del negozio online"
+                ],
+                [
+                    "#mat-mdc-checkbox-9-input"
+                ],
+                [
+                    "xpath///*[@id=\"mat-mdc-checkbox-9-input\"]"
+                ],
+                [
+                    "pierce/#mat-mdc-checkbox-9-input"
+                ]
+            ],
+            "offsetY": 10,
+            "offsetX": 14.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "app-manager-form > div > div > div:nth-of-type(1) > div"
+                ],
+                [
+                    "xpath//html/body/app-root/app-main-layout/mat-sidenav-container/mat-sidenav-content/app-checkout/form[1]/div/div[9]/app-manager-form/div/div/div[1]/div"
+                ],
+                [
+                    "pierce/app-manager-form > div > div > div:nth-of-type(1) > div"
+                ]
+            ],
+            "offsetY": 1,
+            "offsetX": 108.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerSurname']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerSurname\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerSurname']"
+                ]
+            ],
+            "offsetY": 15,
+            "offsetX": 100.5
+        },
+        {
+            "type": "change",
+            "value": "cdc",
+            "selectors": [
+                [
+                    "[data-cy='managerSurname']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerSurname\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerSurname']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerName']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerName\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerName']"
+                ]
+            ],
+            "offsetY": 9,
+            "offsetX": 68.5
+        },
+        {
+            "type": "change",
+            "value": "xzcxz",
+            "selectors": [
+                [
+                    "[data-cy='managerName']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerName\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerName']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerSex']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerSex\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerSex']"
+                ]
+            ],
+            "offsetY": 10,
+            "offsetX": 95.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "html > body > app-root > app-main-layout > mat-sidenav-container > mat-sidenav-content > app-checkout > form.ng-invalid > div > div.muvaManagerContainer > app-manager-form > div > div > div:nth-of-type(3) > div > app-dropdown > article > section > [data-cy='managerSexSection']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerSexSection\"]"
+                ],
+                [
+                    "pierce/html > body > app-root > app-main-layout > mat-sidenav-container > mat-sidenav-content > app-checkout > form.ng-invalid > div > div.muvaManagerContainer > app-manager-form > div > div > div:nth-of-type(3) > div > app-dropdown > article > section > [data-cy='managerSexSection']"
+                ]
+            ],
+            "offsetY": 25,
+            "offsetX": 86.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerCountry']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerCountry\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerCountry']"
+                ]
+            ],
+            "offsetY": 20,
+            "offsetX": 79.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "html > body > app-root > app-main-layout > mat-sidenav-container > mat-sidenav-content > app-checkout > form.ng-invalid > div > div.muvaManagerContainer > app-manager-form > div > div > div:nth-of-type(4) > div > app-dropdown > article > section > [data-cy='managerCountrySection'] > span"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerCountrySection\"]/span"
+                ],
+                [
+                    "pierce/html > body > app-root > app-main-layout > mat-sidenav-container > mat-sidenav-content > app-checkout > form.ng-invalid > div > div.muvaManagerContainer > app-manager-form > div > div > div:nth-of-type(4) > div > app-dropdown > article > section > [data-cy='managerCountrySection'] > span"
+                ],
+                [
+                    "text/Afghanistan"
+                ]
+            ],
+            "offsetY": 5,
+            "offsetX": 59.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "div.muvaManagerContainer div:nth-of-type(5) > div"
+                ],
+                [
+                    "xpath//html/body/app-root/app-main-layout/mat-sidenav-container/mat-sidenav-content/app-checkout/form[1]/div/div[9]/app-manager-form/div/div/div[5]/div"
+                ],
+                [
+                    "pierce/div.muvaManagerContainer div:nth-of-type(5) > div"
+                ]
+            ],
+            "offsetY": 0,
+            "offsetX": 63.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerCity']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerCity\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerCity']"
+                ]
+            ],
+            "offsetY": 7,
+            "offsetX": 65.5
+        },
+        {
+            "type": "change",
+            "value": "zxcxz",
+            "selectors": [
+                [
+                    "[data-cy='managerCity']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerCity\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerCity']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/gg/mm/aaaa"
+                ],
+                [
+                    "[data-cy='dateCalendar']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"dateCalendar\"]"
+                ],
+                [
+                    "pierce/[data-cy='dateCalendar']"
+                ]
+            ],
+            "offsetY": 2,
+            "offsetX": 69.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "tr:nth-of-type(5) > td:nth-of-type(2) span.mat-calendar-body-cell-content"
+                ],
+                [
+                    "xpath///*[@id=\"mat-datepicker-2\"]/div/mat-multi-year-view/table/tbody/tr[5]/td[2]/button/span[1]"
+                ],
+                [
+                    "pierce/tr:nth-of-type(5) > td:nth-of-type(2) span.mat-calendar-body-cell-content"
+                ],
+                [
+                    "text/2002"
+                ]
+            ],
+            "offsetY": 31.265625,
+            "offsetX": 38.171875
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "x"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "c"
+        },
+        {
+            "type": "keyUp",
+            "key": "x",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": "c",
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/[role=\"dialog\"]",
+                    "aria/[role=\"grid\"]"
+                ],
+                [
+                    "table"
+                ],
+                [
+                    "xpath///*[@id=\"mat-datepicker-2\"]/div/mat-year-view/table"
+                ],
+                [
+                    "pierce/table"
+                ]
+            ],
+            "offsetY": 38.3125,
+            "offsetX": 190.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "tr:nth-of-type(2) > td:nth-of-type(3) span.mat-calendar-body-cell-content"
+                ],
+                [
+                    "xpath///*[@id=\"mat-datepicker-2\"]/div/mat-year-view/table/tbody/tr[2]/td[3]/button/span[1]"
+                ],
+                [
+                    "pierce/tr:nth-of-type(2) > td:nth-of-type(3) span.mat-calendar-body-cell-content"
+                ],
+                [
+                    "text/MAR"
+                ]
+            ],
+            "offsetY": 10.265625,
+            "offsetX": 34.421875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "tr:nth-of-type(4) > td:nth-of-type(4) span.mat-calendar-body-cell-content"
+                ],
+                [
+                    "xpath///*[@id=\"mat-datepicker-2\"]/div/mat-month-view/table/tbody/tr[4]/td[4]/button/span[1]"
+                ],
+                [
+                    "pierce/tr:nth-of-type(4) > td:nth-of-type(4) span.mat-calendar-body-cell-content"
+                ],
+                [
+                    "text/21"
+                ]
+            ],
+            "offsetY": 10.265625,
+            "offsetX": 27.453125
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "div.muvaManagerContainer div > div:nth-of-type(7)"
+                ],
+                [
+                    "xpath//html/body/app-root/app-main-layout/mat-sidenav-container/mat-sidenav-content/app-checkout/form[1]/div/div[9]/app-manager-form/div/div/div[7]"
+                ],
+                [
+                    "pierce/div.muvaManagerContainer div > div:nth-of-type(7)"
+                ]
+            ],
+            "offsetY": 46,
+            "offsetX": 275.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "offsetY": 27,
+            "offsetX": 105.5
+        },
+        {
+            "type": "change",
+            "value": "zxczxz:",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": ";",
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "zxczxz",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Control"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "AltGraph"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": ";"
+        },
+        {
+            "type": "keyUp",
+            "key": "Control",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": "AltGraph",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": ";",
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "zxczxzgmail.com",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "offsetY": 24,
+            "offsetX": 44.5
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Control"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "AltGraph"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": ";"
+        },
+        {
+            "type": "keyUp",
+            "key": "Control",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": "AltGraph",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": ";",
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Control"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "AltGraph"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Control"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "AltGraph"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Control"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "AltGraph"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Control"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "AltGraph"
+        },
+        {
+            "type": "keyUp",
+            "key": "Control",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": "AltGraph",
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Control"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "AltGraph"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": ";"
+        },
+        {
+            "type": "keyUp",
+            "key": "Control",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": "AltGraph",
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": ";",
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "zxczxzgmail.com",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "offsetY": 16,
+            "offsetX": 7.5,
+            "duration": 368
+        },
+        {
+            "type": "change",
+            "value": "",
+            "selectors": [
+                [
+                    "[data-cy='managerEmail']"
+                ],
+                [
+                    "xpath///*[@data-cy=\"managerEmail\"]"
+                ],
+                [
+                    "pierce/[data-cy='managerEmail']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Backspace"
+        },
+        {
+            "type": "keyUp",
+            "key": "Backspace",
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Backspace"
+        },
+        {
+            "type": "keyUp",
+            "key": "Backspace",
+            "target": "main"
+        }
+    ]
+}

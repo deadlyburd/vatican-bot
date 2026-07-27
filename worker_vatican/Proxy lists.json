@@ -1,0 +1,86 @@
+[
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.197.6",
+    "port": 8001,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.197.7",
+    "port": 8002,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.198.4",
+    "port": 8003,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.198.5",
+    "port": 8004,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.200.2",
+    "port": 8005,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.200.3",
+    "port": 8006,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.201.1",
+    "port": 8007,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "104.252.201.2",
+    "port": 8008,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "82.22.163.10",
+    "port": 8009,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "82.22.163.8",
+    "port": 8010,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "82.22.163.9",
+    "port": 8011,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "82.22.168.4",
+    "port": 8012,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "82.22.168.5",
+    "port": 8013,
+    "countryCode": "IT"
+  },
+  {
+    "entryPoint": "isp.oxylabs.io",
+    "ip": "82.22.168.6",
+    "port": 8014,
+    "countryCode": "IT"
+  }
+]

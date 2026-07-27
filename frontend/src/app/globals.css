@@ -1,0 +1,176 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: var(--background);
+  --color-graphite: var(--card);
+  --color-stroke: var(--border);
+  --color-stroke-hover: var(--border-hover);
+  --color-white: var(--foreground);
+  --color-ash: var(--muted-foreground);
+  --color-signal: #00E37C;
+  --color-error: #FF4D4D;
+  --font-sans: 'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --background: #050505;
+    --foreground: #ffffff;
+    --card: #0F0F0F;
+    --card-foreground: #ffffff;
+    --popover: #050505;
+    --popover-foreground: #fafafa;
+    --primary: #00E37C;
+    --primary-foreground: #050505;
+    --secondary: #27272a;
+    --secondary-foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #888888;
+    --accent: #27272a;
+    --accent-foreground: #fafafa;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #fafafa;
+    --border: #262626;
+    --border-hover: #404040;
+    --input: #27272a;
+    --ring: #00E37C;
+    --radius: 0.5rem;
+  }
+}
+
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('https://assets.vercel.com/raw/upload/v1600360411/geist/GeistVF.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  body {
+    background-color: #050505;
+    color: #ffffff;
+    font-family: 'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Force dark on ALL native inputs - prevents white flash on mobile */
+  input, select, textarea, option {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border-color: #262626;
+    color-scheme: dark;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #555555;
+  }
+
+  /* Date input calendar icon color */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.5;
+  }
+
+  /* Select arrow */
+  select option {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .h1-hero {
+    @apply text-6xl md:text-8xl font-semibold tracking-tighter leading-none;
+  }
+
+  .h2-section {
+    @apply text-3xl md:text-5xl font-semibold tracking-tight leading-tight;
+  }
+
+  .bento-card {
+    background-color: #0F0F0F;
+    border: 1px solid #262626;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .bento-card:hover {
+    border-color: #404040;
+  }
+
+  .btn-primary {
+    background-color: #00E37C;
+    color: #050505;
+    padding: 1rem 2rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    transform: scale(1.05);
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    color: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border: 1px solid #262626;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: #404040;
+    background-color: rgba(255,255,255,0.05);
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(0,227,124,0.1);
+    border: 1px solid rgba(0,227,124,0.2);
+    color: #00E37C;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}

@@ -1,0 +1,356 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                    VATICAN TICKET BOT - QUICK COMMANDS                       ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════
+📦 DEPLOYMENT COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Copy project to server
+cd /home/abiilesh/Documents/bot/bot
+scp -r . root@YOUR_SERVER_IP:/root/vatican-bot/
+
+# SSH to server
+ssh root@YOUR_SERVER_IP
+
+# Deploy
+cd /root/vatican-bot
+chmod +x deploy.sh
+sudo ./deploy.sh
+
+═══════════════════════════════════════════════════════════════════════════════
+🔍 MONITORING COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Check all services
+docker-compose ps
+
+# View all logs
+docker-compose logs -f
+
+# View specific service logs
+docker-compose logs -f worker_vatican
+docker-compose logs -f backend
+docker-compose logs -f telegram_bot
+
+# View filtered logs
+docker-compose logs -f worker_vatican | grep "Bokun\|Sheets\|Vatican"
+docker-compose logs -f worker_vatican | grep "ERROR\|WARNING"
+
+# View last 100 lines
+docker-compose logs --tail=100 worker_vatican
+
+# Stop viewing logs
+Ctrl+C
+
+═══════════════════════════════════════════════════════════════════════════════
+🧪 TESTING COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Test Bokun API
+docker-compose exec backend python /app/backend/services/bokun_api.py
+
+# Test Google Sheets
+docker-compose exec backend python /app/backend/services/bokun_sheets_sync.py
+
+# Test complete integration
+docker-compose exec backend python /app/backend/manage.py setup_bokun --test-only
+
+# Test backend API health
+curl http://localhost:8000/api/v1/health/
+
+# Test from local machine
+curl http://YOUR_SERVER_IP:8000/api/v1/health/
+
+═══════════════════════════════════════════════════════════════════════════════
+🔄 SERVICE MANAGEMENT
+═══════════════════════════════════════════════════════════════════════════════
+
+# Restart all services
+docker-compose restart
+
+# Restart specific service
+docker-compose restart backend
+docker-compose restart worker_vatican
+docker-compose restart beat
+
+# Stop all services
+docker-compose down
+
+# Start all services
+docker-compose up -d
+
+# Rebuild and start
+docker-compose up -d --build
+
+# Remove all containers and volumes (CAREFUL!)
+docker-compose down -v
+
+═══════════════════════════════════════════════════════════════════════════════
+🔥 FIREWALL COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Check firewall status
+ufw status
+
+# Check detailed firewall rules
+ufw status verbose
+
+# Allow a port (if needed)
+ufw allow 8000/tcp
+
+# Deny a port
+ufw deny 8000/tcp
+
+# Enable firewall
+ufw enable
+
+# Disable firewall (not recommended)
+ufw disable
+
+# Reset firewall (CAREFUL!)
+ufw --force reset
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 SYSTEM MONITORING
+═══════════════════════════════════════════════════════════════════════════════
+
+# Check Docker stats (CPU, Memory)
+docker stats
+
+# Check disk usage
+df -h
+
+# Check memory usage
+free -h
+
+# Check running processes
+top
+
+# Check Docker disk usage
+docker system df
+
+# Clean up Docker (remove unused images, containers)
+docker system prune -a
+
+═══════════════════════════════════════════════════════════════════════════════
+🗄️ DATABASE COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Access Django shell
+docker-compose exec backend python /app/backend/manage.py shell
+
+# Run migrations
+docker-compose exec backend python /app/backend/manage.py migrate
+
+# Create superuser
+docker-compose exec backend python /app/backend/manage.py createsuperuser
+
+# Access PostgreSQL
+docker-compose exec db psql -U postgres -d ticketbot
+
+# Backup database
+docker-compose exec db pg_dump -U postgres ticketbot > backup.sql
+
+# Restore database
+cat backup.sql | docker-compose exec -T db psql -U postgres ticketbot
+
+═══════════════════════════════════════════════════════════════════════════════
+📝 CONFIGURATION COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Edit .env file
+nano .env
+
+# View .env file
+cat .env
+
+# Check specific env variable
+grep BOKUN_ACCESS_KEY .env
+grep TELEGRAM_BOT_TOKEN .env
+
+# Verify google_credentials.json
+ls -la google_credentials.json
+cat google_credentials.json | grep client_email
+
+# Reload configuration (restart services)
+docker-compose restart
+
+═══════════════════════════════════════════════════════════════════════════════
+🔧 TROUBLESHOOTING COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Check if port is in use
+sudo lsof -i :8000
+sudo lsof -i :5432
+
+# Kill process on port
+sudo kill -9 PID
+
+# Check Docker version
+docker --version
+docker-compose --version
+
+# Check network connectivity
+ping google.com
+ping api.bokun.io
+ping sheets.googleapis.com
+
+# Check DNS resolution
+nslookup api.bokun.io
+
+# View Docker logs for specific container
+docker logs container_name
+
+# Inspect container
+docker inspect container_name
+
+# Execute command in container
+docker-compose exec backend bash
+
+═══════════════════════════════════════════════════════════════════════════════
+📦 BOKUN INTEGRATION COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Setup Bokun integration
+docker-compose exec backend python /app/backend/manage.py setup_bokun
+
+# Sync bookings now
+docker-compose exec backend python /app/backend/manage.py setup_bokun --sync-now
+
+# Test only (no changes)
+docker-compose exec backend python /app/backend/manage.py setup_bokun --test-only
+
+# Manual sync from Django shell
+docker-compose exec backend python /app/backend/manage.py shell
+>>> from backend.services.bokun_api import get_bokun_api
+>>> api = get_bokun_api()
+>>> bookings = api.get_confirmed_bookings()
+>>> print(f"Found {len(bookings)} bookings")
+>>> synced = api.sync_bookings_to_sheets()
+>>> print(f"Synced {synced} bookings")
+>>> exit()
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 GOOGLE SHEETS COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Test Google Sheets connection
+docker-compose exec backend python /app/backend/services/bokun_sheets_sync.py
+
+# Manual sync from Django shell
+docker-compose exec backend python /app/backend/manage.py shell
+>>> from backend.services.bokun_sheets_sync import get_bokun_sync
+>>> sync = get_bokun_sync()
+>>> pending = sync.get_pending_bookings()
+>>> print(f"Found {len(pending)} pending bookings")
+>>> exit()
+
+# Check service account email
+cat google_credentials.json | grep client_email
+
+═══════════════════════════════════════════════════════════════════════════════
+🔔 TELEGRAM BOT COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Check Telegram bot logs
+docker-compose logs -f telegram_bot
+
+# Restart Telegram bot
+docker-compose restart telegram_bot
+
+# Test Telegram bot (send message to yourself)
+# Use Telegram app to send /start to your bot
+
+═══════════════════════════════════════════════════════════════════════════════
+📈 PERIODIC TASKS COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Check periodic tasks
+docker-compose exec backend python /app/backend/manage.py shell
+>>> from django_celery_beat.models import PeriodicTask
+>>> tasks = PeriodicTask.objects.all()
+>>> for task in tasks:
+...     print(f"{task.name}: Enabled={task.enabled}, Last Run={task.last_run_at}")
+>>> exit()
+
+# Enable all tasks
+docker-compose exec backend python /app/backend/manage.py shell
+>>> from django_celery_beat.models import PeriodicTask
+>>> PeriodicTask.objects.all().update(enabled=True)
+>>> exit()
+
+# Restart beat scheduler
+docker-compose restart beat
+
+═══════════════════════════════════════════════════════════════════════════════
+🚀 QUICK DEPLOYMENT WORKFLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+# 1. Copy project
+scp -r /home/abiilesh/Documents/bot/bot root@YOUR_SERVER_IP:/root/vatican-bot/
+
+# 2. SSH to server
+ssh root@YOUR_SERVER_IP
+
+# 3. Configure
+cd /root/vatican-bot
+cp .env.example .env
+nano .env  # Add Telegram token and server IP
+
+# 4. Deploy
+chmod +x deploy.sh
+sudo ./deploy.sh
+
+# 5. Test
+docker-compose ps
+docker-compose exec backend python /app/backend/services/bokun_api.py
+docker-compose exec backend python /app/backend/services/bokun_sheets_sync.py
+
+# 6. Monitor
+docker-compose logs -f worker_vatican | grep "Bokun\|Sheets\|Vatican"
+
+═══════════════════════════════════════════════════════════════════════════════
+🆘 EMERGENCY COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+# Stop everything immediately
+docker-compose down
+
+# Restart everything
+docker-compose restart
+
+# View all errors
+docker-compose logs | grep ERROR
+
+# Check what's using resources
+docker stats
+
+# Free up disk space
+docker system prune -a
+
+# Backup database before changes
+docker-compose exec db pg_dump -U postgres ticketbot > backup_$(date +%Y%m%d).sql
+
+═══════════════════════════════════════════════════════════════════════════════
+📚 USEFUL LINKS
+═══════════════════════════════════════════════════════════════════════════════
+
+Google Sheet:
+https://docs.google.com/spreadsheets/d/1MLEb4tKzCF3KWsgUiHGyqn-GaMgPIN0scEAWxFQvJT0/edit
+
+Hetzner Cloud:
+https://console.hetzner.cloud/
+
+Bokun API Docs:
+https://docs.bokun.io/
+
+═══════════════════════════════════════════════════════════════════════════════
+
+💡 TIP: Save this file for quick reference during deployment and maintenance!
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    For detailed guides, see README_FIRST.md                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝

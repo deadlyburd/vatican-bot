@@ -1,0 +1,44 @@
+[
+    {
+        "id": "standard_any",
+        "name": "Standard Entry (Any Available)",
+        "tag": "MV-Biglietti",
+        "ticket_type": 0,
+        "language": null
+    },
+    {
+        "id": "guided_eng",
+        "name": "Guided Tour - English",
+        "tag": "MV-Visite-Guidate", 
+        "ticket_type": 1,
+        "language": "ENG"
+    },
+    {
+        "id": "guided_ita",
+        "name": "Guided Tour - Italiano",
+        "tag": "MV-Visite-Guidate",
+        "ticket_type": 1,
+        "language": "ITA"
+    },
+    {
+        "id": "guided_fra",
+        "name": "Guided Tour - Français",
+        "tag": "MV-Visite-Guidate",
+        "ticket_type": 1,
+        "language": "FRA"
+    },
+    {
+        "id": "guided_spa",
+        "name": "Guided Tour - Español",
+        "tag": "MV-Visite-Guidate",
+        "ticket_type": 1,
+        "language": "SPA"
+    },
+    {
+        "id": "guided_deu",
+        "name": "Guided Tour - Deutsch",
+        "tag": "MV-Visite-Guidate",
+        "ticket_type": 1,
+        "language": "DEU"
+    }
+]

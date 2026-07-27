@@ -1,0 +1,462 @@
+curl ^"https://epay.catholica.va/pay/api/securefields/init^" ^
+  -H ^"Accept: application/json, text/plain, */*^" ^
+  -H ^"Accept-Language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Content-Type: application/json^" ^
+  -b ^"JSESSIONID=7AF867E25BD1C924236DD65EACA9D3D2^" ^
+  -H ^"Origin: https://epay.catholica.va^" ^
+  -H ^"Referer: https://epay.catholica.va/pay/public/init/SIV001-20260329-023540-12010032/BCB2B23A16BA4EB4EEADBCE594D031FA/it;jsessionid=7AF867E25BD1C924236DD65EACA9D3D2^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  --data-raw ^"^{^\^"sivTransactionId^\^":^\^"SIV001-20260329-023540-12010032^\^",^\^"uppRedirectMac^\^":^\^"BCB2B23A16BA4EB4EEADBCE594D031FA^\^"^}^"
+  curl ^"https://tickets.museivaticani.va/api/config/initValues^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/i18n/it.json^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/config/startup?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/config/isAgency^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/search/filter?lang=it^&tag=MV-Biglietti^&areaId=1^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/search/resultPerTag?lang=it^&visitorNum=2^&visitDate=17/06/2026^&area=1^&who=^&page=0^&tag=MV-Biglietti^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/images/museums_ico.svg^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/images/tickets_ico.svg^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/images/booking_ico.svg^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/images/support_ico.svg^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/images/tickets_ico.svg^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/images/booking_ico.svg^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/assets/images/support_ico.svg^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/search/calendar?lang=it^&areaId=1^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit?lang=it^&visitTypeId=2052398703^&visitDate=17/06/2026^&visitorNum=2^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/timeavail?lang=it^&visitLang=^&visitTypeId=2052398703^&visitorNum=2^&visitDate=17/06/2026^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/services?lang=it^&visitId=2026*8817^&visitTypeId=2052398703^&visitorNum=2^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/recap^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -H ^"content-type: application/json^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"origin: https://tickets.museivaticani.va^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/fromtag/2/1781647200000/MV-Biglietti/1^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" ^
+  --data-raw ^"^{^\^"visitId^\^":^\^"2026*8817^\^",^\^"visitTypeId^\^":2052398703,^\^"visitorNum^\^":2,^\^"lang^\^":^\^"it^\^",^\^"tickets^\^":^[^{^\^"id^\^":60,^\^"name^\^":^\^"Biglietto Intero^\^",^\^"price^\^":20,^\^"quantity^\^":^\^"2^\^"^},^{^\^"id^\^":61,^\^"name^\^":^\^"Biglietto Ridotto^\^",^\^"price^\^":10,^\^"quantity^\^":0^}^],^\^"additionalCosts^\^":^{^\^"service-0^\^":^{^\^"id^\^":58,^\^"name^\^":^\^"Diritti di Prevendita^\^",^\^"price^\^":5,^\^"quantity^\^":2^}^},^\^"services^\^":^[^{^\^"id^\^":58,^\^"name^\^":^\^"Diritti di Prevendita^\^",^\^"price^\^":5,^\^"quantity^\^":2^}^]^}^" &
+curl ^"https://tickets.museivaticani.va/api/config/isAgency^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/gdpr?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/country?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/representetivelanguage?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/gdpr?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/flow/ov1/1151758751:1774424211:4o8Wa4Enn-QTt2lnuwi1reIgADkO95lDbuYaz16VfCU/9e3ee8e63f72eea1/3sUrCp.nIRvBp4fOPZt8IYoJJlndrQpGfmbufPjfxeU-1774787677-1.2.1.1-YkLXQFHe9TtiM1Bc3.kH8MrDIPdf6zpwN0kT6xfdDCnKqxWdsH3pUzVYbZgTREsi^" ^
+  -H ^"accept: */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -H ^"cf-chl: 3sUrCp.nIRvBp4fOPZt8IYoJJlndrQpGfmbufPjfxeU-1774787677-1.2.1.1-YkLXQFHe9TtiM1Bc3.kH8MrDIPdf6zpwN0kT6xfdDCnKqxWdsH3pUzVYbZgTREsi^" ^
+  -H ^"cf-chl-ra: 0^" ^
+  -H ^"content-type: text/plain;charset=UTF-8^" ^
+  -b ^"_ga=GA1.1.fd48d2f0-05bf-4569-bd90-4f4c367e28ef; kndctr_8AD56F28618A50850A495FB6_AdobeOrg_identity=CiYwODY5MTU3Njc0OTc0MDUyMjYzMjUzMjMwMzUzNzY2NDE0OTg2MFIRCNbOxqfTMxgBKgRJUkwxMAHwAdbOxqfTMw==; _gcl_au=1.1.1141115808.1774709746; _ga_SQCRB0TXZW=GS2.1.s1774709746^$o1^$g1^$t1774709746^$j60^$l0^$h0^$dUEbhSlB-qp0tcdKtqXFus-zVD_db0_LXtQ^" ^
+  -H ^"origin: https://challenges.cloudflare.com^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/7m398/0x4AAAAAAB2Edz1zEK7o5Rj1/light/fbE/new/normal?lang=auto^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"sec-fetch-storage-access: active^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" ^
+  --data-raw ^"WBqEGzxxAxCrCRJTy7YhF9e9hSDQ1A8vBxLHI8aDvylyR2LtHsg^$CXukrtHnQZRQp0mqD7wRHcw^$i4q+gldl74WijMEV5x5tsWhdl5b62pH6kzoOExJuOkzdiWYFnbzHuqfb7c7X5F8qVb^$1pp1JF1O2TLlUwx1HfuJvIM+f7RsNM65hds+3Dd7yjT^$F9dy9J0bJ0CExmuZEwk32YNEMuzNN0AVmfnOrBRcGEARGEaRImWSXRLUa3lVqplvKl+OP123yajZ3EKHZ2BCgdLbtIwkgVG^$xm^$b5Gc1fDwg^$01pMjobxqYmcynGTsqmbw^$+6PZYbit^$63OReSUAFVpd1GNCelJB95Hm4dafYidn+tr0HLSxtmkgD^$rZ0zxddIEdaZa4kg6d5sa6BbVdIkRtL9WXhhC796DV8lqVMYvKwejmG9qdb9imj^$x9I2KNk00aN7VEh7^$y02Q+BbyHcqpqaDebLIC34h0QyqW9fhL3SnFH5EVjgikIs70KSAHwU^$x6gZKt6Z6XTuqY7XuH4oAWr5C25W9Y1k4zWcqbK0YmE1HaRklTuvgJWgfguwhu+Nve6vGWCil5A8fOcaTsuqyHt4u6ow8OAyGlVkUW11AKolNYCc0rVVlHucGxoY5SjfdetKsfL3B2fqXK18VE+hOp2jXI2^$Yuiej2MaOkUDNWy6EhTJ32PLENgd2scJkXmLSr3FTU^$ehDVCNJvbYZVliD7u3BS^$FmbzmlRl9m9Rc5e0LRN81EadQq^$Ft7390aWJ1Mu9Xlx6Aee9T7qbgrcGwflQtpQ3fED6Sy1Lh1DR0wASILNz1XGM6aXhI6zDzs^$YFy+8el3BNEdntvrbFyIhtFXym3CS89rlwr0ZojdykuZjuo5OrtcjOxHn0DM1RJv3W5TtNIqLSp+8TBB87MAx3xRXwytEmVGY5KtOhO^$v7M^$mtU^$IX7nwoAa6XQMQjT2g^$HddSK2DleJsnPm+T6LvhSdCw^$zZtthERoKfzaZY^$+q+2jFbcgk6OaTuFAxlQWl+ngdaDq9Ur02PDte6GML2iBCvznCle^$dIF5f+7S6FEYDkKJfXNPhMKzfcXs9X8vfCwWOGvbzRkdWt1rTLxWaPaGv3wv9DHCfb8Ud9sKiMHXzzVAMh74MEG^$7dez9P2LO^$ymr7AvqEfWkTXsrX^$bszE7Jyol6RVo8E1KWpzTN7K4NgqgeUbk3Dk+eg1eJ5XIlPQdZoKKO8dV7hFrSZsZmtayhtKggfiU4uGlbKou1qxjLSUWIxv^$NXRMPvJgveTtIvRuXl0NieMogU^$0aZnHet9nG7+jeNNsjfgZ6HuBy22l1dREboEmGLI6Cr8iIOsx7pbXOn2sy^$DX7CzyJ^$MdmE91opmiv1bYEjNPE79KWcIJZ3U+yhV5MlElcleSpVSgmcEomzKl3wBqVWtJfuwqcCkA0ImotNzZKWib58OW9qVEsv5yN3fQWq02^$tnf4nstFJsQskNPjXQTcaiqL901ZuT5BtwXyRcVRXvtjRifvyx^$46qN2QcNrjZ3ObcpzqjAPVz1039sxD9yHdAj64DEp0WUEzsiN70VwruW^$jNh4j1o9rMRXcuB4ESLryIE8Azrq1f8276ACkY9m5BPFc7Efip9M7Vg+Zb4iLqFZA5z+8ppPp81QDBfzlZ7kvKJfvs6n2S^$ehPQJUKF1FcE+kOMIEZQda5CQQl7nNKa+fxlGWfSfV7DX^$3W6YevO54Vb75gFJbO7rT8RctEDb+0fJjhE^$L5+F4GniGmTe^$dQpjk4F4UcUq5p9qcNisfnn2XPLMmLCYnb6O+HPUQdhvGGWfkZepBZbfCoZRikHHunGdBnwbTfegjoUc4ZR4OhOIY9ohV1sAVhEHi03yPaK7fhiaQuXG+VeyGKhXKcxeHJhTB65BPJv9ARi+rh01+6a2bFCbMOVotheZPWHfzodf0f2nggb02MbWBwGNAiwiYae+1cwidWeRdgus^$q1HKQOQIwZFgPYatwk8imC7NMRAXMsYQrugWpWPDATeOgmsjlouz9Utr9TTbZsICOxr57BhXxZQ1Kcx3CJaHab9QC5IYSN16X9mTdtfjsNRUEyqwPkLWsn6k+8vpJcWfSgd6wKunJV5449UE7bjQ502G0MtKWfTaBVj8iTeMKDh6QEznn8HZACWFr+X8CaRS^$4sS4K3GSqDTbxDhct^$U75JVoT0yUn9i4Xi^$56lth7e1YXMkJEkjl4jIZR6RWVgnUtBvt8Ohjbu^$BQ^$huznRz^$vKITgM52V8yUamW6bXwNEY4q^$Vc6+clDEeyIDY39aWkCMb7KwsVCWxq0v5U1iMKVeWq1wcQtVcZtqMOOTxEWzjaRAAYL5F2^$mLAkwpLcGqevKD0p4UPGL6FBQrBfWkfWDcZ6+TBRyu32EvWAU1QEHnNL8U^$ftAuDxJQ4YptkHTtiQJapEQW^$ae17gfLX2O88LeE8NrH7KyGxFkgwpXbBfNkmM823oBfLGEwoRBBiEhiE3GwCEQZRgwmRx1jt^$XfzEj170f76KgblQDMk3hrskXQa6mnobt2QW3F7P9OlyxIaAysaurPeWCiHGimoZRmJPmeslrHW2jgoCjBG78tDI2TV529EmmPJ5bvXg47b8DzOyGaoiUg1geRl^$IUlgu3Wto7a38ZIe08NBHM7b0PPIBsL+c4KS1xi7rS62z4WFhoDFnJPZbCJN3eM0xScBmKKt9cEK70aTq^$52O0xd0nt+5ERvSjIB4bwpaFoNpnpcgIn3sl2aaOm3QUS1oeGd0pE7uBguCJjD+v5bm3bhfstOP+nyTTFRjjoMA^$6ocbb80U86rVdxovXolkmpqvXjbFNurXPTcgH1aVXtV0+71WTkOx1UqlAzmrd+0iYnSFSjHDNFoUmRUkcguDXrOfKGLKWMqWAOMqBtLhLp5ZicT3nWRquxKGW75FNVFZFGerYpqL2gDKgkFVdMnqhrUbdV5gcXDl4SunvOTMuHSP1EvkhEygtV^$xbIJOdr5MTFXm7ejO9Sq3LHYn5sLGqu5pEsp^$rcSFYGhVan+MZyALj^$eLiA4KPhE+VWotCBi6inCZMb05YDYNCoOw4rGWzb44mxSVaEKvwS8el0FoP7C5K1rChfepY1seITcBgxFAFlhX^$OQu1fgK73BS6ie7CwnNVEgxcPSovs7xDGn6VMQgjIzyIR+6LnPO^$Ccdt7BtStt5vWtUTEE2F645deZXD5cdLNH5GS6fd6Auniqf5Nm73NTeMpjGK4L5HOdIIKiwsLfYVPM2UdeUa4o1MUcXvY7ideoIFfkPg4+JQzpwzvKqeYtgOGvJUvMjLkbU7LX6^$2RLZtx3Olid55aYqNabDz5CfuGvsg98p1FfwteYCvDB8Y2NeyUGRcucWoP1oX7K23TvvPgoFgArmjBMrZAexqfWuLRGROKMy5P9qaQrXwx^$TWOSIem5kB5qCeuYU2PRSwIsT5qJvJzDkALu2EnYbZGtoX^$XVgXTnimeyJ07V1J0E+wfWWYTavU+M6aFX2pT2190NCMInRdaHdTW^$d61B+UXgr7NvU^$dFAmSk68kEyUSHT3Sxl3azSn+gz9bjF^$3Yd0f3ehQaB+JmqXfLEHHtYVbCwVV0Hy3Xj2HzdbM8RKF5KaPy5rejtiC4L^" &
+curl ^"https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/pat/9e3ee8e63f72eea1/1774787682940/7a0bb4d1bdff92f853c4c7f0e748d4551691c3c38781bd0f9258e4b7f0c67fcd/WH8bcFcLZIF7XQ0^" ^
+  -H ^"accept: */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -H ^"cache-control: max-age=0^" ^
+  -b ^"_ga=GA1.1.fd48d2f0-05bf-4569-bd90-4f4c367e28ef; kndctr_8AD56F28618A50850A495FB6_AdobeOrg_identity=CiYwODY5MTU3Njc0OTc0MDUyMjYzMjUzMjMwMzUzNzY2NDE0OTg2MFIRCNbOxqfTMxgBKgRJUkwxMAHwAdbOxqfTMw==; _gcl_au=1.1.1141115808.1774709746; _ga_SQCRB0TXZW=GS2.1.s1774709746^$o1^$g1^$t1774709746^$j60^$l0^$h0^$dUEbhSlB-qp0tcdKtqXFus-zVD_db0_LXtQ^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/7m398/0x4AAAAAAB2Edz1zEK7o5Rj1/light/fbE/new/normal?lang=auto^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"sec-fetch-storage-access: active^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/flow/ov1/1151758751:1774424211:4o8Wa4Enn-QTt2lnuwi1reIgADkO95lDbuYaz16VfCU/9e3ee8e63f72eea1/3sUrCp.nIRvBp4fOPZt8IYoJJlndrQpGfmbufPjfxeU-1774787677-1.2.1.1-YkLXQFHe9TtiM1Bc3.kH8MrDIPdf6zpwN0kT6xfdDCnKqxWdsH3pUzVYbZgTREsi^" ^
+  -H ^"accept: */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -H ^"cf-chl: 3sUrCp.nIRvBp4fOPZt8IYoJJlndrQpGfmbufPjfxeU-1774787677-1.2.1.1-YkLXQFHe9TtiM1Bc3.kH8MrDIPdf6zpwN0kT6xfdDCnKqxWdsH3pUzVYbZgTREsi^" ^
+  -H ^"cf-chl-ra: 0^" ^
+  -H ^"content-type: text/plain;charset=UTF-8^" ^
+  -b ^"_ga=GA1.1.fd48d2f0-05bf-4569-bd90-4f4c367e28ef; kndctr_8AD56F28618A50850A495FB6_AdobeOrg_identity=CiYwODY5MTU3Njc0OTc0MDUyMjYzMjUzMjMwMzUzNzY2NDE0OTg2MFIRCNbOxqfTMxgBKgRJUkwxMAHwAdbOxqfTMw==; _gcl_au=1.1.1141115808.1774709746; _ga_SQCRB0TXZW=GS2.1.s1774709746^$o1^$g1^$t1774709746^$j60^$l0^$h0^$dUEbhSlB-qp0tcdKtqXFus-zVD_db0_LXtQ^" ^
+  -H ^"origin: https://challenges.cloudflare.com^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/7m398/0x4AAAAAAB2Edz1zEK7o5Rj1/light/fbE/new/normal?lang=auto^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"sec-fetch-storage-access: active^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" ^
+  --data-raw ^"WBqEGzxxAxCrCRJTy7YhF9e9hSDQ1A8vBxLHI8aDvylyR2LtHsg^$CXukrtHnQZRQp0mqD7wRHcw^$i4q+gldl74WijMEV5x5tsWhdl5b62pH6kzoOExJuOkzdiWYFnbzHuqfb7c7X5F8qVb^$1pp1JF1O2TLlUwx1HfuJvIM+f7RsVPSfOWPgASQIfQdoI+4xBcdlz7RPB2b2m5WtfKQF1rCn6hNAK236uYTmMZ5nAvpP3+Okvmxyi^$DmZN275hZQZKcAiDy9L0LBBrH14dIzcnnyudf3+aNaW5EbQ4vhmzd3LleNQPpV8L5I6I9ocC1HNEHfLuY7PIV349nEyMmRKhH^$CLBB80ui5TIgtRXJDjJJL1I+nbDQKTAggwcc+7TSXYf2nySkMtNsS+ApwgxZe5F^$fqRxxbuS^$ogCA4UOFjEjh8KuK5hXaREeoAqAUIqWiheK3eCXxE+txrCz7LUWe1CSMz9YUiXv3e058M6SkDq9If5lqYXJO8swoTpsdNWuyhOfua5sIZxvP47Q0EdlaRWYhOqwnhmdMNx3GvZsOIxKE3Vyg1zhY9ZQ+N6Wr^$I4yZaSl6+^$^$eqer5eq91Z4lmch8So3wBZhXTLezeaKgzHCuB2dLl0ereEYnV4Rl8VpxRfNlSZl+3YgV^$FpAubUfmOVGz0rVGEvkPFR+DCWfCg8VFwRe377EWQBWyN8A1BrqqKSVZnTbnN1lJfsRxlcZeYqsEHTwxLWMNJx+HlbrUTWtg0M2qx+riu0IcI9s8fXcdbqdxk5UVj+R9uHGaBZUEoorb1k9B0uu5r7IXDHdo1eAUFm+umu6jetGWlN4NcJsChFf54i2vWhukg4S+mb0ytahYZs61K800+IyRkLl9eWvNUAm0aAq5AJmBQAhNnm4xh5Xm3WsTrWkZcKG^$KnKe2oJKj++ZW9RRymtTEBsMrjuEbGd8IiIe0rpTbOcoB5OTRDBBb6+8VpDfvLYnF0uSdxCkhNfTemEypm1d04i3E67Ey9+wEvq+zGo6Z6uS4kU8t+oyBqXWhOeQ^$4mLI+d0OGPuRW2RIxoOml4FfvDR1ZU2ZYC8kxrqHGPoA2r5cpTp9cw51hIEx+^$G8zLkV6M3cguFAOWRnmsPQio2DpQo0Ob6kNpmlI+M94kAFBFQB9MtQYg7qj2XnqSy1d4+QPSiiJIHxITncg2KTcxyLLF5IRKMlLz1H3MoZSn8fsQvPqNYpT4GjF+t^$iYChePTgchruC4OqgBRm3m7+J8GDr1H+xDM^$YpGymHUs091AsayAWW7VEnd0zezvNlA6QTqXbMMp3jRs+qMwpxL+M2F98VPpGd+9vXVcMC6tpnSPdliDmMDn7HHIMtKdV471ZwZP^$u^$pPz3yPjsqpSWUnq8DV6bqMVIjrJhs^$dzzw0Wi2sMqKgolIvkZ70GKBe2TIYrrAv1X6lZ0XeYYkf3vvN80A2rVpOKfp5X4pc4Ba7aA769SqLXsrBTQDTPXyPhDzZVVW6e4C+Leyew6ertY3UqCl1nUOOV0+g0Pt^$5tJXK8dzP^$WJN6HCt7tvQbMw5JtrBarZV3Hp7kJWwDLEY77Hti5JpGECxaQ4Hl+xiOZjJVhk1RBuEllvrByTMIcLwz+KV0pBbVbB4FP6z1XXk1fpeUGZdyr9nD2MIoq1Zi1+4LvUA0ruxkjV2Fwx5IXRLJwyXy8ES6axUYdauP9xvf9Vj5fN^$1vrXYC7CiaTSvjQnCBcYcu9HbPPU68m8wwElnxFATPJNW1muCyr^$Q5u6iqFLxEam537c4Znlkq1mnZCrtDsOQ22KZJGsAQ^$tt4sujHLDhrQk8rzqSQL^$fAl23UT2Vhv5iMrmCCo5VJEg5y9LnD8CL7EZMFak3A4wlyBY1ad6c9CmotyS5uZHk5Bk8A^$big1XILqGFpc48qbYeRsxDfxZvWzX8j+u2rJ2GRN71nGQliIoDnF4DE+qqsmGFfdfQu8rnCnzFwQ8Smy^$mRhNpuIqeyEZ9gOVX1icugMDumgeLG1hwtGCwVk7DtcEmv8wJJMqsXjOY8+HrLr7xO2XWDT8Dv5nyVp8SiZKs5v+hIoawyN3CY^$Zz+84PV8^$Df1bTNud0KR+kaP+8VnuC^$omYK1ALZVPTxpP1HEt+Hyh1VBbmeW67BOQtTUJNK31OFytjA^$dnOKHfkTQw^$5acbgZcbOFoxYmlMRyLOQjwrcaiJJ0EOGgOd7qglO7TdMjqW6QU+55SCuIaDapGxmJVI^$q1u0KWzJnt5N7HRydoWfeiJdvvQNMGoW0pxsFhc82d^$B+lBXV4rgewF8725bvdeT5kNteDJFpdlgsGf89gSUFHHVIKE0DuUKR1zSYMycvRhAz+AkYovyYi+1sxbNjGNGpEMhZ2mDzd6jDHJKZ3uinvR8dE6oBpyRE9IzcZPW1ZhswlUJtgFJQi2I^$NTA66cY3iytWnGTu59dsPf+f4yGwhGfCktrqS8VhZDCnLM8WPa19dy68KLAh2iSg9og4d^$fbboajNEfLKBwfRIqwgi1KaJV6U1N0XHHgLwkWRo8+ElJr+sFtMv7Qa0GOr2OGbRud4tcQ0fyZp4idv35mOcR^$l^$e43uwGtCUh+pm1oi6pdpmTJBsnZ+UdLL1N6sS8V0957wGDXCdLMFpsgWCN7IU9jmKQIY^$D1GiZ5CZkC74wDMM1kU9H^$yTZYQvBweYe7sazjx1PJvLQTpBxVnAocWI0YL6kPOoZhNOASAVqFeqALAnhFhFqvBpYVsrCkmsNgS86TBBbUOvp1oz+86P7C6YJB8mIGt07CKYhEW3+YyWFXEyJETMtD+SMnmRb8D^$p1H77a+H0h1LRF7oLBG+DJh3xI^$DxQmcGtU7igeXcEWeK8B5caIAz+FqWpEOSed8fiWaWL8VUu6Us36RJz1c7z4CVSTR+OwrvKRhzqcr20zgxLUmoe4pcov1lhhJbFvYxaVo1uugBr4bbW38hZh1CynPLmholvfqSkkWJXuZIvMbPpU+J6mquBACRjgf1oQQIPzt2Yvbd5IVB72CGRCx2hBnhXbInTrQuce26S+VZiUSGCynLRf^$uL34Uf1wMu8y0EuxTu3Zw8u03pmPJwyusyiWUU6dwDgN2s5ZeRdsQ0E1I97pPYuxVxflmY^$nVn0wwcpmGn541pQb1L8qvCGeRpUpTMKeiFnST7QvPb5LQLf5YjKS+wg3kfPNbFS4W7LpqC6tGc1bNxxXmVu+rfPfwVQIUNdN8ctdOJwrKtmeRkQ6m8kWYHnVHCzkG+LwwL3I4CzNXfwzy+gPfWFgc+YSTt2WWlZM^$adBPMoLQq2OFHoFisszzzL8t0uH3SLFF93Fr0e+aR0yiCymA3^$VMRel4YtV9cdo5DmlH1Gx4dUzBdX4HBGDQPZ5Hw6wUbbF6TT+EwO4XWw83ni1j4nva6YiC+Qc0XYDgSvcF9bAyHYeA0K0erGqyBDT6KY^$jkftirrbjm1l10og^$tQLw5p3cCUuAQtgxzV^$SW8hALwlPPWLuHLUsk+XjLAsMoQALcyau200P1+ux8H0OZuKmulQAfkesJMt1oLjnQ^$H4kZo0pH6Z0GttESAbx6X6NTFb5OCySJN75et8L2wFyQIqhxvxbgvkVsiShcprSPdDZEww+bThYrccTJkyanwF9Yu3RVIb3HRjbQJlrl6Ls2CO3rV3kcdDQDG1rvD0r6iVNlmW7jrMf2WccuBTkSsppFdPJExoHD5Q9ritSFxGADlUnloKQwuRnwuBl+54VBpR0UtvwaJnIECCkAJw1VgOusxNp1OIkiuzfqxD^$D9Nfx0JmU8ouQYS2OJvWerfa336f+wChAsIGV1HZR2mcOlm9I5vEli^$WcYGf2WAo4Bd8fS7IVNSWHMiPMlNlrKSMeQDOWPITgZasb+ed3sLFV0svxT5nJwXe99R+7GDEQvxkEnGNZjRwTEPrykskf^$+Rw6aNYl0Iwkk0^$wFRlSrgomHQbo8zIlCAEppg1B^$g9t80UiGLq8XkOxP00aczc3jjS83YOr3XphN1Q^$Yd6BC5ulg+jB+qGybb3hHiTt68vMb3z^$cpGu7HFZXxVu3Mx7gRCuCE8wPPlH6+oRugLzLeId9EvHKQTi59qbAXk2sBO^$MJ6RAg+s96Yq5EmM5r5xLd1WBuBc7qPfG4yRo6Soh+j165Pizcs4RPfUjWaWpNLWnfEHArJOf77fzVVDeaZiyWMyY2pitF+GMqaGpXQBcesfd8^$DT^$LeWot6slYVmVSxyurQ+v8Ff7gyjZRp5iHrxJcgDGOtGp3YJPu90k80R22+FatPL5^$kXNl9txEb9nBq+lQS1E077sQartqa3gLgv0Golndl4z1JOiX3jEVP2E3MSv1Nph2GvxRkhTUUhsMje8xcH9MErRt7zGcUfzlYe7eNywD+bqjrS7+2YcOPwlN+c1PcL6ceMwqS3GAgazigFtYV2JZnoqn5Fl4fyoKTCMe1LZTreHncYCGKXOIVGRKmhcLmJwNMroLHw9d16hJ4NQcJNSgcdJ42cYDiN5tmE9jzn+a7^$5dJ94sB5dFAot8qtJMeOw6LP^$YbrnKmKmZ1kZRkEfHO4P^$1Ch+qfIdpuqWpSjhiqDmYl6PQtq5HU4tsG12ylvvD2BmBrx5D4p0zbtMiuVzJKOX+16z+NPP0fSFHd3DEd60sb7Iob^$glLSGNG+bMRs9IvZndOyUPJlWc9dVcY0t0LSzYiLMQqVQOASvl1IHm51XSfDKGQiP6aQEFqESrUNpEBEwGXb8gC+6aOaNNFNm89RuA8z9vQdIhIiff0JZ6cq9cvLOL2lu^$zhXCW5+cN+ag5LRIV85GW9WLJDB17uSFnu+HlWwCSYrk3LTJlGJuosXnZn9NIcWTXSr15eDTY6NhaDAXI06WqLjcn60v+t8fY0jdD6tcwb3gYi8q9mUm3w7NovIj+tF6PloSbOC5A8EM6iU49kZHVFQcs3w6Gpd3iinWrrjjC^$5vcYRTl+YlsyP6Zbku2a0A8rVN2937QDjt^$4gC+f67v^$G2tMIMMj9ihAVkId^$co4ZgVpgEA6MgH3HvC7TfJyB5uoxMxJuD799hgS0jA9AR^$gvjHC441jICAxQ6f9L0iK2GhHvjW0pp7ECcRkh6J3Hw9DGhC^$CuqirC8lQYuKZVjFN^$pb3AhrR3qfNDBWpog^$qNoPaBuO7nOwyb+NskgXIIx0skLQGmlj^$7qwPTu+VRZzh4EIxmmQU18NY3+k4ksDZoLwF7XfZHu9o0fdLW66orqrAoLo^$T9E45C3NHK^$nEjI2w^$LwA12+WoP+L3qudIFepKPZLioDRVi1MkoR+5zZN9LK^$WBC58nIsKUjuKC0CldMAFCOSRKENjv3yYQQx3WJ8wPV^$3IvMZ4mDviuyrTO+tH^$pg2LPR8TAwpbgUJuMS7iPAneL4S2tcmyhiazhG5I3wjfc+paWRrQ5xyC1qfTJx2sQrD0KKcx9KsGLPXWxmQMFUApGk^$bMO0eh^$N7KTb65agLaRHsUqqcSqZ0^$Uhj9S+lbVxSteqUCBdxVFN3MB7h5wklYfHQOBUqjOvUXQx9xE91JhPeN1x9LaazArOpa0Vy9pN7^$6c+Hu3JnlZtUiPxUmf2lh+g^$3pOr2ig6oezAVvE8IKZQu7zAFrk4OBQsADU18H+2GN^$QYrufMYpsseQa7Y9P4qdsB^$x2dOtxBzmmUl9VRNuIZh0fi3IejRB+yqGnB1mI9HskK6w+64f6zSAHOIK62YGlv4Lc3vh2XaXyL95N0lEOqpw8SqBQ0EExbnU+HG99toSl^$4yOMu1xdzxBWNN4DPC+DfCul1jRH0NJQyX+lrTFsjQdfg56W2CM9lRQ^$UMgV8IUfvpaHhjxV4F+oV95TDo^$IeV1F4^$nglA1UJ1IXoagBAN3m9vGJYT0UezE5eBArH53kcc3vPqrx59i^$akITVGjx7v82YWWWYOqmZQr+RQ08DmgbvOMDea+LzIXMEEv^$qBLqW4sCzCoAQh3iyq+rwBkR4L^$loyWW5jBX71DH+e^$KVDynF3^$GpArZ7z5tJc1c25Jm4k8vpEJghbInbeWgeKseIHl2VYQBwOj+cTSeJlitudsZbImcSfLNXizbiXO3wNT5u48HiGodIOxR42LRTphkpAQ+pJ5ebulF+ABkkiUizBE+0jz6uhEYV2481FW849ZwDeavnIkpCanf3jDO^$fkkn6vDhsHl0mHv2hxqmB6RK9NU8euo3J+NgYU2t4v6ci0W97TkZAeEIJBp0Y5K83P3QhAw6eRtyQ4dDZh679COfnh0fKsYZU6dFw8+h3jVyxfYZoo^$PEgTVuolWvnAAkYaYIU6LS0vXkQIf^$wkThqy73uY2ywuhHlO+8tYEyFkyPKljdO2UklpYl2UD3tq61Yz+wUFp1SnXcT0TH0tkqO2GvSO1Cg0mjQ3igblXXG4ToxWRNGbLIERNjDsVa6Aw7lQsmL1r3aks4c1Nkf48gVNCkFZ+tHbrO4Z7K+1^$Qfg3Uy4b^$5PFyDmT4ey9TJpuwbl3G1SCM6EKAqanoIWpNbkJ5tl+AYQnXUdTY9uBv3h9f4^$BfcPhYE+NTUlAiWB6XhJWzsuZUfXGkp11W0PBVziQFki2ULDhvVPT6RA4L+s+iIrqhw7PBbszQBrw4mFDbJEipGaTr^$uYqobFLnJnHSH8uCefyTEj2iXOdSsAUfrDzq2twqLfBfyP9epll+3WZjunoiFLwW2xjr9jKWnWv9bITNdS70xkXUvO6Zqf9qNWGeqTcUh1srs2eHlV9xwxXLoS7sep1fVT5k72AlvZ5ZDHP4^$UK7ktnclX7^$qPzNIKm2af7mq7Kro10LMhu0F6DdanNKkwLpP^$EcoAzh9v5APadMG73RGq6prWG6Yw+BAODCrvZRkjmUUdECfrsHE^$fmPeVnIWFQ6SyVaag+5A7gzq+^$1iNxe1eCV5^$CqJAu9IOK7dBcDSxZjQ+CE+VKlE7lwyn2d5^$xhNEgoJZ5Ota2fJxp^$GpKKt2BEv5dTkO030ZGGcGbdGCbX5ciw7MPUCjQkMqsHgb+6vpBmwl2YlEWS0nV0HjgtnZF9uvbiL8sZW7ZIjOeR5K3gBoN6K1CdJWdhYshOxHMP87Sf1M8YDcFA8h6ZzOBxO37dKdJHvzzAozTGnzl20IXvh8+HAUrCHBSjqbe8VHpsEjM0ACbnuAuu9pmH80rXZ^$hpI3HVNE+U9jyEip0REz77DTuayhmoPye4nVHbRXTXwSvjHkHJyXX35v7fE24Kewq+oRQlrzKzju12s8vU+st6Tr1^$eRD^$7Ny7g1lho^$+tfo^$gStMXdDswZfRZi7IkZ+9XtmQIpajC6gUkqpGRdVjRKlYVhroJrv34I5lmcqzYrOuQ^$HWFS5^$hCOsl+2i1w^$Xsz0Zwzv3iVnhUzk3o2yShAwELs0U0Zjgf7moYTKMYl+6nfgtdqUvVFoVC4358JD^$07a8LqlHCV1oUqiUde0z1W29KiIAniRtb2jPxb1mgASBsQvqFZE1fslfLnym7r^$iX1YDAYgy8eeB5bKxLS47XHu+GCcXKhfK9Cruw8^$yWniSyi4OGXqtUWtAb+I5Fk9wso1IPTGhl99SQSa7TkTAY5iBU+fxqOWAT4uqqJv3GvhOOoQiMEvotH0wYWQz6nnmvajvW8fR1LHb1PliR6YhBjkfqVc^$ypCbXSkuAku5^$nIlgYjLMIcfGBUWaDR2vmlUNtJTblGefUa41TvE+uQ476TL0Z1E6IT90AmK1y8Th0nMad0P8BJLaZh^$fsqdR+zwBu7sL8A8i3i81YvlqpTzgksKOUOTxq^$gHpA+f0LfpQYXDvh4mrov5s95JDRKy31tvA6GYI2fEDkrzPFOb1+3uS04uxYHQ38xl1bD1dIAR6TL08HlwovxDl4AzStMoxWm+ZTil4GRBDwpSOA6WsDI7aiTDJSD0puyxM^$jgszj4uhEhf^$uZO2V1eKvyEFAmyNCeqJCrQeWwEOMA^$Zapk5O3muLDLQT9gX+98YN8LSh+yjp7^$4YQTYSRayfUk2yIy9KaWzBc5MdaG+OQ2kWM6T2EwwBD6kY^$2N5LbhB9hAQsOZ3oEVZxmzPpSpUPlsrD^$OsINeWeg8SeeC44olrvdu1U0^$KnwBy^$ubUlC5gVkdNmAnSS96nmonC95TDtd3^$mmKkXurHGW72BJrwDYHow7WyMfvzd227qO4xS51emKWPpRAvWo6CETaUkfwgCT6cT6dQMCbb82QuFrK^$JqNI5RtpEH+HNTMRJCaaIKgBLB^$jTPhchovThnfM06Y4qesruIIr8eDaftniGWDpw9yLjhpt9w0LJSgxJOQkebXIbnXtyGZw2NaXQG9uzAGeSzrM9qQWxdqTpEWEr2AjlueOn1TXyLOnwxm54xo5deIMNVxeQwg3ZBjC72sNEuqiDZoIybURLRATCUznXar1dy^$iUT7x6Thc8WAvc3TmpjeRGfSkQ8K4BNz05ZfrUjKDpK+vNrcR9obDGXaTUZ9dRfyWQ0B3ImfGkS2k9Vil1nVZFBY0NVl1u55gI+XznZ3^$zTSW1l0ihqRfBCTjGE14sxIpws^$yDP8SeH6IdVnKgFCVzHheqO7kgzZhunHN7tw8V7QllU4izEmjQO7SPBv8jO05lXbpVrKfzdqZ10MJKa^$ntJiGpX+0AZ^$8cStgrYgnX83f+e9WmC0quUhO2MKn^$hwN2xn+qy2bibi^$BreR^$tJVpg+1gwXUkcUa0MH+OQlFkIJgdDZHAwm^$1xzFfcERtTsRRNfubVNb5pcWTYLz9rYKXXXuu5a1W1c0SWENpZvBsJddFJNv8GYaKPUSY0g9s6DTtYE+yYNb2b3zfwsiHRCtcjZyRclBC6to1mH0ewlnNY3V6Z2RZMIoSI^$GkH6i9uRw3MxUoCoD1+Lj2NtbtOWsSFSeJSHtuY^$^$dzmFoD04bbaLeNJWCJk0D+0fgMZ3KazriF9FRU^$Jm6pOeS5ODBl3UTXqZronDT4JS80WfteZ5T^$tXRckHjWqo5ftMKTiMdwkrQFpIEG3pPAtv2722YKYfNE4dI27xQEvJV9zYRoFTCGnPTRrxGTUvgsD8aHbgv8ib+0UVg^$PT5fWHQb7fSqwBFYfblCzd^$YS3Kl3KlKgwIuf9yE8sRIKmJ6TjV6Ltd2lV2VP3^$dGlJLY7lHYtSaSjqrOVLbBLZU6QCR7CYovwV72BG+fcG6RmWMmUJ1BR+^$BW46SWW2AbuqkXyFghblVWxR5U2jGLN^$rZw8mucx+Dhu2kA+4JClikNzt+gtHY5thhkIBI4eYxY^$N6hZhSO5^$iARHG8O6nJDPTLiN^$YAFmlZ0aHx6QCKc9D6723JfV2emqw0Fa2ZGKf0ggxh7+0cDgSJuF4QqI3lb4PJ^$7zRSk2uECRSIzW7il9Zb+CCanZkvOOvTI4mEMNrOHA54LSYz4Nnse+ZYFUnqyc938JQr1tm8l69VMP6uoQZMLLRMD+42v3hDEBMz2dg8ZIsIXpxC3mctm5FRY7c60i1xjvzfLbHlhVuhuG4RGv8weX3aL9ZqiDXpQf9bdRgLwZdm341sC304ba7NqBfbNABSl+plmmetc2yT6y9a9VT1Q3xwdkz5zkmQYr2d+aQlP577y6dS2Ubu59khJEzq4kDG9OJUvZveVhgdzRs6MIkbcnYPGNo2GOFpptaxyeGPB21H52M5blJ8TMtSzY76Kx+AXSmRtp2ZXt1D1kQleFf+ZmBI1diT+^$mNYr4W+Zn+R^$u3dMNTXF1vfZdLH5+tkgtiujPj0xsaxeRxNIa4j^$3b227fEgDA8lg6jDIeQz9MzNZUxawBysIPV53IHSTzQwCOz761phpX15cRfxPPApW2mTxlHK09ta28WqUL7UrjNRpZ1ZWonzUlvbyTFb2JizzdDh5ROqdqQqOmhxqMi3yUi67HSTO16xNklyvkuN3t0Vbm9IkAVw5N0O3COF1VE4Wq8RzJxzjOvQvi1ZLeU89vWv2ccloZAyHQrWxqpLGf9hal1Yr1Tm7ePPVf7unxYptSd9dWvFHWZs^$DhngBR993gLYjdskji2v4M1Ke1fWkvx9NhsHzio1D6fce2wb1ZHqrBxXwdMzfW1X0orluchox^$Xm0^$IUHk4i7dLlGaw4HFVECQZqsmQaoPkR9rh+aMdUrz4DUA6OfEOMa+GCfHRb8u2Iqz4R2frDpzaqH+Y3IM9^$7OgpjJRQR^$HqQeWgtle4yGNSPE90El3vK1zw1IyWuAY5Ay8+QlqUKOr72^$RLfeOLnzovIOpPGsvMHYYnV08e93aE1ldk^$sKjbbm7M8nqFWZ^$WYrye1ai6W81EGU4H5FBDXs6+9wOUj2pYeq3YaJEiMhafM0sGMdcVrjGo9jCIhd8N7Z^$y48V1N0Zd6i6ZtrvlWQhtvmGhRHf6t5zpFeNRoQ2iDvHNo6LxPLtrrzZ^$0iTEyOFFUDzFzleRSQLTOTAwIpxgMLCNcsonxcWUJT0j7CZBkHCvJKsw0bA5U8LL9HoZLJoYcpa6u07mPF^$swqGbeV1MqOrCFHZx1ATHcEWRg^$sfEl0kAOYQWa5uTBzrmOl^$hFJwcU6MGJV53hqeX9AsavfujAvVbuGSjsCrAysAZpaaOJw2wBcaieDB+vRjctYGaPg+iXk0egUFG+P+4DGzW5gQxtd3kYRdqargnAgMhXTwtv6Bio8DFC8WHIr264qSXnKvSpQED^$kwTPtRet+io8+ptUln2Aq7x4KcaOWR21ihxkBtleQZJoqCPwp0tt8pKn4Y0mAy6Z4FJ6rAeiM8LXOPIvc^$SorHKhi9Ixw2gQ0X57w9eHNxejW^$dp+nIiSWkODFQC9+Ru5zF4UHBgkiPgkntY2aOxAm6Dy7vNDv2V8vuhwY5LsOE8N22xISYp9cTkWoedKdN6ITtMJTdpXJWi73TN5uT978M5TD+FdJxlExDPlLN1Fqk6fowlHqI1SQqRV+e8FV8SlKRG1pA6wcb29dHrgbjOLzQlqR5KG^$UdM8P7JTZRYeac7LNBsAH+42btULC^$VsCHvPpBCDlInH6ORnJ^$zi+OdJNEX29KJaxEyZ5Z2tBmHUOG6htH36cHEwWlbcfHUqRo5avEesgEnphfOhuRRJfyVUUvFITgfqaRXtdOvFXWlLr50f4yQUlRX3BB4CbXZZuSn23ayD8KuJrhUU8qz24DXd0zLrHzKUjccqfUpaXzLXPUvG8llFzQquhAvh2HopeCy8oDYhhbGDLGR+dGSAXaOxckqvU0^$aaFv5Om+qRLENIwZqQ5KEKh8AzT33qKmJKGzX8ARxD5zfWsPrhM7gjtvtbtIIkjTBeCqs1qRRFGdUOBs5POHfLr6cI1+RjAzpfHyfM0ksZi25gHEGCnO7YZT9TGucZSXP7wgDDJ^$HwrVdE1EU6nRh87nLT^$QRSDUb14N^$2QA3I^$2sl7En8dOrg^$Ou8u8uoBWtSlJOyNdQQrjQoyfBw+zin6nJXlOEuPE+pmb+TixViQ1WwEaygtq9ouWD2DPjWNaQDNiWNNmiTklH8KqeSc2IT8B98pAKM4MCXH5tQQTymnroZ5FSc75ryY0v0L9m5fj8HmONJd5HtZf663ooCML7WhvzbTkLJWMCjTMMoEErQly58YnU4zdCYc7z9bFMXTQVdyT62zHA27dOJgWTw3LuC7CFFHhPvsCcbaberhKepKr6WxgjZuq27epnP0VkMrrVYYFEfHZzKV4lM4gTXLYhqPdBfFugM69lz^$sK7YNS8EV+hYeks5IR0zZ7NUE+r8A+lgpVXcCoCCYW8ujNVH8j191ObOGCLU2pxjkq604rUzC12fdRsxDr7FDCpOl5FrHotGHrvufYdM0yAZiJ7LvE9YN+rN9id3tyrSFw1JZwqyI2aW8eMqvEzNazQrMib8MqnDJGAHrkRpyCbiFeH7hTh403SP9lY4m1vdXgDNepNcdmVc8DATBtN5NYpCHE7chk9Bwmj4CL9Qiu22aI+ek4NgC6SJCSoTZKdTuEStsFa2UZ+^$JzPHdOwOkbbAEcJhZfd6hFw4uUu+rW2P9SLj+MP9+Bsn1GVOGVLptbQsuZlduYMZwrT^$IaqXXJjvekFXNT2ajx^$kxl8KdZ9hjc99AkcPBoRd4oHmEotZBAyk3hemTP8a3xYDNTK8jCPY+njGK7U6jQl7nyAY40mtwhvfB+m1w5gb+ITxCjsriUAO8s9Fh5JQhsF0yRYnPv1xiX1MrORFG^$3EdCvHhWPn6+nrGhj11ZRylBNez9j0ZQ94di4XQYlkidwUVITiHfQmkCzdJnYmExVIqYu7qusiDJYLYqYJ5fiJGvNScPbjDLXyQknt3fHQYULZ16LnW0lLTKSj5i5KI^$L9xke8^$uf3CkAUw4GECCtq7YUJqf4ZWckf1K0s6nCm3XDVa1fcfrcnWdrmRa8CdSWK59Qc+Q03gourNQqtYHml06Xf1txX+iFRCn4dnVCXq8geaLE75oL+nZBU5gq0q17+lSYe2Yv1kTd1f^$ZIcRVVNijQRjbBJLM3OesrympRUeas9zsT1S3FpB^$KQ8Y+YVL2NcbHxtFszR+Wyo1BKtvZrmQG6jREmXKFj5waiJ1rX6++Xd9bIyjzE4wyuxgY4cagQBrH^$YdSEpf3sH7MmZQC0LgWnRGbgPY24iP6WYj0ZG4sPL+GAVvwofc+ke6psW2qcDWJaD2slY4GJMZ0TnoXyf3CemctTAVrQGywICHlbyd9hbPP3o8TPt^$fZ9QklN6T66eOiXslZXqqNSBG9sgO7CrSI4v09hXg0z5kbhV7bxK7^$GVeGVsUyqXHSgdWVMZGWfxUYX+C9cHFvUahLH4gJQN1QH7dJZw+JYB397Tw13R39r2Rj+WWu4GttiYMB0BlHVBoTtqx0M0ZCr^$H^$+VkBN3IaPnUpEjkPux2rLqjq^$5trFNzdwe6PaHP^$9gJxVtCeyrNaU0Wz0BlFGwQpboH9nlqUBp2Wek^$3acvNeuR5l27sEkZPFIUePY40vmV^$CyzDVIifDx2wiDmeGFcIre4Xe3KtWXUciyNA7C1XYsoRi^$3ya2TyU94hBOUoCtME^$1Bhw6TOmARHVvyoGd0Ftx2rJswvcad9fGxUvSpN3RgtD+v+CX^$rX870Q2cToX3c0UHkyxXI3KSpw9ynyBg^$DPEOClV73oa0GRfdlJLKZwSRZVjn^$JKwTe9HcAlAQs2onySyM7fgTVeYShn6Ed13dGszrgsSfD5Ti51JSS^$zlqGUoIog7J^$1k6VM0LZdJunNT33gZpMQVehwLKbBY2Z2moS5uAVXivH8iu59s9Pame4+iVW5C9JUuiz3PUiUbH1DEG8IxwEZiCPm6EHYJix0CUHDi+V9VU3vr2mxApitk56skgVVws99^$qoy5EglYj1Bt3Yb5BbprfTObrYUUEDTk0MfC2sxdOz2XPiMuTzgSM2kskTdSaSUe1f^$NQnvhBLo5WZfVrjm^$SeURiH78VmXBXAJ^$bQhuXyZEyFnVWgPkBDeISSeq5iPB^$VnNv^$XE62FEBtREnX^$2eshmEUfUCoxQYqtTDK8ZAOCsr1DnRYZqY6l7YXVjaEVpkNgrjh6kYfheEwtJm6BNCSrfguqQ7ruXyP2BZi5bXHaZsBnza^$jS^$d8U3mky0XR6tHlFzawFxq2p^$CnPSxE7cFu7YO1K4LIUmPBIhMLHehTeHI3Hn9vex+rt41NMQqAQ6K4QQZB1iQaiybmqALnYg84+wwHNUYdvqV4gLmFT^$NO3G^$0JJSPR35rQNU7F8pctt1Td97nGIf9Jr2I4rk^$tyYrjJTHJ^$CKqUonBbWnrSC3Rx+e380upT0JrPQulruzfgPlBSHMIYqfD+WL8Ltia6CEtRsPiqMTl6bc6QI2S1P0Qri9utPM04JPogiaSPTLsvsnH9ff1KXa0oMBB^$OiXpfFCkPVbQCfZGteizqTjW2ze^$Jqq2+mqHCJOxfZ851qUqJVOQzMPTyFL4BmKkSHRFR^$XA41krWzKOVxTfONRa4o2em4nhN45cPiJc8m6cewSZgJeZyyifgO7BTDvbpRjNN+Ie94ZWlLJ5Wkgxu1wnjBWh8Ou^$oO^$enRSVZ8J73FgWGVYrm3sbItCFqo+z+W6PDyLkFLlx8NQOoruaNoJVD^$GermUlRfwCN4kmOmbUGK7xvisoh5VvGmdt9iE+ROI5KqIrrpJVAbXMjzeBzsPR7C1Y5Liz^$wzb3pKag^$pDzqftFbriwV8W3R0YcMK^$8nuyWAuZt9UXgBRn9k1XCKgzD0e16w0YY4bao5XpbZ5jS6BG8PFa1UnCVOW5iMuzvfewy2y46KOH6TwIa2GFrgNulTFuyh1q43Txw+YwyUA^$jP4mKTC7kr1VvIP2iSN0Ot0muywNCeW5cvzhLwZHWSLVdoE64Vre3HeZ3SAr75O7Y27QnGb8Ki44OXSevjOVcy0nR8J1vvpmeEdanO1opMrRmtSvCWisI^$K7cQbVKQ3Ww9gSXB3wRrkQyUDlVGGJwfrsNVmGUB2mv+fYmOBTGGVqp0J8t^$KaXnPdPBFaK^$g78tLaAjOeXcirseAYMFn9DRpWGBvpLczvIh9fOa2q2K8xoR780yIDCphqkm6UfuzgaJNoMBjyJ1qaKi+fetGOZcmykJOqnDNLzKAOYPs+ui3EtwUHSKMm^$+AyEyDOqj5Ao2PsadBwI1en6K1BHC9enu9OFs0iIDHwySkc4mXYqNAclaH38VBh0OeB3h3pMy^$csozXvdTBM2V4r6rLrOZWLhjuUimxr53wuIyTcSQPBYMYub6r2N0OFWTQgIbj14j5fAIS4Bib7nvyQTgWenR3nGSR^$o9zw2+kOaKousZDULVNeVt0Wvc3DHDpwNc0bjcf+soeEzm7uqYFn8jk1tQddlkniIYwP6T1cC5F^$2nZjNZsprogYdMhCBza51el7+pAennj5znAv8YQw96xc5Lr6ULKtEX6sfqQVPv2kA5wpnqjC0kx0vw+9JKxsGVZQJV9kS3ooP02jJinlJhaFGklJqYZT9iofQrJFragLfcvLkG4GEst3eEiz1OS^$69RMgC3FsBrKAYNbwBuBdItxZU+zYGBYwRIg7nyPmwvfjwt+U8eL2m+Ci1cqrk111j4hayJvofsCFCLjmp+jwDae7NCp1m^$xorIiPUEg^$AyZQJ4V9zNLlNlJzbRs1svkuU9vn3V1BjJ^$GgpRTNTTwB7HLBUmPcL38HEuCUFDZNSVTcyxsYFGBZTX3oGC5bviSnTzoytMPp7nhxYs^$x07k0mpHtXFTRCFAgJx5etS3MVVm1xjlgJ9GOCSDH^$rK3LU3EhRta8Sq5LeXNyh+CHmPWU5lqlZ3D2R0hBtm5WybKtnBU+0RnaTK7hIGIYHZWzovmltXPS8lWmCgOq^$L6nFYRT7^$Q1ei38uxO9Lo583Q5gu8uarwvwFZeRY92gEI1Vl1bgqEc9FZ3pualsk+HSzzItTaELaESfT4Tk715imAXEr0hWUEP5ZkyK0ghStAp3t8sk8GJrAXAKbqFC9mleVQ6SkbuxnXvMvYDQjJzlh1Tc0hftmb6LKo51ZOrcoRfyPWTzn2A2Qq7YX9bc9RwQ1JKhAZBYUdyzIWhD0UATZ6TlTe0Wg4S7c8Vcyz^$YM0Ryyooiz3ao1CkOC73^$m0JNyg^$tpdGXhaWtSeoZZ8J5DVLUiAYON1xsioUv56rZTJUzQr8vT1Yg+x7PaGbpn2eVKq5uidG+BlQpIz+zEtS6mArnmjSypz4pZXZzC4sLpyFVYX8mV8gx6D8PZmYczoQvygAj4J6LCtUiWQpXJiUcyXWYxSiSa4oYIP5syEf4DNU6ajF29lI8JaOQGg9i7OnDnnP^$rf3fOG6FPvC0WzBfgmqtwUBz12yCs^$Pho6Y4vWZWZIypLY2sbzc285TIaDwz5+UpMedVwCalFkA5jGpHPTzMCENWZvpMpciyMzLqyeYmEHqq4pkmDvKAZu1qlkm846z62VRaDkBf2Be4i06G^$1o^$C81xpxi+WWsltdGECzEMMGDLx4DBpEqLKPvFVEYN+cLv4rWi7lac9Xi+RT9RxpeESw3CMt7B6QHhkRIeoQdWHh5+gA7C5^$evTxKxoBPR7VfhXB5rFxpN6rk00DlGzJBLbjzvBB2rpMJlaFB^$xaCDeeVJgtCBIFD^$^$ix9S^$atKzUWbVVdQaOwmKLkUBUoMaiB8Y0o7fv+mFAU+lyvK0Wc5WtnrZANZY3g0FPo2RwunGNImRAdlk1c5mVvZN1KolBzcgsG61hVnf2GzPSK+21cXbR0TXP5DR0ENLW9DPOU8GfCrTdc3HL2kFmwBmtPtl239ocQIUG6ax4CBCcyNgCt1sKBAlLQrrZFOb1PyiO8PzjwB1D9fdm+x8MC1KoHK^$15kIFcGZoRagJ3QRei5wOlBkln5oNidngSu55Zbgsb5ES08UPxk0GTalc5B6fYSh76htcScTqugX3LTNADmC3htfassyarNrYzLf0FVd+RiYSutEeZZ9Qz3CVJvUJAhhU0k6AFZhESQWxAKWiDoTZ51MVGjqQYZpfx9kSvznnm5ZdetSlxAivshoKbtIWwrhVJ23Zl54d3+2LrKsPkvXdQCSJ8qVoKy9wN4zzIkf^$tskvXqrdN8LI6bW6qOePk7L6NU0FGM6ilG7mDuqHw^$jMErxLB4XCVq0vCEH4PHp5KoUfAV9qp1cplhbVJFmSvG4m9qnfTCC6ydV+xDjXXzFb74s9TWkIB02XnbHwjAKE3zKNyLtVzIe7vKMMYSDmRH4Sy5qRx87omh+t4tSKUUpdzhU3mk0YTs6NAk4lZmGdyhTzttcNFDw9recfc+GyF85vqd8rwxbskfAkukZFJBdWjMEauTC+SSUrzOgK^$GWVrdNRV6PEbFU3AcqA3t8t4utyuuQRLJc3emciWjYoLZpmNSWV+M30FbFYpI6XuvCA8YxVOl1SnXAjE3Lge2BebzdJVXPbRcx9+M61V7u3k^$cSVB4ipjAn2fGawVoDWOc7tlTa0DARERDZkuOF1AUnyY0N531ihqtio51ScdzUpbLnypt2r7NfNXrI6xLoV94ng+ica^$+TwRptqKzz9^$WWk^$iHBxxqwr9aqzVQy1jlcpSCUyTR76Uz31fyQWnGSTer6nbTj97xCxBZf5Df9f9loC5tDUmDaXj9UgCx47Js4GqkI7tqqHUEsq0as0yNNmJSXrmuwMaS^$0vaKRG^$AEGURoD0kfxmPZdGvrbbK^$0PmqIrm7QLhqdgbOq^$P3hmRih48RVS7KxqIlVkdVQkJEN5KZtua3aLs7YUZ+q86nhIWLTUA49bXtiIK^$P4cKr9jCtNZa4VIp6KTmyKKf^$Zvd4efaN0qgC2tBBZ9L49fgLOzdSwz^$WaEeXy3yvfVO9^$gkWd8ZZYnT5U+6wIOQrV6b9eRrzIf5PBhhIkPw+Gb3sL9kR11jC5BiYZJM71lFi8Z02CvrsRTlb3A6VnWYIQ2baSfefabHndE2KNzd1HzCkjI98Mehm8Gf0mKGeplhruW4yVYtEA4mjEfjMtnyrzwF8rkMVH+qxoPKimh85SQVRsaQjgfkC0FXChbuOLRQ3Z4FYaN8JiCbKBzGhJ8EG1VVEXcAg0N^$bwURJwYydcWPjD3PgrJT6MOnVvueHfdKWG6IX0b2QqOZxIYLDCANKUwOuTXlcYJ2LScGfoFkE7kTfcpjXUdZx3fI^$V+LWwFVky9iCXqeY7I4wrGlBKgt2hjVxBeTv7Ao0eC8xQUuqgaB6LHTSEd0vgnnAnzfbDx3jRKZz^$X7O+b2PVncHiO1+mal^$I7yI4qXyKXeRHbX5vPc1k9o1giDYiHv4acgIIrzIlnG4W7Ev05PSI+kE4AD8ngKe9RolBfxnjclz1uSNsmG9khDQib+hMZO55XsEiiSC0YMzujhX+LqHanLxFMiETXvA7Q1X7CDbU635eCHkKUF3PVcyEMj6cWoAu4gzV4Th+cI0INsRLGRTWnoKEZ+Ra8dLqo5nhkhg4Fnp70JkLjlV0j1XtAPDAg2twnWAb5K9Ukxt2N2U0CqkyCP6j^$cSsAzfiP2Tw4dM^$Bd^$g6zVQhyPJ+9U3xIV9AoQT1Csi4h^$^$L4VcOQeiUYp9bMnBIU9MLs4sWorGKhJzL7umwFywpC8OJ8fufagR1MALPNCI+gC4aiBrPvRgTztbp^$BgZbJoE6m2PRBfZxRnq^$yYlW1aJP5MDcRPp4uPpwdgU^$reuZRqxfiXtXMZ53UfI7rdn9a5FX0J7MlvMvp5Ble3O36UistAEaj1^$SdNMdeY9AoSCogSHneUk5Ix8sVWAEHbyMC1PtxSGB8D8SKeNVgN^$1PrzFOATcuFHnRN3eJ69296wXzWndg+Wh5hHIjZbmwqEl79Dr2nsQnTDbhRjzaXdj7QvMvMiYhLMx1ft^$641EbJm^$t2Esr0s1abs7jOhgzY5gFhUN7EmlKQTVyRHw4Tg3qQ03eR2zdSzjXO8S48cm1QOUv6xnOwKfdzsX82OQjwOzPkvuApf8Gb33htWemYC7TZE1rlzvQN0e^$36AAQcVq4ugYu6An5ENpurb63JUbX8AFna3r+fvutTvcVBupM68rIeIX9Dizjno2^$YQi6lr^$XyuH9lhPtgGaiAvyB2CHrBxNiiyDsVh1xBBOZCpRyuSdexLDHpbJeUYw7RNpcyH4MD^$UeBnOhjNltbQ8gQmLorgpYWy9931I25wKWK7pt7ZCLcIRv3e7aeRaeeJKFNAZkXDULr4o+aErreAWahGQYShZibUbdzce+8N1r^$xYuVrt2^$+NynU4l+ktOh+XK+mRuYvPTvwzXBQPTTeEr0841XrlNtXuvWV0Rsa2mfSVJLa8lmzRbPkWgNC5YD7UvkLa0VR7IJe78DkYskAiY4MizDr8w1USzt4qxuvxX9nHEjUh^$KxDD7ZcC6I1pxDYaQnatSDlHUvX2QT5xBtUZA8MVHVc6hiyZEU1R5MtYIn8vVlNCeC7jR1+7+S5wU2Mn26a9V9AKlYoF7M7GBXIeU8bDbkFv062^$EPz^$bhF^$m8Ncc98lZ8Hrs5S+5lEJ6soT6g3HDYPXDhBU0Y0Hm0ONjtxqAy86huYWYMASlQZPVETfoSDtygdDdOVfCTlGgR5CDfsWG4C8TXPYCeTgj7LNSCoaWFD9XmXe60hsf1XKWXHhh3mtVW9WHwCSt4sfKFySc5HwPN3XZbBXBp8N3oNGbVCwIxwfTdVOLHuoCPcTSmjjhmp7gPRV5PBp4ke0DkV9ah43Qca3v+24OTfF6XRSBIyImUFLrDdtwhDsjo9Z9budcB^$zWqgvFYDDQZt4qTMN^$AlxSIwuDbQjFcMCgQC9SdndbkKskZFKl6+sexcKKgBLlYsGpQ4eZKSbBB+KceYXaLHi+O^$SuAaBwaPQBQjhsZweZsCa6BID9ripZx3htWuUJVTDAdRKLqhFRY7Iy1LZFanzY0KHClOa4LNZdkvUJMg6MnDacGv6YDYAaTdtT5tBvVUh8IFtdPmJJ9w5Mu9BXZY87u+7qpsxx39T+gVSwKxVYsimDvz^$C677rWtkZWK0nbgBS1mBT2BGP8V3GytvAwCYQwaNgWH3OYFLuyiwYrs2rNDByl^$6BsOYBUc856tLN0gt^$lJScQ+EPhtNFbz^$lXW7RhGzG0YuMHINzGm4N7t7BzRmKwLsBw8W1ZHGW3LiEtO2m^$JUT^$AUR5llYiDOrDQTq0ud7Rg0WsqtM2quEZ65X2yzfZRBTxkKy1BNwB3l5Cxn0r1Y7xg6U1NWz^$xS1KNYwQ+MVhlUUJ7NHceLwsau00f^$JKryLi8XfrVzWRSh1PVfXOUPf3+t9cIGnCfFSStt1SouJ5YCUTP+FEd5NwznJpmjG2QgLBMAey6^$1VNRnhG1vN^$5w^$H4mgVIzXC4btYuZ46pK02MIXKy^$LjK0hSNShisM0M5OtmP4Rb0Vdj^$XSqrZx2gWVPMPaIQygknsHmqmvxNAUtIak+hMRrW9xRo4JVmjtqGgzYnd8LHzYOgPT9Yo99NuerspxBLLbJxDluiwQiAxmrdcftSJMMmi60cH8lcVEoJ+Yz1JaA4yKkEZClFy1aAPAYY8oWjhJZTeouyqSCpvIn75Mp9Bi7sj6wR6f^$EUn00y^$gwsux9s9dd54pkBGOZbzQCgPvlifInIvgtkE3UGv0zfdNyX5MzW6pSpXt1pS^$04^$d1B0vM5w68g7Rx81m4Nq9KEnroOtdxrwVPM289PaxDsOXMCbLjz3PogVFegD3LUzQejM2zTo7Ux4kxdXROhAdo+ezMv9gkMPKwSh7bMiW28JJAJ^$1NEoL4bvZ9PPSCJyyF5XSupwh6eEVtVVBvhx8Q^$dtkBB+yHv1HkKYK9D8Ur7sqzlmrmwmERw^$NjJKIXx27MXMTtm9fBDsBDrpgWz1lrB+tIgz8hH3TdnhD+gQlRo226y+1iROx6GkzkqC+CSLjxHUFXaVOkRYHoJThjryhZi0xUWIlhKg0cCUK64FmU2D^$hUS8vrBYH8tdxt3kBoKapsuIl4WiTOh7NRi9ST72tRXgsnCLr2L70LhFIvTsusbIY2f57JuSNTw6UtQ0ARr77kk2NvFjaLDAhKj2kEat9hMcrT+QgtA2Opq7HgOAHr77KMpmbKluRtLklV0W7YNGvP2VHCkCi5rthAC0qV0L2IAIMa^$lygBm33SMduL6S0ArhpzSp3uO42QhLVvBnFCBPGrw96Dfk91C0^$OUCEAMexhwBiiMgYyKVTZQBymH3Qc3Oc0GastJQKFOioApSylIb5N8X62OSUBT2MzCwdLNRJ0TkHJ1OWVxIMPb9h5YZB7PkVArd42DqCsqYQdWA0zhr6dS9raMDjQ1NWrfe7d0lBIUtu4^$x16jvUyf6^$ISa9v30bxG1Qa9Vao^$PS9Z4eQHn4iZPCOVzkW2byTfd39LYPimB^$3OYl2HOZzpo^$GyIOUrBPr3EjrfTqC5P3fEu+UC1oxjsqNxGcvTNrBU7NxWn^$mT^$dX6TCwFFsA5TH9C49d3IOrIOmumhWGvLAYoodYP3YNvImcm8NeV5ZLL9DARLJer39rr8qk5L7Dm44yT0nI3Ygsob3cMeCyoJc4+sMa63tLV3A8ZZmO3OyAGPuer^$1T+msYm3VwvQdiy64YqNzabf0DocBo6ZYbZ5NxT7e3kbB+dXbgzA1eSanN55JnIG^$QmnpET610wa5YzTQpC7k9m1tzeQVU5fx1P8roVa2uLVUGeoFVTx3uR++ap2VQfwNEwIk4ct9nlEFWj4^$SDgVVx7Z0wovftuRxh05RWRuSQSi9nDhUF3+SqeGzF91lv+QcyksZ9Q89xMMM+AB2OHoVZu^$sBPO0^$RunbgopCR8WNm6OwpDdXDmdSq39ZOfGWODG^$GZm3cO6kIUltSextmfY+2XdBvXMaceUPJuzzsk4ZhNK64nJExzMLyczk3Rq8uqEPXfCk+uR0Vxx8N58z4Her29FNbOf91OBao3aYyQNt2Evw4eyElWeUpOMo7^$GmFwcHr+pR6enewMaIzj^$5cdVEuw4qVmualEeU0DMw0y096JyrBy++raci+xTwE9S5y0NaV4XqzFNjO+pyl9JfZZbBnCVJpH859g^$3aHFRBtG2NA^$wdQJ9QWC5vyu1IaFBHD5yMQf0CtLyI8UQcgaLaa5j2p4jmhvwTpq9e9Ot8ugiSOCF8IKXWQIfs+y25qCv9^$yy3nuW60xnBOCzh6ZV8nNKrTfAyywWC98jiswoGvIGSNyYNMMgSLgPl4uGgkrcmgfQw+EoZS2Tj7EGVQCuf78bfzJiIEuUEWMJ2hmAGEhcCBB7V9uavDBXvvnBwKt9Y0xdsXSWWg2hLLe6icOEk5fplZm9Gc8lSNljAP9I^$mSpUF7MAYSYZDGf1APUKiAqHYM6bYzSXd4y^$gYLgFUWmAQ^$HBptOvO+yP4i6n6dxpgPFsvzOZDAIavIFcqfJl7xb1qkKY1ztTMbutPImdLkstxVvwPVrqNmE^$d2a4RSxfNs1kfcQd2cmBJsKLTWRTMgoyxLl1ZWvXAyYsXxNv1ugiSLLIQrSTIxdmL9Ydb8m^$fumeXI2RtuoS9^$fk9tKgxN3r7kNhdZsX^$99nkmD97W4yy7w6XPFz+JirqHk4chPaa5^$jxDwc+12OZy^$Iz915oWdHWgFlWkFw8b1ByXBEsngtYLs90UM5hfrgvnPhMTose4IrBk+R45k2RNp86k86exPFkewec5y7+PLDVIqO1jS^$VTtuiqEfa4W+KLH21pI9rNYP09hUgWtE^$i54p6KQd0wZljceE^$^$A2wH6^$x5qakzFbVBwm4mvC2PjZDKLHmP5PKFT5S8Cv4puzW1F5G1me9OGoOpjcLQuw1Rb9MsXPLDSvp^$o2zBWtvEVcxwTJlnVBSBtooMEhUbNbcUEjjiRmkiEw5SeeJcY7FUap4QmV3ITya^$xWZSOG^$Uwtyc53slE7bEy3SazvQ5L7ZMkbMHZMpkbkGtSVFbAxQSLzrVGDRCFi3^$uWeKkfT+XqBPzJtMCi1NcZxfEVzShgck6a+wROGmBdXwcMRYvc2RkuIoDpQ6Xm1YIxOT3ApXa40tbxOQl35^$8i9a3I0PHk1wcNMbcXuh4aLGh4celhQYklJl9zFTUvxkSwsEg0YasUZU9wotFRquGtU^$mV67aI0qKU4DDu8NupYYz6jAJljv^$bHhkBm0i93LszL3sM498FsZQIuw+Dc^$l++ZdV3mgWTcwnA8c4bGX7suPuXXh1lfwwidCUUOWEMc0Vj3RHaKHsIw^$CH0npMKqNZYBfdWozDEyU2HPfmzOg9A6obuAqV3aRb+bTB2YD9kgxymj6rp1llOK8MWeUdJhVgRTMipOmnGHHZURIvILpKAx39cQGdmO3yCemt2oRuV9mfWS^$flhcHgoC6earYJ6VrqYzWlHXiDMENhbKozFNqsorXn8kxfgBYtPcbWNuYIJ0KXxlq2Aocfko8cn1nZR^$7ToK1KKJXMxkXR62+DxQvZM9M6M^$c9kRHFHguVMvpSkDMuAxVCsi2x1V7oHEuM2pj0AgLbQ5A5y6fxOjAc^$1CVCkIw+sYieIZ^$NCQCM0FhdRUl2I4yNy17W2RMyKjsTDpJ48hcRDaOzit9hkIEG4FETcoVVV1yiceXvnm7dDWfspNg17fZ0uexa4Zf7bfEZwGfbaV7tmcXR1Ppu3LwmO6X9Esdj5SAdxGqLNODUe8xky8Xfpfx+gABTRzaKiuxo8SWAHgsBSuGiFKWxF2Tjy4zC78BGqtq3izc^$IpzaTu0oMzZCeOpE5twZLExzEq2YvMc30^$dbbcZ8dC882zu9PA0L3q0yyLPm^$B039tvNCSGgaJ2cV4e51JtftevpMesekr3CVJg0^$nS^$00fejm4qIjViGImWy0M7R5NH23F2TOfm+qGanFCGeKHHuYOT^$hfK97zR+gV8Bh3jA7KdQvYFBpYcKg+eMMZkV5QEpt0DUiby1Sc68VwtfrTDWjAJLBbJSTQIpWoRCABr1SjNz3^$UJbsENg0^$fbvRXSMCWWh^$CiuZMIu1Fmvm4r5TNO6tGq3MiGkOtmZm7LhuQ33pWW63LC3g2u2lLeW2pQIWHQrlEkfkTrR8P8mYSAaA2ShjCE8tpESfYmdk3YW3vIY8dF3l+kE7RBCl9RF71o+dc2CGSiLz^$7BA0PQKEmqUSwqVOwp684y9ImYZhLyfIqgYPg1RMyHZBRdChTThMsTGbXZwDGstO7EARLtr0DB7YeZ3ifIk47HGEunRDAtsQDfd9gaobp4vIvpGmDbGTxD+cFny5MsX1M2IJWzZICC3Ub0gyyOipxvyL1onqZ^$oFt9U8T8Q5+qQ1qg^$B77ypXY3+BnL6^$Ao88GA90R7TPfKGDVTgItxHeGxpRtbcad1I5z5xKI1rp7YJcmFWyeiCSzcTjpe2kp^$7IanAwfGaHGOeI8FEY6fzSqY1USLgDNeZwm86PMGiV244qI3D5mEFfBLURO4BjAH3znHR6ibi9SY99dZQxuPAVrblhKMasMu4tPM5nD^$hOuxiDmpQes2iXMV8M0Fe6CLMDa0GGG6z90I+MtcexBR8NwCEeN2WVsHF0M+NuxKg+vnfP+Gegl423+Y60QHjTVhVSGJXob8rh8BrpTZBVQmelJygA8API6pZ9zOWFLGU7OZlOvxLH^$RNN6yPy3mcoZ^$JIZPaRC2WoWcgycNkHI3p4CkZSpzLE9fJi+h3Pwh^$fFseaoDw3BQRrfq5xuTLxBLj0ivWCC+Ldl2DuHrUk2gYb4HtWjO6qIObBB+RuhvYiGQJRjaVXUVYY6o22lLKIstV5fnIVzn0YvmovglNlka17I8PgL47gJfddALhgpzSX0Fka9vFhuWlX0miJhv27l8Etcow8yYZ996UJ1ztKxEhLKFsGG0hQMOP4+6feHPPyXGM778rLvYt6geeLn7VIuzqFDUnBilDRhzkG^$d2MM+W7KMNcEA3p1Vb23dMOONNZOszEbEDDgCeJtI+ZSdWkDDmHdUaTPGF3ADdXzzkTQ+WoPEH2QiTuDjCpu3lAz4ki+xAIs+L3ZBp3uUxww3CeHpkMMwdZ2LotmCr8oznujUdQSzEZL20ADEc^$XaREDkqP1xMhtfR4vcsHVODKAcScu0j+LZw2zj+bp9W6mQsShQzFomXZY+2f940BFdk7vDTneyw9KWG4AR1YySI2oY5aOBclzuLgKLd98h63BO2rCA4WZ8EMqRDPIN7jx3Ys58vRSmG7Q6iH9cb2j^$rC05cvgVs+QkS7jZtNMnA0jTLG0E3xtkY4nEwEIHPheyG4WL6Nd^$9igEHCmyK88+lhfMDI3xPeob^$5VU2D0cAaXRSGduVT^$AaAhUR4AfFmMc1cks1Ef1RyO5p0QQ6ID^$9MtkmJrIC+b^$B+yO0gVu993aJ+ftAL5RcVdZE^$ZysTlPQHGmUNW1dDW1suW9cdHM3nw72w2Q9p9wBOnwrEsvPsHIvPBxJn+nvk1XGOq7tdnucrgWSYv6SCU5rFykr8KbXdYAYTSaodP+GMZIubij9m0ZnHQOLy0ccr+73M^$iU1J8yURjR^$chU9mn0g9g+2Vwud6LT8N8Zx5ldtsDZxZGkwGfRO6Y1k835bnfROZc0sG^$lQmVGQyAfT79FPhGLcqvhCts8Zy3KGxuOXY+1ADt4K1nwtms73WnoIRtKZ42b8HfoRWHHugpCv2+Vl9mzdgrhVDf0yK6s1mNhXMcEWtGdz6cBFWqN5cA6YDZu4QYj^$mDxIxr7i9486NqCCOv84HTYqaeEcJ8fvmxMFfnWydzYA8YVeW2AslTbdC3w1WrJnAOUnbuNQ7XrZOtgOUH+mzLLsoXY+K71172Jwta3BMtBZmMlat3dVUllz6k3owxvcYR2C2QSPyBjJjSO8BJapIvq2idaSxA0+bg7C+EJ+DuPguR+BtBjNMsBpMFn4K+OwvG7UmMuYKPRdYTEegoxsvzzxZULy9lGhRSo+sG1U7vRlkCAy1kwIX+JvJTUiZIYi18vgsOW0GrLFTrIGS0T5LbZoUasrituB5Dz9BgZco4ETJt4drpwwxxD311UaeZ7XIglkpLsuwlMMtmLUFPBxkZnIxV12LxFJtz71rQXZthP14rtkF9MuxINzRi^$1VqRnpaSK8XHo9wUVT+x5b6K8Btl2BYZd1fjti35IqTQcVor4YNsd^$Q0LqgmMwH+oA7fKfORWZlDO8Pbc^$2KnSHmhgLQI6NvWFaVEvQ+auR5hKltle5nkP5OTIKFchcf1sNopuMYvnSpCJLjLAgPMnz6Smlzpcc8u2CSSmUMd3ZRvKje7g+f12nWxCtoW2G0ppnNoo1EXDOnXQ82HISEl44moXwLdQw85LTXsdTsTqaMfzm5ueW6HiVAbDYxkwrNJDHNBlDX7ge2bOkG0v7NiHQGIQv65CQEghNwjPZM07zgQDNrrHqGixkZ8OnXlsfP4kB8GN6CQYOou5iq1NTz9fbBglXoRy4Ld2MDeWIDj8+Te3+g8GJi7ohluoLHRrKGf5mNfGQiv6FKB2kahQiWO42rL56mOxkBoWwtoJuseCyCHOqjcGqIzz8aqMypYhB2mybluOVDvWYtLfjRFdDtUgjcbFApK2nx20U2EuA4Q5L8x0Q2oabuWW+XwWK8bDQaLsN4hl2q+A^$f^$4qkbxSM1gtNpHlAdHiI3fbwqQqG3stCu4v0Pb8wRKw45^$YorHlnYOQhI9sdChTRm4hDWwallNKulZxfgQLjbytM0LVoOwvR6Ec1oReOTjwSrRbWjJi9buHhgW^$sgX6HzQKEI832hz99V4TGaPTVztQy4ye7X51EAeQtaB3sGEd+BNwYpy1hVaw^$S4zYU3EZEb5VOPmWclVx4XzYZhcIk4aPIHoPBq0NRPXhoRBTcRFj5KIn1i9xzNQAWPFJcPlDKC3gfJYSpERRjFDpBtJMIzTNDE62L+UEkfkpZTR943eJP4O50z8tGMXDDQMIBavpxt4LztcUL0X4N18aKSvXQ4eBPf2l6VVGNHD+8mh1ggiX+eqkSQU5sgfIvdGqaoKmDKS8KYZN2m6fo2MU0lGY7ru^$cFY1n7kscVk+tfoqz2qCuW0RQ2gWj3a^$1uozk1f+3RBEpstbi0T0TUQpgwEBOcjMA2pMoS8bvpe52Q5n4SIZXMjeg8PJN45kLk+m3Jtydsd86NcZ+q0+1Wy^$rG+NbXkXJB5W98lyC1I0nGknGijjtg2WgRSbDecqfV16DFUAYThxpnBg2xjJdTV4UbK1ICw7iIPilbd3clqZJshIYpACSmxadM62LBzQbUwGL03^$kkpSRD6UFHQs+PbWJJgtO6ZTnKcBJOJSU6IN0o+tnWwMdEJ1iL+rJY43Wi9UbbydaNwZxsqwnyZgVxqcBZfqsaD60xPnuHMTFOPDvmTQqWOXGwDsn0lMEJag6cuS5dP8^$Vrf3IKIaetkS4QHEa46xXwmixHfwiePlfVXdWvUCYqWdO+xe9L+znL92WAciGLAA3GbpvHpIxbeLPZvbz8c38nVvDLFu09rqE08kyhmZxjL6i35+3oQu61VIl2s9kkgEdFr5Urw3WmTQEkiyqaMEfDLF3HpWEmJM5xHM5nrNdVl1FExij^$saDLZMyUhKtIpGQIHjL7NIYJADXghcd7PCy2CX7D^$uqsjg5NbVVP2l8wpOgg5WZ+ItWL84vSqyYooFqiy+prJy2d9YPCUJn8tgPNqKu^$2O+c8^$5cD2G4AslqoMIb6gy4N+WaR2jnuX+UuVUKgYgnVVHxk^$Z^$rAW0fYPj4BapkrZ+6IU5QbL6sAxIfOi95sXVFO+dXF0ZPeyZvrgDuzmyTHch2wboIMpxesmCH9ErWBDSLwThWj^$UkssGMl8ytC6u02WoAM^$CFqD1fUOXZwlQQvNlk2QXLaZILA3LCOzKXdOhct80kjf1G8FTe+tJBrf8VtpARCZupaJO0Fqoxf4fi^$nSy0HXR9naXESmBrewsf6V2rxA+uxlzQQtichp1IEFBdMiWr9z0pOmvSdUDHMEdBSTaf4Z4rkHZbo4L4hyvXY9Nvjyi6cjSwJVFHrajlWbNZyVjWwa^$oF+enpkzyAS3+Cn4p97ANw723uwdYxYl6L5c3ArbBJYF9T87bdcoUuY2yBikKIH9Vk6AcW9KcUm4VGPqLmfZlEgtVg4JuCABQ^$z0HpRhQcxev86kJzzVtlTvRsHVbnRXxsGsnsNUNh2xWdnkXRRk4gEePfOJBb9GPXoeW^$4q+EhHBAz9z8EGZua0wceDykMOfFC9dh79mKn9ox1aPOw4NwjjCDUKkgvPZsuU+EuCU3q3o1Y8Ifg5jegPw1X9tiL7A5Nkfh+PPjmTfiDIaeH1Lx+nRd2Vz+xuhM3Ew7XsSqgEb8yPxrXmk4au69NLLiqccVS4ManVa1SzkYPuREMsOBbX8n8mJ7o6odc3kPeO7eovkM3XkjGr4K1FGtrd2hKh5kgRIB5Bls2jA71OS3lnqnwVntqew1WD03SIIHG^$KZyIRs6TN79qwsvQSPV86SIHICa4QX43N5BHBkYiMSMJ8Yu8Xyp8ww5RLofS1waGkvuNLZAzl3PXsckUwE0mkDmB^$hRBpsmz+hxMlaeXV0YaQTvn6rGgcN9QCyGW1BUZfp7hqXFkjmIPn7BnbmN+VrUi4YS7dZdudvPKnO1718YYfvFAvReDZrjO+^$pNyZdRPHm452eTk7VjTqKvcOPEh0l4SlNClncArufxc9NXML2oqu4zoawUsKFY4iFlOjxatYuf7zfhN4oYRWc3PIGx7A4ZcFshOjl^$VLHqznqf^$3jEtV^$Al9f0wSuMCTM4FSpPtWoP8VhWEkxCEbmeZu04fHQSei0^$+gelyQF4x1GjoOXIqexXxF5mte2tiGTB+D1H7F7+^$CECl9qXv2rt91vYq0BCWpNxp+eZDlDiiDFKuFoMpV7ElP3larWBr0Zjo29uvNkFKtUt2Wc1p4YW1RuuI2jHonC9oW344tRPaZAudxYkhVb2zSwDdPAAFtm04o6NpqgxX^$qhkRHyKUZ59LbDAJJ7FqgHEEL3PqH41mt745N4T^$9F7nHb+MoNZWb6^$oFa9kPJwCG3KSiVAIqF9q5fIph4nPPz+yh88XHDRrcOlxPbEWN^$TyBGIjKjlMRZTHBzN+js6v9We9^$rTOqucXeQgOIMdeRxRERZBMIpUOt5ty39AtL^$dbeHfsWFUvK1g^$glWJ8AuGB159F0ibZwlQlOjoR6EHE5HtU1GSNBInII7r8eEgOFRQAVgCCOSj90S3wG3x440YdzY26rnas8XoLE^$aB6URKnBfcW8+nSCZftbNZ1D6knuBJBk2Af49oxKoUFpbdiWafRPISTa1ornrnqsilbBZEKzzzJKI3NSlZnay7gU+Ysm0LZ5WMt8kBWJzX8YdSV0rs53DbgneM2c6XOEe^$GS89612zEFiy3VgS9MkoAerAeHfYn6wvnWw4VzsSPW9Gsx8NHilhbiAEmuN^$ykOQGy5sl8UD7jm9oP+yjW15LAox0Lv3ojdcrACNlZklsYIBfo+T7DZum1ZvH0uG6pgz6OZRIutejg2mApvrYxkj4LFluavX8EfV7X9mJNpYXt9JLRuKwNlMN646HhY4^$5HJdLBjwyAbPKZoy9j7tdc72s23IrYP7NWFO+EDFok5VaUivbNOhT0Zoi2NmD+Zs7uxjdAu3t2IJFQs2Pam1h175i04fKQyMiKP306opUW8lr8no+H5ZTcmNLW2VIZNXI7Lo9ZgIn7NtN6aRNHq7O4PUpZOgC1447+qX+NmQYzF2^$Ybb8uUctCibDISqglc^$aTI^$warccNVEPUDHPXq7OE7rWWcVJjGlWOjQGOTDC+AyVnbEGlz8Rto^$gJ00oSBtJdLMp4+UZPapslaRXkCjLEDQlqhiOPVEYTrOTW4WUjwKWnUXJ2rJSWZFtaJ0Dt4WLgMAGcnv00Y5AOzhjR1N7zOhKAw1WX7Ocpdqq2uI2nSPT4Eo3YD3rjdSMZ9TixExt4KjkPUChJ^$Irb27+^$ux1f^$jBX0uhhKDkTBW2Kcfn06v8jFNDWEiSZJLbA71QXSqE9Xgjdhzg5LeKAn5ARjDUH35rgvfPBxVPgyj7ay4Jps4kIQaXwtg3FNBToPt+AJDzVXsrf47NpGQJ474mRIMRppB+mgsq0+jSUSES7aoYfgO13UA4wO9fQMZQWMjVC+8jPZk^$ni3xxNiUfJbuTOQ7KcEsLdoacz8bi3MqH4LIr4nYygt1Sm8NnzrprePhr6Iw0ITT9MFZ2bxDmePBCXDpIWBURLXDYt0E^$U^$1gdFK^$yVvCLNmEjodMWdrKYpQSo0WkwY1pS0kPSBKmd9EhWm592bolsWSJgkRFEFsB^$F2s6NLVPuSwMFRlWWTqgEjaZhsHF1SUkBvGr2etJ^$Sie+yaQgkO0Fiu40CUxqZqH1vQVlGyEufykOXZ+erkq8fp7QCNKmuYsZOR0xzskkc18AFv6CQ+fDfZtNUIHG9pAJXDBHba0PRGtnIStxqszRUcyIF181PgERecGMINRTJzttszXjAYtWgdh6LNgbEVzFfSoeo3snVM+5ceLs^$Z8wDFco+dXBiDsNh25Ox07LOMIAKQmeT7cqGkAJOqR0PsDAcs2hdZmIc+egq4d8W2FXOIB^$bMrgw+RhjYvbvl9Dpz0qbKdckC47DuZuhF4GalsMDVdYWU15QDFaBNipibmnTiw2fxlJVWCLXfyyD16l14k+drpGM+dPnjJlZTCCiloVtK6HQ1aF7FNInLErvNR71ZfCrDLX1ImcW7h8mE^$pSRwsCJAioyIyNbNlXFKzNtCtwbLFk+3QFrAvLIlO9pmwXBSIJZWldTgfBQhAYFxy204KsNz6HnWYPaz4Ov04TAFVMCdunavztWH2lmLE2R8lZXChv3AddfGLf+Whzko6X9YkSu5rJeLETislUzlOv1TGsgHowbnht^$1QPu9^$dCff0hTCaTNQa2421Jktq9dHgEUsm1ug8Y8C^$tgwi9OsSkxLSLsuuMXXjR+8nQnlQKCLM4s+s+yXriko+6uU54ncE25xjR6r5aWQTZQtnE0tOXR98QI^$BWxkhR+oXUdX+FMHfwKoQTzLJK6R5ZreDrz4Pn9Dd2kCt89lbCVnaljc9QYujpKEv9HAxHIBxsqa9KjBzQkiS8f2yv^$6twGny8xmUeysVPlBg9Oiu7yZMCOYh6TkW3FFavFhigsD6j^$8Pfg1MmRO0ejqxTpPiTI+dseA5M+wWoUtZpo1qy0aX1yicWEp2Y^$wgjdZc4qwyMkVtHZT5Ix+iMXkbWAYRkRTm2OohjaS8j8lnl+eLClnzynL7QBAeCFdmlHugCKHaJ190pHw1B6xLHaexySy0WaTx9zZbGJ4lZzab4xroXG3lRZkth9wnwXnQ00gqDqs20MGRcv93sHr5Yfo1+g498asE1u8HBsCdMFTnIvurw0T1APAE+^$PC0g4+ihtZiovnddUUlIeBQ70divrDTAFrtDVyh0QJzVSHx08q^$oJySpi2BaqNn65ePItRkJgxykKnXrbNE^$Bk2CTEQn5xuLq+i68o039TTp+lmXrsGzQjLE+njwRiFGgeQU7CAT2kIqjIwHGBMA+278yXeHHv4NiNzVGvA9havvy76trxmO2QBPfiTkh941Nzs2tTIuC7wXiVGgzn^$sDtGJW7qC^$ezciycCkW5BP8UChEbY3izqk^$omt65txJdUrQGkLWHL7Y4bXmlz3tmn+Gjm3v3CoRxm6h4xmXMpy3MqD133rl8Pw5YLQGasLqjlSQXndh9ERHnYEY3c6C9eFhfktWvG4fqfRzKC6I9je^$ZAl62AABFoxKLwvAWrBJ39qIYqStqI3zLRUDtyT2PWahPhz8c0EkqOOO+wGYqmE29oeExST6IwcwJ0jTPz+DDNR0QqIf+wKqE2DoBsB2MRNtZ+CwK6cBX4yS+nALu2yPq2STctEHojfce4qGjY7BgSSVve0eqIRtukjUBbBWNdBR90g6RQypGoLan6moeexsVGZ02hOSShVuU86u68ONKDA2ECbhzQeAde8Nh+wJeYNYXMw4e2+be1r5UrjIsftlgCSSdMPn9SSDekYxLCWsCOX2Z6aS7qducQm^$anqG+0O4CniOiyMbk^$7OSAgQ+SuxkUUuxNG^$gE0BxAlBcTSwkhjXgRr^$Bw8NcEEiBc10l3EztZQt08PNSorBxb9mNjg2laEbGL7LcVfY5eYIFRQqY689beeQcYcS0Rc6JSgxPHo^$55UxuUYvtFc2v97VvnVzTggsKsQZsrH1VtttgcP1s6QEQNw4oYOA85enCwvSNtsgta22Xu+YeFvzJGKEXrTiuiUYZvoE+gVFtlIUHdqG9QwXHTbAcODO3BcklXqgF2xaMlwD^$BCSeA^$SGtd5IbAuyBLqQTaaIvJTOxhYpG6awLXZT8FRO1XFphN9MOzlfiUsTuuxml75MBD+Y^$cRU5ROdtJHGTeQLatvxuSjTWZZhJeRXL9fmcWSSptX8H2oBfoxeHwCtxKyykoGJ+6kwQEy5FKHtHdWcIvN4nKqkAztwETe+xvgfXH^$ortebOiskxnrBkkrgxoAzef39nSAoEGxSqVwLbn1t4DppPxp5nP5quMJwvlzsR2mzhFOaBruyU4VlGFGTMwB5FYyXJY9r+pK0CGlzGgpdVYUiM^$goLbhEfcdUB+v0x98hU+QlAqLcDovc+PuHmt1wJ8aLOrI5ts0ekWKGQUWeHh7yRFiYjYVSUYLRfAoM26uJW2xjazWYCy9YrLJnAWFvsiGx3jDBj1OlUJGoTTd7A9j+QA8jNXW06BgwqpqiIQAcWFR9ZO1bcUbMfSxHcdEB2QK+pxNmG2mJVrQE^$hkjgeYfwBtgq0bFVuRsQzd59b6ebcdPRly^$IVJ8vcoPiujUMwKaXLaski72VVjcyvkFMk00U5P+5ihJfgIW8g0Af4Uy6W6l0rWQY06pvwW+gvudLBqErCe^$ChLB69Rcg8j^$020ga6ajEt0RxnG9zP3vGU7pP6^$jw8JIJFAv+aBTE6Y^$Z^$t3WaDeVgz+^$xNcpxTJug+Rgzng5Yr05X0Pyjb34ojVnXj+l70LcsejavssxlcunZRrpuHeh8PpYCvQOM3pJcn7vpOS61D51wj00^$z8hKejtzrfXkkhdhLJW2FPbMtK32mlBjLBi02pQQI8pdwnrSwotxoG12AbLLaGtEVFGiPsbxShOoc+LhLKtIW2v5mJdxMSiUylz^$JOp2GKvOBh+8i5OLyzWghxcpw96h9EONmO57T9StT0PHo7+3VVUSj0RCdIBD6VMpt+8cSm+dP^$R87NsYZWo4zEXWmCCf^$fpRJgBLW2hIFpRiX9Pgv2enKYNl70RqvDYGLbaBe4pRlwV3+BQu0rsCqqDZUE+bVCpwXe0GhWIjdoWeOlOogWHQ+KTSGUisTX1RAx+PdUbvHcumNf^$ejc70IzslArb5awbXqYK82GdHcm^$BcMRO5fRF05GdRNgSlhVne8UH+ZdZQp66NWxFrC7u09ABULiI+R1gsqwq+ykCkxQJiJYkITpDwik05fmzaEp54i1hnsjYsmmF9^$0LlJTosZcQVmBqAfDEMEV9b0Wbgci1GdkxjxICv^$Ar883pR4XuJi4wLzo4owDZ8WKRFamRip6dRkox5rjLnWNA4BggZvVe+8gUtMAhaip+a4+ABKxhguNQSjB^$qE9N71DSqWEw^$OjgTBR9U3o^$0FwOkKFP+O^$SS^$Kl^$Wk7itiuBeOR02kUa4quJGv6VB7J7BnJpg0Oym7pc84PFkLXRGAlpEFMThaPRFpGJfnM2c17MwqZT07eU+glROFTCghJ+QeEtK77PKst3aik6P4m5fZAE6WOCCIWG7HFw19MKI6^$GzUyBX9kJXXwqIhUfSngB4FqkEzHdI3+xgUKzFQuUMdIDo3S^$pWHlw1W^$jzyvJAoCyna^$2FZIyAs0ZzT9KbCqNunC88G9igr53V5YWZCKycqD4wKX^$a3GqFPkJSrQaRo^$kKsSDHYwAIwpGzjSqs4C1+LgRod4V3q+8GbLyAeFTogM7lu^$u04RKDSMluoP6sBnjjnwtu+9ShF6ndmmOcXjfge7j5nSA5OVy+2WgWdxzd5eBWWr1zbK1kEBnaMbKOSdwK6k1J8WrQDu7ojlvcmC3rG3d5RSl38vaTCOU8ClgeKoLOhXR58c62+0hoNl34Wb9xMO8mVdXCKxOCyLLFtpC4JOdRuCrO+2AUEo+C1KJL0gwBWS2Pd35HnrTPM9gFCarEXwgF9qhDH414WRP^$nWvmHLoJv3L0X1sQga5XSEB5C^$W^$zAVO4tKsgAiFqtzmPBc9tm0f0wCHzK1VllbcEsGXF1eZUNKrufBjTPWf721piBlonKSVX^$DL1ATqtM1Js5UoTtnZ+KTkVL1KPOTcjyRBkNLNsQSf8jwZx6lJYfh688bfByuZcGAj19OLJlILQ^$XkHMfz^$LcpG847EPIOOHnYz42UFYfoGnI+yMcTUViW0tuOD7cOPctArZNmIn^$IDk6MfGVcg5wiEDXlFUSJCD5hNCnUMIGafvpcCB6gCqcIq9gSC+1CV6+PhR^$uHiWwG5cc13jRXaA12Or5AlvvCocYZRu2Vr00kP^$g^$R6AYfWDF8Wb0YeMueTrDHpKoNo+G8sgwTHdtfoqgIe85ZXreHoxz0f5RQjzKh7E531njUcKqOWAJtuYfpv1iB7oGhpKMKmOGN3l6rgs4VxOkMoWSiFqL7PIeNIQk6NBWreNwzXiqPCM8rZ1qgB7Gs2MetIBrdMJ9uVJAqERvE+cx6HCdM^$K3Q5J0knx9UNFCK0uQq^$E2nsdo55+9wnGBvR9SWMf9Wm9HBXeFuB6VVaHx3nTDLF2JHnHj^$3BqBKXJSv1WZafEyhjVbNOBprDufn2Kj4X97VRVYpsJ7Baft+Yy5J1^$ylrfzfLqOIQ9KhI6FuBz8HGd2Nj+JgGkiDCnASlq6W5GYpibF51ZrHlBL+SgifrtbNsnD6IARWwBqrKCjBe6gU948UZodliieBFcw7xAv7VvIquViuJevbwoVhilG0S7DgW1Vydps6FmYMZrpHu6f0h4jPcLPAqfg7eRcTPQnPkAMj^$k2xX98Ujp4YCBfIWIENcpY+ZnLF7sWkrLM2kSgKbaidZvcO5bJ1CYZaIjiKjqsezeX4oueYUe7Oq9ew+BITAfsoicwpeHycUkedk6saRCnjH5BnhR3lYf0bIhgmuim3suh74C+wGxsffSvobvhltY7eZKwQ4jl1dQyE73ezv1H+EKUW0MvurKqHeWIwfo+8z2E03GIVQV3+1L1VdMguMY9vX9otYbWrVfLeAlJK628Ri17PQLlE2Uo5fPd22wtsbsMT4AUA1Gr5X8C^$6ulPKfGrpXVJ^$S01Odl25DIEEvvopwTJgPJnrs5SDx4E^$R5aImciADOiF^$fmCZi8MIWQ7ierUEoL8yPWAgRgDZnFPWlli3adFAJGgLrIJdftAaBDW4VpQNzd3^$PNpm5Sp6ghwe3PH2EnQbwljBikB75cGIoGx2qZJUIK4UHxCKeH7dC577DVZ9g153BibCLRaSeh22Gu7QHTvyR2szPYROC+K^$3zsEhvqrCGG8ehlcdhs3DnAaLqmjD+D^$6eHH3ygGWEQZdkgp2YFSIdToUCXkTwIJc1M^$Sqm68qc+7ua9SHO+j2pZBhugs9ZX2kmtAiqROouJWXkfZX6wKzbMSFgC8SLheEZfy9nSZrOBHo0mJLpexO4ft5wkQceVfOf22iTUZOFstAnMWle5wpSf81t0AyWlgqqr2RCBrJE58Yw47I4QWuxi5AA7GI35qiKyQATTrGZbwv4XR15I4n2wY75gSpgEHrXdVeferquBOq39te92VO0ZtNDzHKVtLa7w3EX46VGrWmgf+aiMg4epJ0iWxWWq9z7XfdihmzZ0lscKJMRqk733NUNYblIaUiQqP8vNIQM4zHlUjVMu4Fw2cDs2UTrlEGRWBD6ezKbEowH6Np3sm5wkWIDEukWtsbJryAgjtX0MA1SO+b0HiKbFMIRM3KfbZ1yJFo2^$6XMa52f3niriVyvbqsptA7aUiANg0F^$SAnq7j48GhGhxa+NMKGVihLs1E8e+Tw8zyhlj7OPjhwVV+a6T6zapRGE1vRTU1SJmfplcnAQWmmphp3FJwug8jJ5ZHeo9rWhddyPdjYx5OCZxHVzVV9tJPKS2aBT5UDUbGkAme5NHv4Ve4pdcIFyndskXcXcpRDqbespzuPSuF2r7Lzks0oGjOj70bkoMfMoyghvQ3I5u3pzWxaoi1hYPWZ0jEVxJsx28ceRVIlewI6GWRmKMbacUjrJkK7U^$cxfJ7ghfAsUNsXjUVAS6jMHH^$HNDn22SGOHCm6kG3QpNib7xCEv8399WnhKd1DULs^$3ej4QuAtBI+1G0yev9CD2M5HuetZcy66erqwh6jrOpjXUwWZxSoGb1WC^$d64OgCCGpOVbSkMATDJhlViQWBPgoWrKZlXtnFYd4JS^$4JpKA9SYlNjNFYLxbLlFZFL++UFsYE4NW+GhRJlePfMAnAGrN9V^$g3Q4C9+EoX2MAaF1LH4OkDUW+xnsMD^$y0iCpSY620BjJysqxkTW+AGsA^$1^$jJ6SnLnPflr1qtdYXpWmq^$chLipZ2mLnqivWSjylW+j0T2laHcn^$B0XN97hiDWXr+hJ^$sgAne+B5^$eeVy1n3bm7avrcAeFR5TjqgUQbfrmXWWXzgrEDG3nhh^$9TfTYH37bX4XqDKlUDCbuH1fIQCT2q1Dcg7p7i0gFoOtuE1hUlHVuLro4t5^$GTftK9Gpm4iYGgHFTZjZPsyAsk5o+awQ9LjjnmwtH7BCFQ04xvPoftZZVRLrj5QXvIVs0FlL5Wvtf48+4svsM364BG5V71vCb^$bj1TGMAyk1uru3Kep+^$35ZgqVjgixgqBseSEmt92cDkeWOVw6GJYO9sa78zm7TfKYPgaU2MNF+gbaLJT26CeuczVQAGGjm0tIY4rR3Tq3gfiWjZhgnsIFTzGd0M46PBGfIzs2kivh9dvbFKFbd0SphTAlkQ89o70+BwpzocRuCJfVP1mM+3DY1HAPjse95K26MgCR5nJsy8zIn1XbTYKZgcawDBv5up^$AMsl^$Ey^$+xGmBMKfe6QTF8DIFyU04hC+aa6rR3elFtMtT^$b0Pfvn2CBL+0KjwJpDDgFx0ziMTbhkG8EbG4T1p3E1D1AroYTAo5oav8WQx+9IGmAAwDK6AZU2jOBB29a1UBDHgUdnUtmmcWaqIYa3Vw3O4y90lnqnznZ3eafJxjjkLRHxxnDL8zwR4FlNvitnmQiAj8j0N1+T4CoTrlhcmM451nZv747ePDtozgsy8eRSD1PnO0vs6LHSEOipCAXi+l18utnULJP2K+2ZAL1P4NUfZ1+CuVWLYLOeknNqTwLybpDK0+w4jAJBgLfTpig9kuXmDJJ^$Mq4bfaC4cBh60h2zeyo5x8YdCMbf0wp1eWfoRG3^$B6jTF^$cR2w8A7GCWny5z2Cyyl7H6g+c^$IeA8RMMq9sWMdU4R^$PUVPIeXyYDekhzp12F8Kk69x3ICrnYS28rh9SBe1xB7yaGXEDxiTumo7LrciT6pTcUOXfIgRhl0lVJDgGtLdX5N4ZwseZsef8a9Jn4FrIc3RP4OOl2EuWDQwifPEl9GnDZGLM^$7Fh+tghxtyu52HzSDGLOvq0ynlB6Lidbu^$XVhPMrQW^$6KBS9MPYrr1q8Wjs7IrSy8mHrDDYKm2j7HMRQkZ^$hrKYxf8PzQ5zCTK8Z1DxtWkj5ac+JGnSkIVQsQnJA8kig79GIWtQxT8xJ0x5TlzmJTZoidBcly0S1g3MuFx7EHq0pR^$KWuyCGPfUL85phTMnEQZMmh6zYs2gBQGnwYRNSG9JqhAahp6ry8o9OVEjwYrq^$0JkOdaNRbvF3B2udR2OgmUo+goB99XQFD02qX8J3WW0+gcARHUBmNrHGHOFicIsL^$Dh8HgniYT4jBRH7q8BxopdnrVcdJjnd9fZ^$UmbxgS07qQ^$jeIReuOxrGOFb5nOJxIyly288H9f5JoCA67jUd2HBKGS^$5vyRFte8s3kBoyqsxqiRd^$DoJ0tdOIQjxVfButZEZa2fyuE1Atc+7SjNeOqeYO0mr+qUDcWayxNsLrCA1UPvTRUqw5khr2Fq1kHm2VHmdE9+Y^$V5e+EwMAq4VmICBUw4ukjA77fpUf0eVVa16ct47GGSMsd4mhZZvNgYOXNvFJ1bwelJHEGVvTB7k91mb76Ry1hq8vYUk1QV^$Mvt1La2wFJAwpKvxeapLol8GT+RdbHDw7l1gpRCA8SQYYgACtGjxjXeV1OVBw6fWTr^$nEbsDa+5dDnTaTYnUkzDEnILLJf9x5x8dcryYQYPPJkL1Roz2d36k0SZUMiHEeE7x7n2rFOcrPdhfFNDRTsHHLk3Js61eWx64izB^$ROUXibvwF8^$kb87F9WI7IOqkT2QWYK^$5Vns^$^$EkMU+ghoPmFoIa7eQOjsTrqW6Tqo8W50sd6VOIM5MZsOM5d4XwiO5^$LFeUVSir5iZ3062USQTS2ZkDkKVR+iuETkF67hwXQqWmC4OSBeqIyHfN9DdFzBl1E0ABS7ezMvaGk8qELJ6SAX6oh4pSbpaBZErKfwEDZ6cVgIttF^$6E0s5zaxgQur0L41MG7B3g1uSArfI1aa0abCLG1Oo0A6MPt+fjAjxAQ6+gUMVCVy6Xy937ssBbcIobC6fdybCA475j7CwtT3DU5dFXE0ZBF5VHGpQs0SCMreT^$CFPQv8QroVrwVtf^$Y+tOixUgwmiql+MOJyjZtV5Z2qqhKo4TgY5CZ+dhJzkcZiiblg7FgW6bpYpAlDZZRZK8tKz9o1TeRx1oeWshoA+Os5HnjkVkMYT92kMe1f3Z0X2+s9zpI01auxpvRiTVVX7tQOwn4SUHc5JyoaDLHVm91igzzhGHMh253SPj6H7zq3cqVLaSJsNMZcII9UfPWQ9l2liDQkAVg^$2ttQPO^$YJQsWaDQBiBS5in8pBmzUWOlyxF56yFsqjoTRnEF5KHQl4nacJdOwCPe^$+EUHp^$QAoWn9^$jT4Ra+tgazQtVkmTLDuX0hBKkeIL5QriA91TVYVQH4ID0gsvsHes+rcDclQPl3stfZKBhuKwWzsoNHhsxNMPgD07ff5SxGffIBxt9Nbgbg2V^$oOl8u0Pyx9b6hHv2+6IKkWdS5+x9rbvZh3bcNt7^$SxlS+4pjTFdbUvHJ+O1rorB6qrfKHm9DxAkugh+h6cA^$Nq80Mjz48YbfllUj4HAhf2PSNSOjSVoRivETfUt8R0D51aASAPc3Tlp^$lyf3gZSZV+RCzYcy^$TfzUcp57lIZskIkXSB7PqrYBi9iM7yYMOjzvXnB1c9vrPptu8T69ZCgi6W6TcI5vW+SJbhNo0zrO^$JYLuhlQRDU0hmNGWHVWKKKw36GKEtNm^$8uuos9iST01UgPJMykRBDRqu603jmv5pabNWKmIQRguObyiztWp4mT4REqXC7x2bWcVWNP+VBhOa^$xOKbnCh3MJEDY0lYahSI6XRD+Nfrj5yLpTFAOePp98Ymlss7IlEELGLoNxpTIltX35PuwcNVBzcVRCGMy9EqsmHWcFI+ENucddElRDBkn3rFbUKJy+HWffv80donGZVLscch^$XzKEyUpVaG24jbnBFuUXhJCXNH6Sjag89Vt3wtVCPr8h6t8SITHaqXv4AltqOZpBlMC8sEY+ZDytUMvFQY94TtSaLxqVMwTNLG0slbJSH0Ft^$yLuD0oB1FQwASEdPUNGxpiecjp4evkkWZvRaKW1zsdiS^$a5kE+h1fPXbmnTyWaC4IzOfCfY+U7CP3hJe2EA4uEyNYIjyHkdTWNOQbQewQqP3AoahCmUcuXrnFj2rhp8bqSEKUddYiApzYfboLYHeOID0aG9uwXS+cLP9CwIlQz+x42JSIXAb6HSkq31vwhdathGH+oMR8e5hp2c6SU+0cW4eBE7u^$jK3Nvg1gURjujpYsS1iv1MIkvuce^$Zm8szKLDhjgkwX3m0ia3h1DpNbP3w425mIFJi97UtQPxijosUTRhQ4we6OR7lj7WSj32PvRVlrSPG^$0xowDqnkQTy2A5ELA7zngFhzG^$Zg0Ah+1fzzXxDOzILWsDuWBc7tSvBCPOKW7S0fGzhItDhEcN1h6vpJVhcn3OnHNwE0vZeH3q714hkr6UP5+jHqGfw5lmqn6wU3yq9oRiDG+nVC^$oKvcptue8a29NlOWa3PpGPY5zfRHm8iEUs7jF4paEkAqHO4n3XBT^$idTq3BtiH8dn97So4oT4y8f9yvQ^$4QggMsp0owab+X3ImJ6UTEOuJgAMU7+lrwPtYTf8SLNC+HIwX5zgG3IG^$rd5b4bJAVTYMvD18tNNPMPUfQslzSHT7PYxq^$BG1nGRWYR1PG5Zt1HxAPCUhLF41MqO^$+kZHhgnO14aG5Tt3aODpE3tk7X1weaPAilDgjxnjTOj^$wufHGsL7k7SIjWBxgbBmgM7kIjJOnt12vD^$x52dhIaqrX8ZM1of2EM3^$AleCrObcpbZoxognbsoo9mnzemNk4reeuYUa7bUXsZCIKBxxjmOdACcxp8QYnx5Gh6tdSYPozmkRh57jr4XodtsEjpfTmRRdwl6J5H9CiU9q80A6HBTbX9F8TeFLiidoI56PhbxJDIHOg+Mchd^$vUY7GusqyH5i^$Y14WYGAfqP4tNzcY6^$aFZTHQxRATCOVIA^$PQBzo2f^$Rt0oOk1cus^$Ypt4frQMDMP8Rr4y1AFt7Y7v0dEPuhvPXOcvAe9aVJIdSm7evP1qiE6H4^$x+WwNdVQ7TPOvH1hqyOk0wq4HXyJIYYxzvyrY4cuvGwRMSssQtxlKndu94x2ckWAyOXHpw3YOBI3w8bb9CMF+4YjFX1lj1i3MzE7jr2H8rJiZBr3FTj5hb0jOVaAnHfjHlAJZdlhY4dwZbiN70CbiCvG0xLzpQ^$+^$XE2SWVtRogLUGKdjEZXOSk4of+29zr+5DoOtotN8bfUxDT8^$CSDAO2vhN+LM1g4xTJR2HXfAcxB+BONmcFQGuD4dHdgZXKXVBz6PH0J8284AvsWtcRYbeNg5QuzZLzoMMOEalCj9NqdJ0scAu6WvT1H+ajanOUhSx0gX5VCpF8y2GQhFkYLlzDiXedC+R8yJ4rgLSR1DlRHroZUKVvDLQ^$ka7dulOU94t6lQDwzm7kEA8xpUqMrkzyN7+XP+GgjddPpTc7ZvFLraA322gKscjqasxLN^$gyyt3+gTF+FmpMb4CUUCD+87AaruakEvptIVPjmUWDrBN9kK6mK^$JSc7g9dVHXWRF35ZUOinFu6+md1fylEN4n4MIRfyuqDluGPFU0J4HaXJncD91B55VP197Q7Deh0GcAoWUfSsb^$aS1EgOJ2Ma5EWa0SrP30N79pXiQsf6ns3C22hWWH7ic1vBIbabZK745H4M^$Y3LXUCLS0UeqESkOGZf1BxVHrOlfHDzF7^$rPLIHLD61mu9Mr^$+K4qv7NBPyyhxkAEp1oO5HO2xA7HzEfM6fFHz2DJsq81gR0zJdD5+6+V98xuArV+j1L4b2ga3lVqOqm3OdSMpn8srF^$XffKdn4^$+UZsOt76VmKea5xJpNoPn7qhZJlYFyynskbb8nwYI9PHKKD44wGfjwqFl8kjaxthGruv^$sApHtsd4cpe4thpXDBQzAhR3SJ497UXey0x^$0IX18mOeWyKy9FP0ArlEocIpAmZzrDFM3ZrIDsPe9D+jmUqoVVGYFPU0tlxAYibuM8xGRoDCc6vpHCwE7hyFetyX9zhdtRgDOkvxOd649G6r31O9tCdq0QLIdcMNWY^$y6chFGV3icZ9dGxR82F^$VFB1M6ZBHJ2e0agRYkzSHIBFNRvYWeP9WR6^$4KRodc1w3AOoHlRHtQOoeVSgB9oQ+CoaJP9^$UmtuTseV^$bD5nKr7RMJJ7TDi79r0QbDUQvYFWUnf2LreS9HZrKglF2uzt9mQ8eJaXWx5r9Yiln6J4yNTizDGN09YzanNiurNDAx^$OKxnJetmsKwg5GDkhyWC4V0Gz6KiA0ovVsGfG7ZLw^$xCosd5PWF+BGRHllnOTyTwYHvPn7kV3NRXpNGLkRhDy1yE6KotRwRr1hIi9V8LVdHw^$r74bujZbmwvUlH9ip8ZEpSGlYAV5Bz4xZSshMlNDBmlIhTKG2ZG3RkGySMzdPL+hsLkdyAcbRTBZd9Q6f1VdmJPKt4ctUAajUCcvnrrzuxzYQjhuY2LYBvXDYaMCEl8XoZz9VBrM8ZWL4RE0JctJ5g^$sUCe2aoJF6^$7P^$to8P9PAW^$nIwB1rupIfQ+Ht+k6XTMbybI86uSXF18JF1mn^$li7nBSYi1nX0wwiL3aWyl0i^$dQ+jQYdQwmmUA+ym3E0sIxI+UL0cHC92f+diRKIYvItDWalboAGOhDaSzldtLETH7u8Qls5EbIhRGLBqXi6DdJkSdNhiPQIctEYBqr^$^$SaOCuBYhCWriOKeFCFUr1OhoSIowZpTRrcEqWcUNdafk58wtJBREdnFydk+kCwo5jS9icRbiSBIC+RV72qdCv2yK2hKuqupr5CA^$OEsuOpMPxPWj7EeGwKYfOrwu08X4rYL^$NAjDjj8xQ^$cmWjILKjATE^$Vi6FwJBeB14RszDyOvDyYKqxseO4tf6PLSZfYlLD9M6zhdherLrho4KzOtgCVqRgTI^$8gG46mBuUaAXny^$yhM7JFpF1DqEqUcVG5mIeRMNDNqy^$DnOIeMsI0DBLYYlxDt7OgyJD+TIWj0R4Z64Ei0BbRIshbiJmkRZ5wfyfvJlBFnnnG9OvuQXHnR+t3pOruMPWcYsNEeloZ+mx^$UCZ1ycVa9hVZZFXCyzpSmiDD^$pUAKcFf9h+lOwVZFCUVr6DZDKTqBJQQ6jjA+h9WToBXWT7lEddQPEyVcV8Jdl39^$udKKighqCgRNbudf8YLyw4gc7z1u8YhN6I^$IbulU4NOmSina+8IHRhnE83xOFqBBu1bcAL59zGqUKU6WTWrPmJ27NvLwhoRMnKv3RfxbAPODyJJ8QK32vWLTTuN7WONnX0lIizOvSyf6n0c41bdH4yq6aMMzSATYcOfdcCZ^$JfkyxjnJBaV6iJJel19u7wg3bQfRv+KHUqjdedmyjQph4gzRaRHhMPINe6m0jlrJt+agQSbP3qhy57Bu7U5950bZtJ6lqYGIGubV5EnTonfXAo8X7krTRkeSKOea40yhMtudIikgDKMGb^$vKYshDrUTfpuBWdvRaHdUQHDN6Bo4EzMXqVx2KBRMcVwwGLCNTTl0hPTgGDX3JE98s2l4nvFTMmX0rrNnIQ1jVVjDsdwXJK^$2dOXmsXGWMZ7dsdyb1e8yNna9FB6JcQLSRoUp7azB4SbwGSWl6QurdyTcyw138tGXUCDXo67MZ0NX8yrvTi0F30S7nQ7xvsdDTQddqfddniFKeJ0xWxxrtSMd1^$^$ReurgV52LMEF^$kqISh4C4cznd1ky^$TuhAJoaY^$M+s37Lqln2XNJhNEn9CxVGlnO0n3tArc1YLx7P^$dv98ZeRi3^$pskZ1uokerLVuQJiE4p9ipYbGYtmr8GE+ywRjpO8fprsgBRe7euBX^$pbmQF70PQj4V1MeH4Bbv1pxd0w4sAKrn9EPLvrwAu4aTJcQcbhCs7wZLZGKCaXALxU8^$CKo4xluMl3yApIZ0h9TLGD3X4ZhpUgOTZYMguntY2h96UrGCMHFBLUJrzV75vCdvPK4Z5PH9s11qrLnh6zcBaGZjRMmr7eUS45zOFzDS4rkxAi^$cXmcyF00Je6VR^$SXxk70MWkrTjmLf5qvkuHRulQMK^$7ARoTz+3OasJ4ROLpyr4lef8vdEpwJY^$SAqtxm2544P^$jxrFWhL9RYYpnKFC+IF7CSxJ9VIJo1pty3pEXwNiFQjKJnkVcrQbiUxsToYBGXlY+c8mJuMFZUyARz3TBPoVh3E1gzpBk15Ka6hSKe9^$oqCF1+Z5^$Ev5Q6ywhG4wT6yMhpusOYlD2ppmZew^$MbIDyTH17gwztcz3OaH05eDNSjnf^$KqEv2^$5Y0XQymoDGMpB^$c+lwGcia6KaAAcx+VAtgGaJZPgWo1p4Ok6PALbihoRY3fFOiI8sJBOrOZKOYUBk92fcWuUpfWSwq0twcklJx91ubDuOaVeCQrptrRzw1VNvNinDK25gtqTUOkre4Xi8ksSm27fxwKalvJvw31ckZIsDg3bVfcjaHffy2dkFRgHNIGnmAd1YsuHD4RZTleiGHt2GAXFNwL1wo8b6UPPTazEmQv0zexcRdtTZq^$7uOI^$zndS^$wW9o^$uukoBOcNiR5DRAuvikR4dCWFC1qiyfTz^$tlghC^$^$pKnLU3^$KYQ^$qBlJ7k0^$5VN8MMw+^$fa3X5djLV9J0z^$T3TEayvGM8vrHHPkqQkEiO6swBMFy1u^$PUIxZW6U^$DGcynwzexfTOKXErypHv1v+jBlFNIkoSgARElgvCoF9ZqTvl6bgHMqZH1G9mfwrA79PREspZxYnkfLaC5CZYuW4Ocm3bXz45vNRsguh56+nYVtwzDCd8qu0RrSDjX91YLwlRnJFV^$^$vGQkQ3Ql4ofp+WVTu1nHciHkv1vsa5ETpBTbt0nSlvBkS0QaRTu0f7CG9VJepcsfARTulPNedgy3Ugh1BChvHkCTDCyZRG+J8kZvNAoo1j2LdiN2hhMDiruGULBYmC+sz0Dm52YIX2zUUcmvh0vVXZFTvbfqtmKEwYg3pq^$TzJ58M4Pw89RLZ37AK^$1^$Eq^$AO2JsBk9f^$e8MbnQ7JvhI0qpVY0lgLxAel0hk7xTECxZg234OHjxA70HHq9JmozMq14rKOKoKZASLMrRJsYGiKf2pxPD9BP^$Y7Ezg32OippLXO4z18pbEvtzjQOVv+KwiYrVpiNAMKEwsWWYoL8pXPwxWAMR0UWeZe99OSa7buhTtBTtxOIqk+4G3CBSkdozUlERwJTKr326y^$AigwVh2FhLEPiYy7^$BlmnqUHlp9l88u0reYd3u4GPHNqa+RHpruHbMYtU3oZu+kvs6LQDT7QA1WmQhbfIANde5a3cnVlCRlnp+51IRWZAJW+H2GDy0jHMTy9wls83dKPm4TtlFSksFoBgn8^$MNkIAHfeMBuwxpMt48sNOGM0QK^$QXalhdbee1EGP1RR4+yWZ8cw^$bf+HC8dWyi^$VW87ETS9ThaCda2+M29qRDjwi96IWCScBCAExy6Aim5Wmj91rSV217qfhi8CW1M5XDYZ8sgYaWaBPSFw2qHeZBwP1qVHzZhB+kc4ONl5Uu4nUp^$DJwE89uEdeJsLBi47brTCuet+bieQdH3pHIf+3NeKu9WEt5rUIuVn3IVTuh4qDTGyzuP8wuELxekPxcivgO7jNbJEeV+AhAhMEADEN5uXK4wqzqzwuaInq8aZUu1YBrNfVmDZUSO5XEsKYHlMBWJ^$Q6UZjDX4iINPCGpl68xu96qSAW6TBJwtq24IFITR8gE2hy7DZ5pF9OqyxAHDNWhoauD2VB7tEsCBy7hhRL98c9eD8yskLb5AACxeF8jCeia7Y85Yfjsjlk+35sv92z78JwMRYdUc5F1iCT4Abm1XM9nFaPklBS4m8vXMZ0z5xLlxceoBuWz2es0ZbpqZg+LM7VanDwS+R^$AtGQIKuhZWjzvTwy9zZIWdo7gC8HFUIxVo8BjVSiHubiMOY4sZl3QvVOZpJwpr3+KmExIKmlyTE6jtMZ2acuSH9ncVdOYc7XV^$^$FdYvHcRDDhMM44xuMNldiycfTNShrDYA+YvsEbT1AKtTLLFmUJl2N0iYpY833sQbJw8f76keWkl4LYIxnKtyUxzWpeofZ+Dgs1LtWrJaCr7PBsPKtgvQUtlrXQjQ5XImh6qpBVimb1SEe7YA5pPgKHO5tOyusaRxCqskGJkI7WYfHh2oN0ayqaTHFDjqJZnK7oCQVd3oY+KM8UP^" &
+curl ^"https://tickets.museivaticani.va/api/config/startup?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/config/isAgency^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/purchaserules?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/gdpr?lang=it^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" &
+curl ^"https://tickets.museivaticani.va/api/visit/reservation^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -H ^"content-type: application/json^" ^
+  -b ^"JSESSIONID=6A7E81E5DED19778BB086F19DDC69A22; ticketmv=01; SERVERID=03^|ackcR^" ^
+  -H ^"origin: https://tickets.museivaticani.va^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://tickets.museivaticani.va/home/checkout^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" ^
+  --data-raw ^"^{^\^"recaptcha^\^":^\^"0.ajaEiDunVOICybrr3d6FTuMXVCCqhwhv1ubJhxxBqWXznUQNCZXX1XwSzKei9WmxMgdV9v0UwdMx2ZCNt-HwK56qCKwFonP8Eq7apPIJf3RGQam_kz91y7_loA5LS2RpuXOhHkI4g58iUVpeJTD8DFadMuJFK8tUNaOHeiyNVYPCU-EjcUhN2MQ3TsZ9pvElNN0wVCdCikC3QGI6JmM2HBzMc0bHKWX86o-I4C70H5u44PTwGhmx7WkSvMyF3pfFMsX1ZVmlJtdX0_bYrT8HRTi12iHDsP415CVjiP0NXk-f8MmTaUMFrdGHD102X6uu5BvBdoFrBD1qlccSLPKlVgahiDE3-rVyciNfZkVfNrf2L9R-XAN33uk102aoG0c5YwASnLi1MNiOKJcEOP-PNqmeIvN48EdF6PQ2WUfjQqDCrT7XttwVjoXQ_cwRDGZsJ8MsiJEWHDtJin867Wfmdi0J9WN6PlBjfn5qPAbqqMbd_Itlenb38ikB47L4f41sU6gIrgxkNzJGiHAfk7_QI-Ha11xYlUiLKtYaPaUb6tsezd_R9JLfRpehmtbk6NEdr5vrfwKAlhJtJAtbQ8waZEHuqP2KkQZTc6k-Vej3iWJ3D6kbWlWh8QZqa70-_5Xuoutrufu7XUGxVxtwduT6tQ9sEOcP893VTW59uv39TA5_2NNb93EiJbWQ-g-jXFTf5EGqHRRpV4iwE_OaJ_hyGPpsBuKUzkPWSsYcyCWNRqi5j76Rpr4nb343aAq3r8CbEgxlbgLlmXeMAvxaHwtjRY55S3Bx9TMhwtM-ptc0h9YZOFTnPE20ol8Kiz_eC8A8NhTg4IEtOOW9IoMsbR0s_pF2J-50eJB5WTga18NEhIUEva42RmzUJGKGOg6JrNU47aOY_DpTs5VRvibZ7RyGMBrvjvGM0ekEF3a8S5RbnO1Tb6u_WNGPZm2ppCMi9ss_.bGwIIzBSQfJCTd67V-usTA.4ebb965abb25fbd822a99f6437b9837ff2f02da8724c053cfbd25c3c10361e40^\^",^\^"lang^\^":^\^"it^\^",^\^"recapId^\^":^\^"2026/8817/67^\^",^\^"visitorNum^\^":2,^\^"visitId^\^":^\^"2026*8817^\^",^\^"visitTypeId^\^":2052398703,^\^"tickets^\^":^[^{^\^"id^\^":60,^\^"name^\^":^\^"Biglietto Intero^\^",^\^"price^\^":20,^\^"quantity^\^":^\^"2^\^"^},^{^\^"id^\^":61,^\^"name^\^":^\^"Biglietto Ridotto^\^",^\^"price^\^":10,^\^"quantity^\^":0^}^],^\^"services^\^":^[^{^\^"id^\^":58,^\^"name^\^":^\^"Diritti di Prevendita^\^",^\^"price^\^":5,^\^"quantity^\^":2^}^],^\^"representativeUser^\^":^{^\^"surname^\^":^\^"sekar^\^",^\^"name^\^":^\^"abiilesh^\^",^\^"gender^\^":^\^"F^\^",^\^"country^\^":^\^"Afghanistan^\^",^\^"city^\^":^\^"rome^\^",^\^"birthDate^\^":^\^"2006-06-20T22:00:00.000Z^\^",^\^"email^\^":^\^"abiiels^@gmail.com^\^",^\^"confirmEmail^\^":^\^"abiiels^@gmail.com^\^",^\^"telephoneNumber^\^":^\^"4817127363^\^",^\^"language^\^":^\^"it^\^"^},^\^"participantUser^\^":^[^{^\^"surname^\^":^\^"adf^\^",^\^"name^\^":^\^"dfdf^\^",^\^"id^\^":60,^\^"ticketType^\^":^\^"intero^\^",^\^"services^\^":^[58^]^},^{^\^"surname^\^":^\^"ddfd^\^",^\^"name^\^":^\^"dfdf^\^",^\^"id^\^":60,^\^"ticketType^\^":^\^"intero^\^",^\^"services^\^":^[58^]^}^],^\^"gdpr^\^":^[^{^\^"id^\^":1,^\^"check^\^":true^},^{^\^"id^\^":3,^\^"check^\^":true^}^]^}^" &
+curl ^"https://epay.catholica.va/pay/public/assets/i18n/it.json^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"Referer: https://epay.catholica.va/pay/public/init/SIV001-20260329-023540-12010032/BCB2B23A16BA4EB4EEADBCE594D031FA/it;jsessionid=7AF867E25BD1C924236DD65EACA9D3D2^" ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" ^
+  -H ^"Accept: application/json, text/plain, */*^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" &
+curl ^"https://epay.catholica.va/pay/api/securefields/init^" ^
+  -H ^"Accept: application/json, text/plain, */*^" ^
+  -H ^"Accept-Language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Content-Type: application/json^" ^
+  -b ^"JSESSIONID=7AF867E25BD1C924236DD65EACA9D3D2^" ^
+  -H ^"Origin: https://epay.catholica.va^" ^
+  -H ^"Referer: https://epay.catholica.va/pay/public/init/SIV001-20260329-023540-12010032/BCB2B23A16BA4EB4EEADBCE594D031FA/it;jsessionid=7AF867E25BD1C924236DD65EACA9D3D2^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"146^\^", ^\^"Not-A.Brand^\^";v=^\^"24^\^", ^\^"Google Chrome^\^";v=^\^"146^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  --data-raw ^"^{^\^"sivTransactionId^\^":^\^"SIV001-20260329-023540-12010032^\^",^\^"uppRedirectMac^\^":^\^"BCB2B23A16BA4EB4EEADBCE594D031FA^\^"^}^"

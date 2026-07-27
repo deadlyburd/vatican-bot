@@ -1,0 +1,12 @@
+{
+  "autoStart": true,
+  "backendUrl": "http://backend:8000",
+  "apiKey": "",
+  "maxConcurrentBookings": 3,
+  "holdMode": false,
+  "autoPay": false,
+  "autoConfirm": true,
+  "fillForm": true,
+  "clickAcquista": true,
+  "mode": "full_auto"
+}

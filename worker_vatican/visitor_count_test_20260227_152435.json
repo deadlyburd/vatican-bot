@@ -1,0 +1,40 @@
+{
+  "1_visitors": {
+    "slots_found": 0,
+    "available_times": [],
+    "slot_1730_found": false,
+    "slot_1730_details": null
+  },
+  "2_visitors": {
+    "slots_found": 0,
+    "available_times": [],
+    "slot_1730_found": false,
+    "slot_1730_details": null
+  },
+  "3_visitors": {
+    "slots_found": 0,
+    "available_times": [],
+    "slot_1730_found": false,
+    "slot_1730_details": null
+  },
+  "4_visitors": {
+    "slots_found": 0,
+    "available_times": [],
+    "slot_1730_found": false,
+    "slot_1730_details": null
+  },
+  "5_visitors": {
+    "slots_found": 0,
+    "available_times": [],
+    "slot_1730_found": false,
+    "slot_1730_details": null
+  },
+  "1_visitors_guided": {
+    "slots_found": 0,
+    "available_times": []
+  },
+  "2_visitors_guided": {
+    "slots_found": 0,
+    "available_times": []
+  }
+}

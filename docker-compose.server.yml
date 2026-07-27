@@ -1,0 +1,227 @@
+# ============================================================================
+# VATICAN BOT - SERVER-ONLY CONFIGURATION
+# ============================================================================
+# Minimal setup for server-side monitoring only
+# Frontend and nginx removed - not needed for your use case
+# ============================================================================
+
+services:
+  # ============================================================================
+  # DATABASE
+  # ============================================================================
+  db:
+    image: postgres:15
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=ticketbot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  # ============================================================================
+  # REDIS (Cache & Message Broker)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis-data:/data
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru --save "" --appendonly no
+    mem_limit: 1g
+    memswap_limit: 1g
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ============================================================================
+  # BACKEND (Django API)
+  # ============================================================================
+  backend:
+    build: .
+    restart: always
+    ports:
+      - "0.0.0.0:8000:8000"
+    command: sh -c "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:8000 --timeout 120"
+    volumes:
+      - .:/app
+      - static_volume:/app/backend/staticfiles
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
+      - PYTHONPATH=/app/backend:/app
+      - STATIC_ROOT=/app/backend/staticfiles
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - SERVER_BASE_URL=${SERVER_BASE_URL}
+      - BOKUN_ACCESS_KEY=${BOKUN_ACCESS_KEY}
+      - BOKUN_SECRET_KEY=${BOKUN_SECRET_KEY}
+      - GOOGLE_SERVICE_ACCOUNT_FILE=${GOOGLE_SERVICE_ACCOUNT_FILE}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      - db
+      - redis
+
+  # ============================================================================
+  # WORKER (Vatican Monitoring + Bokun Sync)
+  # ============================================================================
+  worker_vatican:
+    build: .
+    restart: always
+    command: celery -A backend.core worker -l info -Q snipe,vatican,celery --concurrency=8 --max-tasks-per-child=100
+    volumes:
+      - .:/app
+    mem_limit: 3g
+    memswap_limit: 3g
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
+      - PYTHONPATH=/app/backend:/app
+      - OXYLABS_USERNAME=${OXYLABS_USERNAME:-}
+      - OXYLABS_PASSWORD=${OXYLABS_PASSWORD:-}
+      - TWOCAPTCHA_API_KEY=${TWOCAPTCHA_API_KEY:-}
+      - VATICAN_CONCURRENCY=${VATICAN_CONCURRENCY:-4}
+      - VATICAN_RPS=${VATICAN_RPS:-5}
+      - VATICAN_VISITORS=${VATICAN_VISITORS:-2}
+      - BOKUN_ACCESS_KEY=${BOKUN_ACCESS_KEY}
+      - BOKUN_SECRET_KEY=${BOKUN_SECRET_KEY}
+      - GOOGLE_SERVICE_ACCOUNT_FILE=${GOOGLE_SERVICE_ACCOUNT_FILE}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      - db
+      - redis
+
+  # ============================================================================
+  # BEAT (Celery Scheduler - Runs periodic tasks)
+  # ============================================================================
+  beat:
+    build: .
+    restart: always
+    command: celery -A backend.core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - PYTHONPATH=/app/backend:/app
+      - BOKUN_ACCESS_KEY=${BOKUN_ACCESS_KEY}
+      - BOKUN_SECRET_KEY=${BOKUN_SECRET_KEY}
+      - GOOGLE_SERVICE_ACCOUNT_FILE=${GOOGLE_SERVICE_ACCOUNT_FILE}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      - db
+      - redis
+
+  # ============================================================================
+  # TELEGRAM BOT (Notifications)
+  # ============================================================================
+  telegram_bot:
+    build: .
+    restart: always
+    command: python /app/backend/telegram_bot.py
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ticketbot
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
+      - PYTHONPATH=/app/backend:/app
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - SERVER_BASE_URL=${SERVER_BASE_URL}
+    depends_on:
+      - db
+      - redis
+      - backend
+
+  # ============================================================================
+  # CHROME BOT 1 (Visual Booking with VNC)
+  # Connect via VNC: your-server-ip:5901 (no password)
+  # ============================================================================
+  chrome_bot_1:
+    build:
+      context: .
+      dockerfile: chrome_bot/Dockerfile
+    restart: always
+    ports:
+      - "5901:5901"   # VNC - connect with any VNC viewer
+      - "9222:9222"   # Chrome remote debugging
+    environment:
+      - PROFILE_ID=1
+      - BACKEND_URL=http://backend:8000
+      - VNC_ENABLED=true
+      - SCREEN_WIDTH=1280
+      - SCREEN_HEIGHT=720
+    volumes:
+      - ./browser-extension:/root/browser-extension
+      - chrome_profiles_1:/root/chrome-profiles
+    depends_on:
+      - backend
+    shm_size: '2gb'
+
+  # ============================================================================
+  # CHROME BOT 2
+  # Connect via VNC: your-server-ip:5902
+  # ============================================================================
+  chrome_bot_2:
+    build:
+      context: .
+      dockerfile: chrome_bot/Dockerfile
+    restart: always
+    ports:
+      - "5902:5902"
+      - "9223:9223"
+    environment:
+      - PROFILE_ID=2
+      - BACKEND_URL=http://backend:8000
+      - VNC_ENABLED=true
+      - SCREEN_WIDTH=1280
+      - SCREEN_HEIGHT=720
+    volumes:
+      - ./browser-extension:/root/browser-extension
+      - chrome_profiles_2:/root/chrome-profiles
+    depends_on:
+      - backend
+    shm_size: '2gb'
+
+  # ============================================================================
+  # CHROME BOT 3
+  # Connect via VNC: your-server-ip:5903
+  # ============================================================================
+  chrome_bot_3:
+    build:
+      context: .
+      dockerfile: chrome_bot/Dockerfile
+    restart: always
+    ports:
+      - "5903:5903"
+      - "9224:9224"
+    environment:
+      - PROFILE_ID=3
+      - BACKEND_URL=http://backend:8000
+      - VNC_ENABLED=true
+      - SCREEN_WIDTH=1280
+      - SCREEN_HEIGHT=720
+    volumes:
+      - ./browser-extension:/root/browser-extension
+      - chrome_profiles_3:/root/chrome-profiles
+    depends_on:
+      - backend
+    shm_size: '2gb'
+
+volumes:
+  postgres_data:
+  static_volume:
+  redis-data:
+  chrome_profiles_1:
+  chrome_profiles_2:
+  chrome_profiles_3:

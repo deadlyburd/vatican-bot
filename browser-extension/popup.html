@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vatican Ticket Monitor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>🎫 Vatican Ticket Monitor</h1>
+        <button id="settingsBtn" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+          ⚙️ Settings
+        </button>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="status-dot"></span>
+        <span class="status-text">Inactive</span>
+      </div>
+    </header>
+
+    <div class="section">
+      <h2>Quick Setup</h2>
+      
+      <div class="form-group">
+        <label for="dateInput">Date:</label>
+        <input type="date" id="dateInput" min="" />
+      </div>
+
+      <div class="form-group">
+        <label for="visitorsInput">Visitors:</label>
+        <input type="number" id="visitorsInput" min="1" max="20" value="1" />
+      </div>
+
+      <div class="form-group">
+        <label for="ticketType">Ticket Type:</label>
+        <select id="ticketType">
+          <option value="standard">Standard Entry</option>
+          <option value="guided">Guided Tour</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="languageGroup" style="display: none;">
+        <label for="language">Language:</label>
+        <select id="language">
+          <option value="ENG">English</option>
+          <option value="ITA">Italian</option>
+          <option value="FRA">French</option>
+          <option value="DEU">German</option>
+          <option value="SPA">Spanish</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="checkInterval">Check Interval:</label>
+        <select id="checkInterval">
+          <option value="5">5 seconds (Fast)</option>
+          <option value="10">10 seconds</option>
+          <option value="30">30 seconds</option>
+          <option value="60">1 minute</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="monitorMode">Monitor Mode:</label>
+        <select id="monitorMode">
+          <option value="backend">🚀 Backend Listener (FASTEST - RECOMMENDED)</option>
+          <option value="tab">🔍 Tab Reload (Visual Check)</option>
+          <option value="api">⚡ API Only (Background)</option>
+        </select>
+        <div style="font-size: 11px; color: #666; margin-top: 8px; padding: 8px; background: #f0f7ff; border-left: 3px solid #2196f3; border-radius: 4px;">
+          <strong>🚀 Backend Listener (FASTEST):</strong><br>
+          • Backend checks every 5 seconds with proxies<br>
+          • Opens 10 incognito windows for parallel booking<br>
+          • No rate limiting - uses backend proxies<br>
+          • Books multiple dates simultaneously<br>
+          <br>
+          <strong>🔍 Tab Reload:</strong><br>
+          • Opens Vatican website in a tab<br>
+          • Visually checks for "PRENOTA" buttons<br>
+          • More reliable - sees exactly what you see<br>
+          • Can only book ONE date at a time<br>
+          <br>
+          <strong>⚡ API Only:</strong><br>
+          • Checks in background (no tab)<br>
+          • Faster but may have false negatives<br>
+          • Use if you want silent monitoring
+        </div>
+      </div>
+
+      <div id="backendConfigSection" style="display: none; margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+        <h3 style="font-size: 14px; margin-bottom: 10px;">🔧 Backend Configuration</h3>
+        
+        <div class="form-group">
+          <label for="backendUrl">Backend URL:</label>
+          <input type="text" id="backendUrl" placeholder="http://localhost:8000" value="http://localhost:8000" />
+        </div>
+        
+        <div class="form-group">
+          <label for="apiKey">API Key (optional):</label>
+          <input type="password" id="apiKey" placeholder="your-api-key" />
+        </div>
+        
+        <div class="form-group">
+          <label for="maxConcurrentBookings">Max Concurrent Bookings:</label>
+          <input type="number" id="maxConcurrentBookings" min="1" max="20" value="10" />
+          <p style="font-size: 11px; color: #666; margin-top: 5px;">
+            Number of incognito windows to open simultaneously (1-20)
+          </p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="autoBooking" style="width: auto; margin-right: 8px;">
+          Enable Auto-Booking (Experimental)
+        </label>
+        <p style="font-size: 11px; color: #666; margin-top: 5px;">
+          ⚠️ When enabled, extension will automatically book tickets when found
+        </p>
+      </div>
+
+      <div id="profileSection" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="font-size: 14px; margin-bottom: 10px;">Booking Profile</h3>
+        
+        <div class="form-group">
+          <label for="firstName">First Name:</label>
+          <input type="text" id="firstName" placeholder="Mario" />
+        </div>
+        
+        <div class="form-group">
+          <label for="lastName">Last Name:</label>
+          <input type="text" id="lastName" placeholder="Rossi" />
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" placeholder="mario.rossi@example.com" />
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Phone (Italian):</label>
+          <input type="tel" id="phone" placeholder="3401234567" />
+        </div>
+        
+        <div class="form-group">
+          <label for="city">City:</label>
+          <input type="text" id="city" placeholder="Roma" />
+        </div>
+        
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="autoConfirm" style="width: auto; margin-right: 8px;">
+            Auto-confirm purchase (⚠️ Use with caution!)
+          </label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button id="startBtn" class="btn btn-primary">Start Monitoring</button>
+        <button id="stopBtn" class="btn btn-secondary" disabled>Stop</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Monitoring Status</h2>
+      <div id="monitoringInfo" class="info-box">
+        <p class="no-data">Not monitoring any dates</p>
+      </div>
+      
+      <!-- Timing Information (like Telegram) -->
+      <div id="timingInfo" style="display: none; margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: #1976d2;">⏱️ Monitoring Timing</h3>
+        <div style="font-size: 12px; color: #424242;">
+          <div style="margin-bottom: 8px;">
+            <strong>🚀 Started:</strong> <span id="startTime">-</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>🔄 Last Check:</strong> <span id="lastCheckTime">-</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>⏰ Next Check:</strong> <span id="nextCheckTime">-</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>📊 Total Checks:</strong> <span id="totalChecks">0</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>⏱️ Check Interval:</strong> <span id="checkIntervalDisplay">-</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>🎯 Mode:</strong> <span id="modeDisplay">-</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>📅 Monitoring:</strong> <span id="monitoringDate">-</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>👥 Visitors:</strong> <span id="monitoringVisitors">-</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>🎫 Ticket Type:</strong> <span id="monitoringTicketType">-</span>
+          </div>
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #90caf9;">
+            <strong>⏳ Running for:</strong> <span id="runningDuration">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Recent Results</h2>
+      <div id="results" class="results-container">
+        <p class="no-data">No results yet</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Available Slots</h2>
+      <div id="availableSlots" class="slots-container">
+        <p class="no-data">No available slots found</p>
+      </div>
+    </div>
+
+    <div class="section" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 15px; border-radius: 8px; color: white;">
+      <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">🧪 Test Auto-Booking</h2>
+      <p style="font-size: 12px; margin-bottom: 15px; opacity: 0.9;">
+        Test if the extension will automatically open booking windows when slots are available.
+      </p>
+      <div class="button-group">
+        <button id="createTestSlotBtn" class="btn" style="background: white; color: #f5576c; font-weight: bold;">
+          🧪 Create Test Slot
+        </button>
+        <button id="deleteTestSlotBtn" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+          🗑️ Delete Test
+        </button>
+      </div>
+      <div id="testMessage" style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 4px; display: none; font-size: 12px;"></div>
+      <p style="font-size: 11px; margin-top: 10px; opacity: 0.8;">
+        ℹ️ After clicking "Create Test Slot", open console (F12) and watch for an incognito window to open within 10 seconds!
+      </p>
+    </div>
+
+    <footer>
+      <button id="settingsBtn" class="btn btn-link">⚙️ Advanced Settings</button>
+      <button id="clearBtn" class="btn btn-link">🗑️ Clear History</button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "curl": {
+    "error": "'GodTierVaticanMonitorV2' object has no attribute '_get_ticket_ids'"
+  },
+  "playwright": {
+    "error": "'GodTierVaticanMonitorV2' object has no attribute '_get_ticket_ids'"
+  },
+  "direct_api": {
+    "error": "'GodTierVaticanMonitorV2' object has no attribute '_get_ticket_ids'"
+  }
+}
