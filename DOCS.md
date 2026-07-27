@@ -2,50 +2,60 @@
 
 ## What This Is
 
-A full-stack automation platform that monitors Vatican Museums ticket availability 24/7 across 60+ dates, auto-books tickets when slots open, and manages the entire resale pipeline — from CRM (Google Sheets) through booking to payment capture.
+A full-stack automation platform that monitors Vatican Museums ticket availability 24/7, books tickets when slots open, and manages the entire resale pipeline — from CRM (Google Sheets) through booking to payment capture.
 
-Built as a Docker-based microservices architecture deployed on a Hetzner cloud server (Ubuntu 26.04).
+## Architecture: Server / Desktop Split
 
----
-
-## Architecture Overview
+The core architectural insight: **Cloudflare Turnstile blocks browser automation from cloud servers** (datacenter IP + virtual display fingerprint), but **real Chrome on a desktop with a residential IP passes it**. So the system is split:
 
 ```
-                    ┌─────────────┐
-                    │   NGINX     │  :80, :443 (reverse proxy)
-                    └──────┬──────┘
-                           │
-              ┌────────────┼────────────┐
-              │            │            │
-         ┌────▼───┐   ┌───▼────┐  ┌───▼──────────┐
-         │ BACKEND │   │FRONTEND│  │ CUSTOMER CARE │
-         │ Django  │   │Next.js │  │ Telegram Bot  │
-         │ :8000   │   │ :3000  │  │ (tourists)    │
-         └────┬────┘   └────────┘  └───────────────┘
-              │
-    ┌─────────┼─────────┬──────────┬──────────────┐
-    │         │         │          │              │
-┌───▼──┐ ┌───▼───┐ ┌───▼───┐ ┌───▼────┐ ┌──────▼──────┐
-│Redis │ │Postgre│ │Celery │ │Celery  │ │Telegram Bot  │
-│Cache │ │ -SQL  │ │Worker │ │Beat    │ │(admin alerts)│
-└──────┘ └───────┘ │:vatican│ │(sched) │ └──────────────┘
-                   │ snipe  │ └────────┘
-                   └───┬────┘
-                       │
-         ┌─────────────┼─────────────┐
-         │             │             │
-    ┌────▼────┐  ┌────▼────┐  ┌────▼────────┐
-    │Chrome   │  │Chrome   │  │Chrome       │
-    │Bot 1    │  │Bot 2    │  │Bot 3        │
-    │VNC:5901 │  │VNC:5902 │  │VNC:5903     │
-    │CDP:9222 │  │CDP:9223 │  │CDP:9224     │
-    └─────────┘  └─────────┘  └─────────────┘
+┌─────────────────────────────────┐     ┌──────────────────────────────┐
+│   SERVER (Hetzner, 24/7)        │     │   DESKTOP (admin's machine)  │
+│                                 │     │                              │
+│   agent/pipeline.py             │     │   agent/local_worker.py      │
+│   ┌─────────────────────────┐   │     │   ┌──────────────────────┐   │
+│   │ 1. Read Google Sheets   │   │     │   │ 1. Poll Booking_Queue│   │
+│   │ 2. Check Vatican API    │   │     │   │ 2. Connect to Chrome  │   │
+│   │    (no browser needed!) │   │     │   │    via CDP (port 9222)│   │
+│   │ 3. Write to Booking_    │───┼─────┼──→│ 3. Book in real Chrome│   │
+│   │    Queue sheet tab      │   │     │   │ 4. Turnstile solves ✓ │   │
+│   │ 4. Telegram alerts      │   │     │   │ 5. Capture epay URL   │   │
+│   └─────────────────────────┘   │     │   │ 6. Write back to sheet│   │
+│                                 │     │   └──────────────────────┘   │
+│   Also runs:                    │     │                              │
+│   agent/customer_bot.py         │     │   Why this works:            │
+│   (tourist Telegram bot)        │     │   • Real Chrome fingerprint  │
+│                                 │     │   • Residential IP           │
+│         ↑                       │     │   • Real GPU + audio stack   │
+│         └──── Google Sheets ────┼─────┘   • Persistent profile       │
+│              (Booking_Queue)    │                                  │
+└─────────────────────────────────┘     └──────────────────────────────┘
+```
 
-    ┌──────────┐  ┌───────────┐  ┌──────────────┐
-    │Auto      │  │Master     │  │Extension     │
-    │Pipeline  │  │Sync       │  │Bridge        │
-    │CRM→Book  │  │Sheets sync│  │Ext→Commands  │
-    └──────────┘  └───────────┘  └──────────────┘
+**The key insight:** The Vatican API check (`vatican_api.py`) is just two `requests.get()` calls — no browser needed, no Cloudflare to bypass. Only the actual booking flow (ticket selection → form fill → captcha → purchase) uses a browser. So that's the only part that runs on the desktop.
+
+### Why Not Cloud-Based Browser Automation?
+
+| Factor | Cloud Server | Desktop |
+|--------|-------------|---------|
+| IP address | Datacenter (flagged) | Residential (trusted) |
+| Browser fingerprint | Docker + Xvfb + no GPU | Real GPU, compositor, audio |
+| Chrome profile | Empty (suspicious) | Weeks of browsing history |
+| Turnstile result | Challenged / blocked | Auto-solved |
+
+### Agent System (`agent/` package)
+
+```
+agent/
+├── config.py          # Central config from env vars (validated)
+├── sheets.py          # Google Sheets read/write + Booking_Queue
+├── vatican_api.py     # Slot checking via Vatican API (no browser)
+├── booker.py          # Browser booking via nodriver (fallback)
+├── local_worker.py    # Desktop worker — books via real Chrome CDP
+├── notifier.py        # Telegram admin alerts (Markdown)
+├── pipeline.py        # Server-side orchestrator → writes to queue
+├── customer_bot.py    # Tourist-facing Telegram bot (FAQ + Claude AI)
+└── cli.py             # CLI: pipeline, local-worker, check, book, status
 ```
 
 ### Service Descriptions
@@ -81,6 +91,7 @@ Built as a Docker-based microservices architecture deployed on a Hetzner cloud s
 | Tab Name | Purpose | Columns (key ones) |
 |----------|---------|-------------------|
 | **📊 Master** | Aggregated booking view. Auto-rebuilt by `master_sync.py` | Date, Time, Product, Pax, First Name, Last Name, Booking ID, Status, Confirmation, Payment Link, Missing Info, Ticket Type, Platform |
+| **Booking_Queue** | Server→Desktop bridge. Pipeline writes tasks, local worker picks them up | Status (PENDING/BOOKED/FAILED), Booking ID, Date, Time, Visitors, Customer Name, Ticket ID, Slot ID, Payment Link, Error |
 | **Activity_Lines** | Raw booking data from Bokun/Viator/other sources | All booking line items |
 | **Passengers** | Individual passenger details per booking | First Name, Last Name, Type (Adult/Child/Infant), Booking ID |
 | **Bookings** | Consolidated booking records | Booking ID, Date, Time, Product, Status, Payment |
@@ -227,39 +238,90 @@ VATICAN_MONITOR_MODE=hybrid
 
 ## Quick Deploy
 
-### Prerequisites
-- Server with Docker and Docker Compose installed
-- Ports 80, 443, 8000, 3000, 5901-5903 available
-
-### Steps
+### Step 1: Server Setup (Hetzner / cloud VPS)
 
 ```bash
-# 1. Clone
 git clone https://github.com/deadlyburd/vatican-bot.git
 cd vatican-bot
 
-# 2. Configure
+# Configure
 cp .env.example .env
-nano .env  # Fill in ALL values
+nano .env  # Fill in: TELEGRAM_BOT_TOKEN, ADMIN_TELEGRAM_IDS,
+           #           GOOGLE_SHEET_ID, GOOGLE_SERVICE_ACCOUNT_FILE
 
-# 3. Add Google credentials
+# Add Google credentials
 # Place your google_credentials.json in the project root
 
-# 4. Deploy
-chmod +x deploy.sh
-./deploy.sh
+# Install Python dependencies
+pip install -r requirements.txt
 
-# Or for server-only (no frontend/nginx):
-chmod +x deploy-server-only.sh
-./deploy-server-only.sh
-
-# 5. Create initial monitoring task
-docker compose exec backend python /app/create_real_monitoring_task.py
-
-# 6. Check everything is running
-docker compose ps
-docker compose logs -f
+# Start the pipeline (scans sheets + checks Vatican API)
+python -m agent.cli pipeline
 ```
+
+### Step 2: Desktop Setup (admin's machine — does the actual booking)
+
+```bash
+# 1. Clone the same repo on your desktop
+git clone https://github.com/deadlyburd/vatican-bot.git
+cd vatican-bot
+pip install -r requirements.txt
+
+# 2. Configure with the SAME .env values
+cp .env.example .env
+nano .env
+
+# 3. Start Chrome with remote debugging enabled
+# macOS:
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+    --remote-debugging-port=9222 \
+    --user-data-dir="$HOME/.vatican_chrome_profile"
+
+# Linux:
+google-chrome \
+    --remote-debugging-port=9222 \
+    --user-data-dir="$HOME/.vatican_chrome_profile"
+
+# Windows:
+"C:\Program Files\Google\Chrome\Application\chrome.exe" \
+    --remote-debugging-port=9222 \
+    --user-data-dir="%USERPROFILE%\.vatican_chrome_profile"
+
+# 4. Run the local worker
+python -m agent.cli local-worker --cdp-port 9222 --interval 30
+```
+
+### Step 3: Customer Bot (optional — tourist-facing Telegram bot)
+
+```bash
+# Run on server or desktop
+python -m agent.cli customer-bot
+```
+
+### How It All Connects
+
+```
+1. Server pipeline detects a pending booking in Google Sheets
+2. Server checks Vatican API → finds an available slot
+3. Server writes task to Booking_Queue sheet tab: "BOOK: 01/08/2026, 2 visitors"
+4. Server sends Telegram alert: "Slot found for Mario Rossi on 01/08"
+5. Desktop worker picks up the task (polls every 30s)
+6. Desktop worker opens Chrome → navigates Vatican → books → captures epay URL
+7. Desktop worker writes payment link back to BOTH Booking_Queue and Master sheet
+8. Desktop worker sends Telegram: "Booked! Payment link: epay.catholica.va/..."
+9. Admin shares payment link with customer
+10. Customer pays on epay.catholica.va with their own card
+```
+
+### Running with Docker (legacy full-stack mode)
+
+If you want the full Django + Next.js + Chrome bots stack:
+
+```bash
+chmod +x deploy.sh
+./deploy.sh          # Full production deploy
+./deploy-server-only.sh  # Server-only (no frontend/nginx)
+docker compose ps    # Check all services
 
 ### Deploy Scripts
 
@@ -398,6 +460,46 @@ Located in `browser-extension/`. A Chrome/Firefox extension that:
 **Install manually:**
 1. Chrome → `chrome://extensions/` → Enable Developer Mode
 2. Click "Load unpacked" → Select `browser-extension/` folder
+
+---
+
+## Agent CLI Reference
+
+```bash
+# ── Server Commands ─────────────────────────────────────────────────
+
+# Run the booking pipeline (scans sheets, checks API, writes to queue)
+python -m agent.cli pipeline
+
+# Run the customer-facing Telegram bot
+python -m agent.cli customer-bot
+
+# One-off: check slots for a date
+python -m agent.cli check --date 01/08/2026 --visitors 2
+
+# One-off: scan 60 days for first available slot
+python -m agent.cli check --scan 60 --visitors 2
+
+# Show system configuration
+python -m agent.cli status
+
+# List pending bookings from sheets
+python -m agent.cli sheets
+
+
+# ── Desktop Commands ────────────────────────────────────────────────
+
+# Run the local booking worker (requires Chrome with --remote-debugging-port=9222)
+python -m agent.cli local-worker
+
+# Custom CDP port and poll interval
+python -m agent.cli local-worker --cdp-port 9223 --interval 15
+
+# One-off: book a single ticket via local Chrome
+python -m agent.cli book --date 01/08/2026 --visitors 2 \
+    --email "customer@example.com" \
+    --first-name "Mario" --last-name "Rossi"
+```
 
 ---
 
