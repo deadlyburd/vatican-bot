@@ -36,6 +36,11 @@ def main():
     # customer-bot
     sub.add_parser("customer-bot", help="Run the customer-facing Telegram bot")
 
+    # local-worker
+    worker_parser = sub.add_parser("local-worker", help="Run the local booking worker (desktop)")
+    worker_parser.add_argument("--cdp-port", type=int, default=9222, help="Chrome DevTools port")
+    worker_parser.add_argument("--interval", type=int, default=30, help="Poll interval in seconds")
+
     # check
     check_parser = sub.add_parser("check", help="Check Vatican API for available slots")
     check_parser.add_argument("--date", help="Date in DD/MM/YYYY (default: today)")
@@ -70,6 +75,8 @@ def main():
         cmd_pipeline()
     elif args.command == "customer-bot":
         cmd_customer_bot()
+    elif args.command == "local-worker":
+        cmd_local_worker(args)
     elif args.command == "check":
         cmd_check(args)
     elif args.command == "book":
@@ -94,6 +101,13 @@ def cmd_customer_bot():
     from agent.customer_bot import CustomerBot
     bot = CustomerBot()
     bot.run_polling()
+
+
+def cmd_local_worker(args):
+    """Run the local booking worker (desktop)."""
+    from agent.local_worker import LocalWorker
+    worker = LocalWorker(cdp_port=args.cdp_port, poll_interval=args.interval)
+    worker.run()
 
 
 def cmd_check(args):

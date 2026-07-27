@@ -278,6 +278,117 @@ class SheetsClient:
         return ""
 
 
+    # ── Booking Queue (for server → local-worker communication) ──────────
+
+    def ensure_queue_sheet(self) -> gspread.Worksheet:
+        """Create the Booking_Queue tab if it doesn't exist."""
+        try:
+            return self.sheet.worksheet("Booking_Queue")
+        except gspread.WorksheetNotFound:
+            ws = self.sheet.add_worksheet("Booking_Queue", 1000, 10)
+            ws.append_row([
+                "Status",           # A: PENDING / BOOKED / FAILED / CANCELLED
+                "Booking ID",       # B: from Master sheet
+                "Date",             # C: DD/MM/YYYY
+                "Time",             # D: HH:MM
+                "Visitors",         # E: number
+                "Customer Name",    # F: First Last
+                "Ticket ID",        # G: Vatican ticket type ID
+                "Slot ID",          # H: Vatican time slot ID
+                "Payment Link",     # I: epay URL (filled after booking)
+                "Error",            # J: error message if failed
+            ])
+            logger.info("Created Booking_Queue sheet")
+            return ws
+
+    def create_booking_task(
+        self,
+        booking_id: str,
+        date: str,
+        time: str,
+        visitors: int,
+        customer_name: str,
+        ticket_id: str,
+        slot_id: str,
+    ) -> int:
+        """
+        Add a booking task to the queue. The local worker picks these up.
+
+        Returns the row number of the new task.
+        """
+        ws = self.ensure_queue_sheet()
+        ws.append_row([
+            "PENDING",
+            booking_id,
+            date,
+            time,
+            str(visitors),
+            customer_name,
+            ticket_id,
+            slot_id,
+            "",      # Payment Link (empty until booked)
+            "",      # Error
+        ])
+        # Return the last row
+        return len(ws.get_all_values())
+
+    def get_pending_tasks(self) -> list[dict]:
+        """Return all PENDING tasks from the Booking_Queue."""
+        try:
+            ws = self.sheet.worksheet("Booking_Queue")
+        except gspread.WorksheetNotFound:
+            return []
+
+        rows = ws.get_all_values()
+        if len(rows) < 2:
+            return []
+
+        tasks = []
+        for i, row in enumerate(rows[1:], start=2):
+            if len(row) < 8:
+                continue
+            status = (row[0] or "").strip().upper()
+            if status != "PENDING":
+                continue
+
+            tasks.append({
+                "row": i,
+                "status": status,
+                "booking_id": (row[1] or "").strip(),
+                "date": (row[2] or "").strip(),
+                "time": (row[3] or "").strip(),
+                "visitors": self._parse_int(row[4]),
+                "customer_name": (row[5] or "").strip(),
+                "ticket_id": (row[6] or "").strip(),
+                "slot_id": (row[7] or "").strip(),
+                "payment_link": (row[8] or "").strip(),
+                "error": (row[9] or "").strip(),
+            })
+        return tasks
+
+    def mark_task_booked(self, task_row: int, epay_url: str) -> bool:
+        """Mark a queue task as BOOKED with the payment link."""
+        try:
+            ws = self.sheet.worksheet("Booking_Queue")
+            ws.update_cell(task_row, 1, "BOOKED")
+            ws.update_cell(task_row, 9, epay_url)
+            return True
+        except Exception as e:
+            logger.error("Failed to mark task %d as booked: %s", task_row, e)
+            return False
+
+    def mark_task_failed(self, task_row: int, error: str) -> bool:
+        """Mark a queue task as FAILED with an error message."""
+        try:
+            ws = self.sheet.worksheet("Booking_Queue")
+            ws.update_cell(task_row, 1, "FAILED")
+            ws.update_cell(task_row, 10, error[:200])
+            return True
+        except Exception as e:
+            logger.error("Failed to mark task %d as failed: %s", task_row, e)
+            return False
+
+
 # ── Singleton ────────────────────────────────────────────────────────────────
 
 _client: SheetsClient | None = None

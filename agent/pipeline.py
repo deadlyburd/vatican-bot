@@ -118,122 +118,68 @@ class Pipeline:
         # Limit per cycle
         to_process = pending[: config.pipeline_max_bookings_per_cycle]
 
-        cycle_booked = 0
+        cycle_queued = 0
         cycle_no_slots = 0
-        cycle_failed = 0
         cycle_errors = []
 
-        # 2. Process each booking
+        # 2. Check slots for each booking → queue task if slot found
         for i, booking in enumerate(to_process):
             logger.info(
-                "[%d/%d] Processing: %s %s — %s (%dv)",
+                "[%d/%d] Checking: %s %s — %s (%dv)",
                 i + 1, len(to_process),
                 booking.first_name, booking.last_name,
                 booking.date, booking.pax,
             )
 
-            # Check slots
             visitors = booking.pax if booking.pax > 0 else 2
             slots = self.finder.find_slots(booking.date, visitors, use_cache=False)
 
             if not slots:
-                logger.info("  → No slots available for %s", booking.date)
+                logger.info("  → No slots for %s", booking.date)
                 notify_no_slots(booking.date, booking.first_name, booking.last_name, visitors)
                 cycle_no_slots += 1
                 continue
 
-            slot = slots[0]  # Earliest available
-            logger.info("  → Slot found: %s %s", slot.date, slot.time)
+            slot = slots[0]
+            logger.info("  → Slot found: %s %s — queuing for local worker", slot.date, slot.time)
 
-            # Book
-            result = asyncio.run(self._book_slot(slot, booking))
-
-            if result["success"] and result.get("epay_url"):
-                # Write payment link to sheet
-                self.sheets.write_payment_link(booking, result["epay_url"])
-                self.sheets.write_status(booking, "BOOKED")
-
-                # Notify
-                notify_booking_success(
-                    date=slot.date,
-                    time=slot.time,
-                    first_name=booking.first_name,
-                    last_name=booking.last_name,
-                    visitors=visitors,
-                    epay_url=result["epay_url"],
+            # Write task to Booking_Queue (picked up by local worker)
+            try:
+                task_row = self.sheets.create_booking_task(
                     booking_id=booking.booking_id,
-                )
-                cycle_booked += 1
-                logger.info("  → ✅ BOOKED")
-            else:
-                notify_booking_failed(
                     date=slot.date,
                     time=slot.time,
-                    first_name=booking.first_name,
-                    last_name=booking.last_name,
-                    error=result.get("error", "Unknown error"),
+                    visitors=visitors,
+                    customer_name=f"{booking.first_name} {booking.last_name}",
+                    ticket_id=slot.ticket_id,
+                    slot_id=slot.slot_id,
                 )
-                cycle_failed += 1
-                cycle_errors.append(result.get("error", "Unknown"))
-                logger.error("  → ❌ Failed: %s", result.get("error"))
-
-            # Cooldown between bookings
-            if i < len(to_process) - 1:
-                time.sleep(config.pipeline_cooldown_seconds)
+                self.sheets.write_status(booking, "QUEUED")
+                cycle_queued += 1
+                logger.info("  → ✅ Queued (row %d in Booking_Queue)", task_row)
+            except Exception as e:
+                cycle_errors.append(str(e))
+                logger.error("  → Failed to queue: %s", e)
 
         # 3. Report
         self.stats["total_checked"] += len(to_process)
-        self.stats["total_booked"] += cycle_booked
+        self.stats["total_booked"] += cycle_queued
         self.stats["total_no_slots"] += cycle_no_slots
-        self.stats["total_failed"] += cycle_failed
 
         elapsed = time.time() - cycle_start
         logger.info(
-            "Cycle %d complete in %.1fs: %d booked, %d no-slots, %d failed",
-            c, elapsed, cycle_booked, cycle_no_slots, cycle_failed,
+            "Cycle %d complete in %.1fs: %d queued, %d no-slots",
+            c, elapsed, cycle_queued, cycle_no_slots,
         )
 
-        if cycle_booked > 0 or cycle_failed > 0:
+        if cycle_queued > 0:
             notify_pipeline_summary(
                 total_checked=len(to_process),
-                booked=cycle_booked,
+                booked=cycle_queued,
                 no_slots=cycle_no_slots,
-                failed=cycle_failed,
+                failed=0,
                 errors=cycle_errors,
             )
-
-    # ── Booking ─────────────────────────────────────────────────────────
-
-    async def _book_slot(self, slot: Slot, booking: Booking) -> dict:
-        """Execute a booking — isolated async call."""
-        from agent.booker import BuyerInfo, Participant, VaticanBooker
-
-        buyer = BuyerInfo(
-            first_name=booking.first_name or config.buyer_default_name or "Guest",
-            last_name=booking.last_name or config.buyer_default_surname or "Guest",
-            email=config.buyer_default_email or "booking@example.com",
-            phone=config.buyer_default_phone or "0000000000",
-            city=config.buyer_default_city,
-        )
-
-        participants = [
-            Participant(
-                first_name=booking.first_name,
-                last_name=booking.last_name,
-                ticket_type="Adult",
-            )
-        ]
-        # Add additional participants if pax > 1
-        for i in range(1, slot.visitors):
-            participants.append(Participant(
-                first_name=f"Guest{i + 1}",
-                last_name=booking.last_name,
-                ticket_type="Adult",
-            ))
-
-        booker = VaticanBooker(headless=False)
-        return await booker.book(slot, buyer, participants)
-
 
 # ── Entry point ─────────────────────────────────────────────────────────────
 
