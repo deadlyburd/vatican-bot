@@ -76,6 +76,36 @@ class TestWatcher(unittest.TestCase):
         times = {a.time for a in added}
         self.assertEqual(times, {"09:00", "10:30", "14:00"})
 
+    def test_add_multi_groups(self):
+        w = self._watcher()
+        added = w.add_multi("29/10/2026", ["09:00"], visitors=2, groups=4)
+        self.assertEqual(len(added), 4)
+        self.assertEqual(len(w.list()), 4)
+        # all four watches are the same date+time (same slot, separate bookings)
+        self.assertEqual({a.date for a in added}, {"29/10/2026"})
+        self.assertEqual({a.time for a in added}, {"09:00"})
+
+
+class TestWatchTargetToDict(unittest.TestCase):
+    def test_no_slot(self):
+        w = WatchTarget(date="29/10/2026", time="09:00", visitors=2)
+        d = w.to_dict()
+        self.assertIsNone(d["slot"])
+        self.assertEqual(d["date"], "29/10/2026")
+
+    def test_with_slot(self):
+        w = WatchTarget(date="29/10/2026", time="09:00", visitors=2)
+        w.slot = Slot(date="29/10/2026", time="09:00", slot_id="2026*11048", ticket_id="t1")
+        d = w.to_dict()
+        self.assertEqual(d["slot"]["slot_id"], "2026*11048")
+        self.assertEqual(d["slot"]["time"], "09:00")
+
+    def test_json_serializable(self):
+        import json
+        w = WatchTarget(date="29/10/2026", time="09:00", visitors=2)
+        w.slot = Slot(date="29/10/2026", time="09:00", slot_id="s", ticket_id="t")
+        json.dumps(w.to_dict())  # should not raise
+
 
 class TestGroupByDateVisitors(unittest.TestCase):
     def test_groups(self):

@@ -92,7 +92,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/credentials/status":
             _send_json(self, _credentials_status())
         elif self.path == "/api/watch":
-            _send_json(self, {"watches": [w.__dict__ for w in _get_watcher().list()]})
+            _send_json(self, {"watches": [w.to_dict() for w in _get_watcher().list()]})
         elif self.path == "/api/health":
             _send_json(self, {"ok": True})
         else:
@@ -225,7 +225,7 @@ class Handler(BaseHTTPRequestHandler):
             _send_json(self, {"error": "date and time are required"}, 400)
             return
         _get_watcher().add(w)
-        _send_json(self, {"ok": True, "watch": w.__dict__})
+        _send_json(self, {"ok": True, "watch": w.to_dict()})
 
     def _watch_add_multi(self):
         data = _json_body(self)
@@ -234,12 +234,13 @@ class Handler(BaseHTTPRequestHandler):
         visitors = int(data.get("visitors", 2))
         name = data.get("name", "")
         email = data.get("email", "")
+        groups = int(data.get("groups", 1))
         if not date or not times:
             _send_json(self, {"error": "date and at least one time are required"}, 400)
             return
-        watches = _get_watcher().add_multi(date, times, visitors, name, email)
+        watches = _get_watcher().add_multi(date, times, visitors, name, email, groups)
         _send_json(self, {"ok": True, "added": len(watches),
-                          "watches": [w.__dict__ for w in watches]})
+                          "watches": [w.to_dict() for w in watches]})
 
     def _watch_remove(self):
         data = _json_body(self)

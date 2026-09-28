@@ -99,8 +99,10 @@ th{color:var(--muted);font-weight:600}
           <input id="wDate" type="date" style="width:100%"></div>
         <div><label>Time</label>
           <select id="wTime" style="width:100%"><option value="">-- choose time --</option></select></div>
-        <div><label>Visitors</label>
-          <input id="wVisitors" type="number" min="1" value="2" style="width:100%"></div>
+        <div><label>Visitors (max 6 per booking)</label>
+          <input id="wVisitors" type="number" min="1" max="6" value="2" style="width:100%"></div>
+        <div><label>Bookings (groups at this time)</label>
+          <input id="wGroups" type="number" min="1" value="1" style="width:100%"></div>
         <div><label>Customer name</label>
           <input id="wName" placeholder="Mario Rossi" style="width:100%"></div>
         <div><label>Email (optional)</label>
@@ -116,7 +118,8 @@ th{color:var(--muted);font-weight:600}
         grabs each time the moment it opens (fewer API calls → less rate-limiting).</div>
       <div class="grid2" style="margin-top:10px">
         <div><label>Date</label><input id="mDate" type="date" style="width:100%"></div>
-        <div><label>Visitors</label><input id="mVisitors" type="number" min="1" value="2" style="width:100%"></div>
+        <div><label>Visitors (max 6 per booking)</label><input id="mVisitors" type="number" min="1" max="6" value="2" style="width:100%"></div>
+        <div><label>Bookings per time (groups)</label><input id="mGroups" type="number" min="1" value="1" style="width:100%"></div>
         <div><label>Customer name</label><input id="mName" placeholder="Mario Rossi" style="width:100%"></div>
         <div><label>Email (optional)</label><input id="mEmail" placeholder="mario@example.com" style="width:100%"></div>
       </div>
@@ -227,17 +230,21 @@ async function checkCreds(){
 }
 
 async function addWatch(){
+  const date=document.getElementById("wDate").value.trim();
+  const time=document.getElementById("wTime").value.trim();
+  if(!date||!time){toast("Enter a date and time");return;}
+  const groups=parseInt(document.getElementById("wGroups").value)||1;
   const body={
-    date:document.getElementById("wDate").value.trim(),
-    time:document.getElementById("wTime").value.trim(),
+    date:date,
+    times:[time],
     visitors:parseInt(document.getElementById("wVisitors").value)||2,
+    groups:groups,
     name:document.getElementById("wName").value.trim(),
     email:document.getElementById("wEmail").value.trim(),
   };
-  if(!body.date||!body.time){toast("Enter a date and time");return;}
-  const r=await api("/api/watch/add","POST",body);
+  const r=await api("/api/watch/add-multi","POST",body);
   if(r.error){toast(r.error);return;}
-  toast("Watching "+body.date+" "+body.time);
+  toast(`Watching ${date} ${time} × ${r.added||1}`);
   refreshWatches();
 }
 
@@ -469,6 +476,7 @@ async function addMultiWatch(){
     date:date,
     times:times,
     visitors:parseInt(document.getElementById("mVisitors").value)||2,
+    groups:parseInt(document.getElementById("mGroups").value)||1,
     name:document.getElementById("mName").value.trim(),
     email:document.getElementById("mEmail").value.trim(),
   };

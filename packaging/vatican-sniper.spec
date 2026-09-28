@@ -22,6 +22,11 @@ _datas = [
 if _pw_driver:
     _datas.append((_pw_driver, "playwright/driver"))
 
+# Optionally bake google_credentials.json in (single-client distribution).
+_creds = os.path.join(ROOT, "google_credentials.json")
+if os.path.isfile(_creds):
+    _datas.append((_creds, "."))
+
 a = Analysis(
     [os.path.join(ROOT, "sniper_app.py")],
     pathex=[ROOT],

@@ -48,6 +48,25 @@ class WatchTarget:
     slot: Optional[Slot] = None
     attempts: int = 0    # booking attempts so far
 
+    def to_dict(self) -> dict:
+        """JSON-safe representation."""
+        return {
+            "id": self.id,
+            "date": self.date,
+            "time": self.time,
+            "visitors": self.visitors,
+            "name": self.name,
+            "email": self.email,
+            "status": self.status,
+            "attempts": self.attempts,
+            "slot": None if self.slot is None else {
+                "date": self.slot.date,
+                "time": self.slot.time,
+                "slot_id": self.slot.slot_id,
+                "ticket_id": self.slot.ticket_id,
+            },
+        }
+
 
 def normalize_time(t: str) -> str:
     """Normalize a time to HH:MM (zero-padded)."""
@@ -95,14 +114,15 @@ class Watcher:
         return w
 
     def add_multi(self, date: str, times: List[str], visitors: int = 2,
-                  name: str = "", email: str = "") -> List[WatchTarget]:
-        """Add multiple watches (one per time) for the same date."""
+                  name: str = "", email: str = "", groups: int = 1) -> List[WatchTarget]:
+        """Add watches for the given times, `groups` bookings per time (same slot)."""
         added = []
         for t in times:
-            w = WatchTarget(date=date, time=normalize_time(t), visitors=visitors,
-                            name=name, email=email)
-            self.watches[w.id] = w
-            added.append(w)
+            for _ in range(max(1, int(groups))):
+                w = WatchTarget(date=date, time=normalize_time(t), visitors=visitors,
+                                name=name, email=email)
+                self.watches[w.id] = w
+                added.append(w)
         self.start()
         return added
 

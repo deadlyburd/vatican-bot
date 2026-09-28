@@ -21,6 +21,17 @@ jobs:
           python -c "import platform; assert platform.machine() == 'arm64', f'expected arm64, got {platform.machine()}'"
           echo "runner arch: $(python -c 'import platform; print(platform.machine())')"
 
+      - name: Write credentials (optional secret)
+        env:
+          CREDS: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        run: |
+          if [ -n "$CREDS" ]; then
+            echo "$CREDS" > google_credentials.json
+            echo "credentials baked in"
+          else
+            echo "no GOOGLE_CREDENTIALS_JSON secret — building without credentials"
+          fi
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
