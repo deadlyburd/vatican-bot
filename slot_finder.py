@@ -20,6 +20,10 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+
+class RateLimitError(Exception):
+    """Raised when the Vatican API rate-limits us (HTTP 429/403)."""
+
 # ── Config ──────────────────────────────────────────────────────────
 VATICAN_BASE = "https://tickets.museivaticani.va"
 
@@ -205,6 +209,8 @@ class SlotFinder:
                 timeout=15,
             )
 
+            if r.status_code in (429, 403):
+                raise RateLimitError(f"Search API rate-limited ({r.status_code})")
             if r.status_code != 200:
                 logger.warning(f"Search API returned {r.status_code}")
                 return None
@@ -254,6 +260,8 @@ class SlotFinder:
             )
 
             # Vatican returns 500 for sold-out tickets
+            if r.status_code in (429, 403):
+                raise RateLimitError(f"Timeavail rate-limited ({r.status_code})")
             if r.status_code == 500:
                 logger.debug(f"Timeavail 500 — likely sold out for {target_date}")
                 return []

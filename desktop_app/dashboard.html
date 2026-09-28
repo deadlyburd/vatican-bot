@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vatican Sniper — Dashboard</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --border:#2a2f3a;
+  --text:#e6e9ef; --muted:#8b93a5; --accent:#4f8cff; --accent2:#22c55e;
+  --danger:#ef4444; --warn:#f59e0b; --radius:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text)}
+.wrap{max-width:1080px;margin:0 auto;padding:20px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:20px;margin:0}
+.badge{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button{cursor:pointer;border:1px solid var(--border);background:var(--panel2);color:var(--text);
+  padding:8px 14px;border-radius:var(--radius);font-size:14px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+button.ghost{background:transparent}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,select{background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  padding:8px 10px;border-radius:var(--radius);font-size:14px;min-width:0}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+.tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:10px}
+.tab{padding:8px 16px;border-radius:8px;background:transparent;border:1px solid transparent}
+.tab.active{background:var(--panel2);border-color:var(--border)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;margin-bottom:16px}
+.panel h2{font-size:15px;margin:0 0 12px}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;background:var(--muted)}
+.status-dot.idle{background:var(--muted)}
+.status-dot.running{background:var(--accent2)}
+.status-dot.stopped{background:var(--danger)}
+#statusList{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;max-height:240px;overflow:auto;white-space:pre-wrap}
+.proxy-row,.sheet-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.proxy-row input{width:130px}
+.sheet-head{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:10px}
+.map-item label{font-size:11px}
+#preview{max-height:260px;overflow:auto;font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600}
+.hidden{display:none}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--panel2);border:1px solid var(--accent);
+  padding:10px 16px;border-radius:8px;font-size:14px;z-index:99}
+.timegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.timegrid label{display:flex;align-items:center;gap:6px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
+.timegrid label:has(input:checked){border-color:var(--accent);background:#1c2a44}
+.timegrid input{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Vatican Sniper</h1>
+      <div class="badge">local dashboard · one process per booking</div>
+    </div>
+    <div class="row">
+      <span class="status-dot idle" id="stateDot"></span>
+      <span class="small muted" id="stateLabel">idle</span>
+      <button class="primary" id="startBtn" onclick="startRun()">Start</button>
+      <button class="danger" id="stopBtn" onclick="stopRun()" disabled>Stop</button>
+      <button onclick="saveConfig()">Save</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab" data-tab="manual" onclick="showTab('manual')">Manual</button>
+    <button class="tab active" data-tab="sheets" onclick="showTab('sheets')">Sheets</button>
+    <button class="tab" data-tab="proxies" onclick="showTab('proxies')">Proxies</button>
+    <button class="tab" data-tab="settings" onclick="showTab('settings')">Settings</button>
+    <button class="tab" data-tab="status" onclick="showTab('status')">Status</button>
+  </div>
+
+  <section id="tab-manual" class="hidden">
+    <div class="panel">
+      <h2>Snipe a slot (no sheet needed)</h2>
+      <div class="small muted">Set a date + time. The app watches for that exact slot and
+        books + holds it the moment it becomes available.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label>Date</label>
+          <input id="wDate" type="date" style="width:100%"></div>
+        <div><label>Time</label>
+          <select id="wTime" style="width:100%"><option value="">-- choose time --</option></select></div>
+        <div><label>Visitors</label>
+          <input id="wVisitors" type="number" min="1" value="2" style="width:100%"></div>
+        <div><label>Customer name</label>
+          <input id="wName" placeholder="Mario Rossi" style="width:100%"></div>
+        <div><label>Email (optional)</label>
+          <input id="wEmail" placeholder="mario@example.com" style="width:100%"></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="primary" onclick="addWatch()">Watch this slot</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Hold multiple times for one date</h2>
+      <div class="small muted">Tick the times you want. The app polls the date <b>once</b> and
+        grabs each time the moment it opens (fewer API calls → less rate-limiting).</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label>Date</label><input id="mDate" type="date" style="width:100%"></div>
+        <div><label>Visitors</label><input id="mVisitors" type="number" min="1" value="2" style="width:100%"></div>
+        <div><label>Customer name</label><input id="mName" placeholder="Mario Rossi" style="width:100%"></div>
+        <div><label>Email (optional)</label><input id="mEmail" placeholder="mario@example.com" style="width:100%"></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="ghost" onclick="multiAll(true)">Select all</button>
+        <button class="ghost" onclick="multiAll(false)">Clear</button>
+      </div>
+      <div id="mTimes" class="timegrid" style="margin-top:10px"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="primary" onclick="addMultiWatch()">Watch selected times</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Active watches</h2>
+      <div id="watchList"><div class="muted small">No watches yet.</div></div>
+    </div>
+  </section>
+
+  <section id="tab-sheets">
+    <div class="panel">
+      <h2>Connect a Google Sheet</h2>
+      <div class="row">
+        <input id="sheetUrl" placeholder="Paste sheet URL or ID…" style="flex:1;min-width:280px">
+        <button class="primary" onclick="connectSheet()">Connect</button>
+      </div>
+      <div id="connectResult" class="hidden" style="margin-top:14px"></div>
+    </div>
+    <div class="panel">
+      <h2>Configured sheets</h2>
+      <div id="sheetsList"><div class="muted small">No sheets yet. Connect one above.</div></div>
+    </div>
+  </section>
+
+  <section id="tab-proxies" class="hidden">
+    <div class="panel">
+      <h2>Proxy pool</h2>
+      <div class="small muted">Add a proxy per booking process. Chrome can't send user/pass — enable IP
+        whitelist on the provider side, or leave user/pass empty for IP-auth proxies.</div>
+      <div id="proxiesList" style="margin-top:12px"></div>
+      <button class="ghost" onclick="addProxy()">+ Add proxy</button>
+    </div>
+  </section>
+
+  <section id="tab-settings" class="hidden">
+    <div class="panel">
+      <h2>Settings</h2>
+      <div class="grid2">
+        <div><label>Google credentials file (leave as 'google_credentials.json' — it auto-finds it)</label>
+          <input id="svcAccount" placeholder="google_credentials.json" style="width:100%">
+          <div class="small" id="credsStatus" style="margin-top:6px"></div></div>
+        <div><label>Browser path (blank = auto-detect)</label>
+          <input id="browserPath" style="width:100%"></div>
+        <div><label>Max concurrent processes</label>
+          <input id="maxConcurrent" type="number" min="1" style="width:100%"></div>
+        <div><label>Stagger same-date (seconds)</label>
+          <input id="stagger" type="number" min="0" style="width:100%"></div>
+        <div><label>Default visitors</label>
+          <input id="defaultVisitors" type="number" min="1" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Telemetry (Telegram alerts)</h2>
+      <div class="small muted">The app messages you on Telegram when it starts, holds a
+        booking, or errors — so you know which machines are running and when one fails.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label>Machine name (auto = hostname)</label>
+          <input id="machineName" placeholder="e.g. Client-Mac" style="width:100%"></div>
+        <div><label>Telegram bot token (BotFather)</label>
+          <input id="tgToken" placeholder="123456:ABC..." style="width:100%"></div>
+        <div><label>Telegram chat id (your user id)</label>
+          <input id="tgChat" placeholder="123456789" style="width:100%"></div>
+        <div><label>Heartbeat every N hours (0 = off)</label>
+          <input id="heartbeatHours" type="number" min="0" step="0.5" style="width:100%"></div>
+      </div>
+      <div class="small muted" style="margin-top:8px">This install id: <b id="machineId"></b></div>
+    </div>
+  </section>
+
+  <section id="tab-status" class="hidden">
+    <div class="panel">
+      <h2>Run status</h2>
+      <div id="statusList" class="muted">Not running.</div>
+    </div>
+  </section>
+</div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const CANONICAL = ["booking_id","activity_date","visitors","customer_name","customer_email","product_title","status"];
+const FIELD_LABELS = {booking_id:"Booking ID",activity_date:"Date",visitors:"Visitors",
+  customer_name:"Customer name",customer_email:"Email",product_title:"Product",status:"Status"};
+let cfg = null;         // AppConfig mirror
+let connected = null;   // last connect result
+
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.remove("hidden");
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.add("hidden"),3000);}
+
+async function api(path, method="GET", body){const o={method,headers:{"Content-Type":"application/json"}};
+  if(body)o.body=JSON.stringify(body);const r=await fetch(path,o);return r.json();}
+
+async function checkCreds(){
+  const el=document.getElementById("credsStatus");if(!el)return;
+  try{
+    const r=await api("/api/credentials/status");
+    if(r.found){el.innerHTML=`<span style="color:var(--accent2)">✅ credentials found</span> <span class="muted">(${r.resolved})</span>`;}
+    else{el.innerHTML=`<span style="color:var(--danger)">❌ credentials not found. Put your file at:</span><br><code>${r.suggested_path}</code>`;}
+  }catch(e){el.innerHTML="";}
+}
+
+async function addWatch(){
+  const body={
+    date:document.getElementById("wDate").value.trim(),
+    time:document.getElementById("wTime").value.trim(),
+    visitors:parseInt(document.getElementById("wVisitors").value)||2,
+    name:document.getElementById("wName").value.trim(),
+    email:document.getElementById("wEmail").value.trim(),
+  };
+  if(!body.date||!body.time){toast("Enter a date and time");return;}
+  const r=await api("/api/watch/add","POST",body);
+  if(r.error){toast(r.error);return;}
+  toast("Watching "+body.date+" "+body.time);
+  refreshWatches();
+}
+
+async function removeWatch(id){await api("/api/watch/remove","POST",{id});refreshWatches();}
+
+async function refreshWatches(){
+  const el=document.getElementById("watchList");if(!el)return;
+  const r=await api("/api/watch");
+  const ws=r.watches||[];
+  if(!ws.length){el.innerHTML='<div class="muted small">No watches yet.</div>';return;}
+  el.innerHTML=ws.map(w=>`
+    <div class="card">
+      <div class="sheet-head">
+        <b>${w.date} · ${w.time}</b> <span class="small muted">${w.visitors} pax · ${w.name||""}</span>
+        <button class="ghost" onclick="removeWatch('${w.id}')">Remove</button>
+      </div>
+      <div class="small muted" style="margin-top:6px">status: ${w.status}</div>
+    </div>`).join("");
+}
+
+function showTab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+  ["manual","sheets","proxies","settings","status"].forEach(s=>document.getElementById("tab-"+s).classList.toggle("hidden",s!==name));
+  if(name==="settings")checkCreds();
+  if(name==="manual")refreshWatches();}
+
+async function loadConfig(){cfg=await api("/api/config");render();}
+
+function render(){
+  document.getElementById("svcAccount").value=cfg.google.service_account_file||"";
+  document.getElementById("browserPath").value=cfg.browser.path||"";
+  document.getElementById("maxConcurrent").value=cfg.booking.max_concurrent;
+  document.getElementById("stagger").value=cfg.booking.stagger_same_date_seconds;
+  document.getElementById("defaultVisitors").value=cfg.booking.default_visitors;
+  document.getElementById("machineName").value=cfg.telemetry.machine_name||"";
+  document.getElementById("tgToken").value=cfg.telemetry.telegram_bot_token||"";
+  document.getElementById("tgChat").value=cfg.telemetry.telegram_chat_id||"";
+  document.getElementById("heartbeatHours").value=cfg.telemetry.heartbeat_hours||0;
+  document.getElementById("machineId").textContent=cfg.machine_id||"";
+  renderSheets(); renderProxies();
+}
+
+function collectConfig(){
+  cfg.google.service_account_file=document.getElementById("svcAccount").value.trim();
+  cfg.browser.path=document.getElementById("browserPath").value.trim();
+  cfg.booking.max_concurrent=parseInt(document.getElementById("maxConcurrent").value)||4;
+  cfg.booking.stagger_same_date_seconds=parseInt(document.getElementById("stagger").value)||0;
+  cfg.booking.default_visitors=parseInt(document.getElementById("defaultVisitors").value)||2;
+  cfg.telemetry.machine_name=document.getElementById("machineName").value.trim();
+  cfg.telemetry.telegram_bot_token=document.getElementById("tgToken").value.trim();
+  cfg.telemetry.telegram_chat_id=document.getElementById("tgChat").value.trim();
+  cfg.telemetry.heartbeat_hours=parseFloat(document.getElementById("heartbeatHours").value)||0;
+  // read per-sheet inputs
+  cfg.sheets.forEach((s,i)=>{
+    s.name=document.getElementById(`sheet-name-${i}`).value;
+    s.sheet_id=document.getElementById(`sheet-id-${i}`).value;
+    s.tab=document.getElementById(`sheet-tab-${i}`).value;
+    s.date_format=document.getElementById(`sheet-fmt-${i}`).value;
+    CANONICAL.forEach(f=>{const v=document.getElementById(`map-${i}-${f}`).value;
+      if(v)s.column_map[f]=v; else delete s.column_map[f];});
+  });
+}
+
+async function saveConfig(){collectConfig();
+  const r=await api("/api/config","POST",cfg);toast(r.ok?"Saved":"Save failed: "+(r.error||""));}
+
+async function connectSheet(){
+  const url=document.getElementById("sheetUrl").value.trim();
+  if(!url){toast("Paste a sheet URL first");return;}
+  const r=await api("/api/connect","POST",{url});
+  if(r.error){toast(r.error);return;}
+  connected=r;
+  document.getElementById("connectResult").classList.remove("hidden");
+  document.getElementById("connectResult").innerHTML=connectResultHTML();
+}
+
+function connectResultHTML(){
+  const r=connected;
+  let tabOpts=r.tabs.map(t=>`<option value="${t}" ${t===r.tab?"selected":""}>${t}</option>`).join("");
+  let mapRows=CANONICAL.map(f=>{
+    const val=(r.suggested_mapping||{})[f]||"";
+    const opts=["<option value=\"\">— none —</option>"]
+      .concat((r.headers||[]).map(h=>`<option value="${h}" ${h===val?"selected":""}>${h}</option>`)).join("");
+    return `<div class="map-item"><label>${FIELD_LABELS[f]}</label><select id="cmap-${f}" style="width:100%">${opts}</select></div>`;
+  }).join("");
+  return `<div class="card"><div class="sheet-head"><b>${r.sheet_id}</b>
+    <div class="row"><input id="cname" placeholder="Sheet name" value="Sheet ${cfg.sheets.length+1}">
+    <select id="ctab" style="width:120px">${tabOpts}</select>
+    <select id="cfmt" style="width:140px"><option value="auto">date: auto</option>
+      <option value="%Y-%m-%d">date: YYYY-MM-DD</option><option value="%d/%m/%Y">date: DD/MM/YYYY</option>
+      <option value="%m/%d/%Y">date: MM/DD/YYYY</option></select></div></div>
+    <div class="map-grid">${mapRows}</div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" onclick="addConnectedSheet()">Add sheet</button>
+      <button onclick="previewConnected()">Preview matches</button></div>
+    <div id="preview" class="hidden" style="margin-top:10px"></div></div>`;
+}
+
+function addConnectedSheet(){
+  const r=connected;
+  const cm={};
+  CANONICAL.forEach(f=>{const v=document.getElementById(`cmap-${f}`).value;if(v)cm[f]=v;});
+  cfg.sheets.push({name:document.getElementById("cname").value,sheet_id:r.sheet_id,
+    tab:document.getElementById("ctab").value,date_format:document.getElementById("cfmt").value,
+    column_map:cm,vatican_keywords:["vatican","sistine","vaticani","musei"],
+    status_values:["PENDING","CONFIRMED"]});
+  document.getElementById("connectResult").classList.add("hidden");
+  renderSheets();toast("Sheet added — click Save to persist");
+}
+
+async function previewConnected(){
+  const r=connected;const cm={};
+  CANONICAL.forEach(f=>{const v=document.getElementById(`cmap-${f}`).value;if(v)cm[f]=v;});
+  const sheet={name:"preview",sheet_id:r.sheet_id,tab:document.getElementById("ctab").value,
+    date_format:document.getElementById("cfmt").value,column_map:cm,
+    vatican_keywords:["vatican","sistine","vaticani","musei"],status_values:["PENDING","CONFIRMED"]};
+  const res=await api("/api/preview","POST",{sheet});
+  const el=document.getElementById("preview");
+  el.classList.remove("hidden");
+  if(res.error){el.innerHTML=`<div class="small" style="color:var(--danger)">${res.error}</div>`;return;}
+  el.innerHTML=`<div class="small muted">${res.matched} matched of ${res.total_rows} rows</div>`+
+    (res.bookings||[]).map(b=>`<div class="small">${b.activity_date} · ${b.visitors}pax · ${b.customer_name} · ${b.product_title}</div>`).join("");
+}
+
+function renderSheets(){
+  const el=document.getElementById("sheetsList");
+  if(!cfg.sheets.length){el.innerHTML='<div class="muted small">No sheets yet. Connect one above.</div>';return;}
+  el.innerHTML=cfg.sheets.map((s,i)=>sheetHTML(s,i)).join("");
+}
+
+function sheetHTML(s,i){
+  const mapRows=CANONICAL.map(f=>{
+    const cur=s.column_map[f]||"";
+    const opts=["<option value=\"\">— none —</option>"];
+    if(cur)opts.push(`<option value="${cur}" selected>${cur}</option>`);
+    return `<div class="map-item"><label>${FIELD_LABELS[f]}</label>
+      <select id="map-${i}-${f}" style="width:100%">${opts.join("")}</select></div>`;
+  }).join("");
+  return `<div class="card"><div class="sheet-head"><b>${s.name||("Sheet "+(i+1))}</b>
+    <button class="ghost" onclick="removeSheet(${i})">Remove</button></div>
+    <div class="grid2" style="margin-top:10px">
+      <div><label>Name</label><input id="sheet-name-${i}" value="${s.name||""}"></div>
+      <div><label>Sheet ID</label><input id="sheet-id-${i}" value="${s.sheet_id||""}"></div>
+      <div><label>Tab</label><input id="sheet-tab-${i}" value="${s.tab||""}"></div>
+      <div><label>Date format</label><select id="sheet-fmt-${i}">
+        <option value="auto" ${s.date_format==="auto"?"selected":""}>auto</option>
+        <option value="%Y-%m-%d" ${s.date_format==="%Y-%m-%d"?"selected":""}>YYYY-MM-DD</option>
+        <option value="%d/%m/%Y" ${s.date_format==="%d/%m/%Y"?"selected":""}>DD/MM/YYYY</option>
+        <option value="%m/%d/%Y" ${s.date_format==="%m/%d/%Y"?"selected":""}>MM/DD/YYYY</option>
+      </select></div>
+    </div>
+    <div class="map-grid">${mapRows}</div></div>`;
+}
+
+function removeSheet(i){cfg.sheets.splice(i,1);renderSheets();}
+
+function renderProxies(){
+  const el=document.getElementById("proxiesList");
+  if(!cfg.proxies.length){el.innerHTML='<div class="muted small">No proxies. Add one below.</div>';return;}
+  el.innerHTML=cfg.proxies.map((p,i)=>`
+    <div class="proxy-row">
+      <input id="ph-${i}" placeholder="host" value="${p.host||""}">
+      <input id="pp-${i}" placeholder="port" value="${p.port||""}" style="width:80px">
+      <input id="pu-${i}" placeholder="user" value="${p.username||""}">
+      <input id="pw-${i}" placeholder="pass" type="password" value="${p.password||""}">
+      <input type="checkbox" id="pe-${i}" ${p.enabled!==false?"checked":""} title="enabled">
+      <button class="ghost" onclick="testProxy(${i})">Test</button>
+      <button class="ghost" onclick="removeProxy(${i})">✕</button>
+    </div>`).join("");
+}
+
+function addProxy(){cfg.proxies.push({host:"",port:8080,username:"",password:"",enabled:true});renderProxies();}
+function removeProxy(i){cfg.proxies.splice(i,1);renderProxies();}
+function collectProxies(){cfg.proxies.forEach((p,i)=>{
+  p.host=document.getElementById(`ph-${i}`).value.trim();
+  p.port=parseInt(document.getElementById(`pp-${i}`).value)||8080;
+  p.username=document.getElementById(`pu-${i}`).value.trim();
+  p.password=document.getElementById(`pw-${i}`).value;
+  p.enabled=document.getElementById(`pe-${i}`).checked;});}
+
+async function testProxy(i){collectProxies();const p=cfg.proxies[i];
+  toast("Testing…");
+  const r=await api("/api/proxies/test","POST",p);
+  toast(r.ok?`OK — IP ${r.ip} (${r.latency_ms}ms)`:`FAILED — ${r.error}`);}
+
+async function startRun(){collectProxies();collectConfig();await api("/api/config","POST",cfg);
+  const r=await api("/api/run","POST",{});if(r.error)toast(r.error);else{toast("Started");poll();}}
+
+async function stopRun(){const r=await api("/api/stop","POST",{});toast("Stopping…");poll();}
+
+async function poll(){const s=await api("/api/status");
+  const dot=document.getElementById("stateDot"),lbl=document.getElementById("stateLabel");
+  dot.className="status-dot "+s.state;lbl.textContent=s.state;
+  document.getElementById("startBtn").disabled=s.state==="running";
+  document.getElementById("stopBtn").disabled=s.state!=="running";
+  const list=document.getElementById("statusList");
+  const entries=Object.entries(s.status||{});
+  list.textContent=entries.length?entries.map(([k,v])=>`[${k}] ${v.step} ${v.ok?"✅":"⏳"}`).join("\n"):"Not running.";
+}
+
+// populate the time dropdown (08:00–18:00, 30-min) + set min date
+(function initManual(){
+  const sel=document.getElementById("wTime");
+  for(let h=8;h<=18;h++){
+    for(const m of [0,30]){
+      if(h===18&&m===30)continue;
+      const v=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+      const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);
+    }
+  }
+  const today=new Date();
+  const iso=today.toISOString().split("T")[0];
+  document.getElementById("wDate").min=iso;
+  document.getElementById("mDate").min=iso;
+
+  // populate the multi-time checkbox grid (08:00–18:00, 30-min)
+  const grid=document.getElementById("mTimes");
+  const times=[];
+  for(let h=8;h<=18;h++){for(const m of [0,30]){if(h===18&&m===30)continue;times.push(String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"));}}
+  grid.innerHTML=times.map(t=>`<label><input type="checkbox" class="mtime" value="${t}">${t}</label>`).join("");
+})();
+
+function multiAll(on){document.querySelectorAll(".mtime").forEach(c=>c.checked=on);}
+
+async function addMultiWatch(){
+  const date=document.getElementById("mDate").value;
+  const times=[...document.querySelectorAll(".mtime:checked")].map(c=>c.value);
+  if(!date||!times.length){toast("Pick a date and at least one time");return;}
+  const body={
+    date:date,
+    times:times,
+    visitors:parseInt(document.getElementById("mVisitors").value)||2,
+    name:document.getElementById("mName").value.trim(),
+    email:document.getElementById("mEmail").value.trim(),
+  };
+  const r=await api("/api/watch/add-multi","POST",body);
+  if(r.error){toast(r.error);return;}
+  toast("Watching "+r.added+" times on "+date);
+  refreshWatches();
+}
+
+loadConfig();
+setInterval(poll,4000);
+setInterval(()=>{const m=document.getElementById("tab-manual");if(m&&!m.classList.contains("hidden"))refreshWatches();},4000);
+</script>
+</body>
+</html>

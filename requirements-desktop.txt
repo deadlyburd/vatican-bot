@@ -1,0 +1,6 @@
+# Minimal runtime deps for the desktop app (no Django/Celery/postgres).
+# Matches the versions in the dev .venv.
+playwright==1.63.0
+gspread==6.2.1
+google-auth==2.58.0
+requests==2.34.2

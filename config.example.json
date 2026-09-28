@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "google": {
+    "service_account_file": "google_credentials.json"
+  },
+  "sheets": [
+    {
+      "name": "Main CRM",
+      "sheet_id": "1YkDZgFZs-DiMJ9ECIECJZ3aNmpyWB66qzc2CeteI1Vg",
+      "tab": "Activity_Lines",
+      "date_format": "auto",
+      "column_map": {
+        "booking_id": "bookingId",
+        "activity_date": "activityDate",
+        "visitors": "totalParticipants",
+        "customer_name": "customerName",
+        "customer_email": "customerEmail",
+        "product_title": "productTitle",
+        "status": "status"
+      },
+      "vatican_keywords": [
+        "vatican",
+        "sistine",
+        "vaticani",
+        "musei"
+      ],
+      "status_values": [
+        "PENDING",
+        "CONFIRMED"
+      ]
+    },
+    {
+      "name": "Example: another sheet",
+      "sheet_id": "paste-sheet-id-here",
+      "tab": "Bookings",
+      "date_format": "%d/%m/%Y",
+      "column_map": {
+        "booking_id": "Booking ID",
+        "activity_date": "Date",
+        "visitors": "Pax",
+        "customer_name": "Customer Name",
+        "customer_email": "Email",
+        "product_title": "Product",
+        "status": "Status"
+      },
+      "vatican_keywords": [
+        "vatican",
+        "sistine",
+        "vaticani",
+        "musei"
+      ],
+      "status_values": [
+        "PENDING",
+        "CONFIRMED"
+      ]
+    }
+  ],
+  "proxies": [
+    {
+      "host": "185.199.108.154",
+      "port": 80,
+      "username": "youruser",
+      "password": "yourpass",
+      "enabled": false
+    }
+  ],
+  "booking": {
+    "max_concurrent": 4,
+    "stagger_same_date_seconds": 120,
+    "default_visitors": 2
+  },
+  "browser": {
+    "path": ""
+  }
+}

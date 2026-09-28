@@ -1,0 +1,50 @@
+name: Build macOS (Apple Silicon)
+
+on:
+  workflow_dispatch:            # manual trigger from the Actions tab
+  push:
+    branches: [main, master, agency-automation]
+
+jobs:
+  build-arm64:
+    runs-on: macos-14           # Apple Silicon (arm64) runner
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify runner is arm64
+        run: |
+          python -c "import platform; assert platform.machine() == 'arm64', f'expected arm64, got {platform.machine()}'"
+          echo "runner arch: $(python -c 'import platform; print(platform.machine())')"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-desktop.txt pyinstaller
+
+      - name: Build .app
+        run: |
+          APP_NAME="Vatican Sniper (Apple Silicon).app" TARGET_ARCH=arm64 \
+            python -m PyInstaller --clean --noconfirm packaging/vatican-sniper.app.spec
+
+      - name: Verify native arm64
+        run: |
+          file "dist/Vatican Sniper (Apple Silicon).app/Contents/MacOS/vatican-sniper"
+          file "dist/Vatican Sniper (Apple Silicon).app/Contents/MacOS/vatican-sniper" | grep -q arm64
+
+      - name: Package .app into a zip
+        run: |
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent "Vatican Sniper (Apple Silicon).app" "Vatican-Sniper-Apple-Silicon.zip"
+          ls -lh "Vatican-Sniper-Apple-Silicon.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vatican-Sniper-Apple-Silicon
+          path: dist/Vatican-Sniper-Apple-Silicon.zip
+          retention-days: 30

@@ -9,6 +9,7 @@
 !QUICK_COMMANDS.txt
 !QUICK_DEPLOY.txt
 !README.md
+!requirements-desktop.txt
 
 # Docker
 .docker_id
