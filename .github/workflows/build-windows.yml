@@ -1,0 +1,50 @@
+name: Build Windows
+
+on:
+  workflow_dispatch:            # manual trigger from the Actions tab
+  push:
+    branches: [main, master, agency-automation]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Write credentials (optional secret)
+        env:
+          CREDS: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        shell: pwsh
+        run: |
+          if ($env:CREDS) {
+            [System.IO.File]::WriteAllText("$PWD\google_credentials.json", $env:CREDS)
+            Write-Host "credentials baked in"
+          } else {
+            Write-Host "no GOOGLE_CREDENTIALS_JSON secret - building without credentials"
+          }
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-desktop.txt pyinstaller
+
+      - name: Build
+        run: python -m PyInstaller --clean --noconfirm packaging/vatican-sniper.spec
+
+      - name: Package (zip)
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist/vatican-sniper" -DestinationPath "Vatican-Sniper-Windows.zip" -Force
+          Get-Item "Vatican-Sniper-Windows.zip" | Select-Object Name, Length
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vatican-Sniper-Windows
+          path: Vatican-Sniper-Windows.zip
+          retention-days: 30
