@@ -6,6 +6,7 @@ optional warm-profile seeding, CDP connection, then the provider's book() flow.
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import shutil
 import subprocess
@@ -14,6 +15,8 @@ import time
 from typing import List, Optional
 
 from .proxies import Proxy
+
+log = logging.getLogger("sniper")
 
 def _browser_candidates() -> List[str]:
     """Platform-specific browser executables, in preference order."""
@@ -180,16 +183,27 @@ async def run_booking(
     profile_dir = profile_dir or os.path.expanduser(f"~/vatican_snipe_profile_{idx}")
     browser_path = detect_browser(browser_path)
 
+    log.info(f"[{label}] browser={browser_path} port={port} profile={profile_dir}")
+    if not browser_path:
+        log.error(f"[{label}] no browser found — install Chrome/Brave/Edge")
+        return False
+
     os.makedirs(profile_dir, exist_ok=True)
     clean_profile_locks(profile_dir)
     if seed_source:
         seed_profile(profile_dir, seed_source)
 
     cmd = build_chrome_cmd(browser_path, port, profile_dir, idx, proxy=proxy)
-    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log.info(f"[{label}] launching browser...")
+    # capture the browser's stderr so a launch crash is visible in the log
+    stderr_path = os.path.join(profile_dir, "browser_stderr.log")
+    _stderr = open(stderr_path, "w")
+    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=_stderr)
+    log.info(f"[{label}] browser PID={proc.pid} (stderr -> {stderr_path})")
 
     try:
         await asyncio.sleep(2 + idx * 0.2)
+        log.info(f"[{label}] waiting for CDP on port {port}...")
         for _ in range(30):
             try:
                 urllib.request.urlopen(f"http://127.0.0.1:{port}/json/version", timeout=1)
@@ -197,21 +211,29 @@ async def run_booking(
             except Exception:
                 await asyncio.sleep(0.5)
         else:
+            log.error(f"[{label}] CDP never became ready on port {port} — browser likely crashed on launch")
             return False
 
+        log.info(f"[{label}] CDP ready — connecting playwright...")
         async with async_playwright() as p:
             browser = await p.chromium.connect_over_cdp(f"http://127.0.0.1:{port}")
             ctx = browser.contexts[0] if browser.contexts else await browser.new_context(
                 locale="it-IT", timezone_id="Europe/Rome")
             page = await ctx.new_page()
+            log.info(f"[{label}] connected — navigating to Vatican")
             return await provider.book(page, target, slot, label,
                                        on_hold=on_hold, on_payment=on_payment)
-    except Exception:
+    except Exception as e:
+        log.error(f"[{label}] booking error: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
         return False
     finally:
         try:
             proc.terminate()
+        except Exception:
+            pass
+        try:
+            _stderr.close()
         except Exception:
             pass
