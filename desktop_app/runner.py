@@ -171,19 +171,14 @@ async def run_booking(
     on_hold=None,
     on_payment=None,
 ) -> bool:
-    """Spawn one Chromium process, connect via CDP, run provider.book().
-
-    Returns True if a hold was established (book() reached the hold loop).
-    """
-    import urllib.request
+    """Launch one Chromium, connect, run provider.book(). Returns True on hold."""
     from playwright.async_api import async_playwright
 
     label = label or f"T{idx + 1:02d}"
-    port = port or (9400 + idx)
-    profile_dir = profile_dir or os.path.expanduser(f"~/vatican_snipe_profile_{idx}")
+    profile_dir = profile_dir or os.path.join(os.path.expanduser("~"), f"vatican_snipe_profile_{idx}")
     browser_path = detect_browser(browser_path)
 
-    log.info(f"[{label}] browser={browser_path} port={port} profile={profile_dir}")
+    log.info(f"[{label}] browser={browser_path} profile={profile_dir}")
     if not browser_path:
         log.error(f"[{label}] no browser found — install Chrome/Brave/Edge")
         return False
@@ -193,34 +188,30 @@ async def run_booking(
     if seed_source:
         seed_profile(profile_dir, seed_source)
 
-    cmd = build_chrome_cmd(browser_path, port, profile_dir, idx, proxy=proxy)
-    log.info(f"[{label}] launching browser...")
-    # capture the browser's stderr so a launch crash is visible in the log
-    stderr_path = os.path.join(profile_dir, "browser_stderr.log")
-    _stderr = open(stderr_path, "w")
-    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=_stderr)
-    log.info(f"[{label}] browser PID={proc.pid} (stderr -> {stderr_path})")
+    launch_kwargs = dict(
+        user_data_dir=profile_dir,
+        executable_path=browser_path,
+        headless=False,
+        args=[
+            "--no-first-run", "--no-default-browser-check",
+            "--disable-blink-features=AutomationControlled",
+            "--no-sandbox", "--disable-dev-shm-usage",
+            "--window-size=1000,750",
+        ],
+        locale="it-IT",
+        timezone_id="Europe/Rome",
+        viewport=None,
+    )
+    if proxy is not None:
+        launch_kwargs["proxy"] = proxy.playwright_proxy()
 
     try:
-        await asyncio.sleep(2 + idx * 0.2)
-        log.info(f"[{label}] waiting for CDP on port {port}...")
-        for _ in range(30):
-            try:
-                urllib.request.urlopen(f"http://127.0.0.1:{port}/json/version", timeout=1)
-                break
-            except Exception:
-                await asyncio.sleep(0.5)
-        else:
-            log.error(f"[{label}] CDP never became ready on port {port} — browser likely crashed on launch")
-            return False
-
-        log.info(f"[{label}] CDP ready — connecting playwright...")
         async with async_playwright() as p:
-            browser = await p.chromium.connect_over_cdp(f"http://127.0.0.1:{port}")
-            ctx = browser.contexts[0] if browser.contexts else await browser.new_context(
-                locale="it-IT", timezone_id="Europe/Rome")
-            page = await ctx.new_page()
-            log.info(f"[{label}] connected — navigating to Vatican")
+            log.info(f"[{label}] launching browser via Playwright...")
+            context = await p.chromium.launch_persistent_context(**launch_kwargs)
+            log.info(f"[{label}] browser launched — opening page")
+            page = context.pages[0] if context.pages else await context.new_page()
+            log.info(f"[{label}] navigating to Vatican")
             return await provider.book(page, target, slot, label,
                                        on_hold=on_hold, on_payment=on_payment)
     except Exception as e:
@@ -228,12 +219,3 @@ async def run_booking(
         import traceback
         traceback.print_exc()
         return False
-    finally:
-        try:
-            proc.terminate()
-        except Exception:
-            pass
-        try:
-            _stderr.close()
-        except Exception:
-            pass
