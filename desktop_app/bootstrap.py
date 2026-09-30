@@ -21,12 +21,16 @@ def setup_logging() -> None:
     root = logging.getLogger()
     if root.handlers:
         return
+    logging.raiseExceptions = False  # don't spam stderr on encoding/emit errors
     fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
     root.setLevel(logging.INFO)
 
-    sh = logging.StreamHandler()
-    sh.setFormatter(fmt)
-    root.addHandler(sh)
+    try:
+        sh = logging.StreamHandler()
+        sh.setFormatter(fmt)
+        root.addHandler(sh)
+    except Exception:  # noqa: BLE001
+        pass
 
     try:
         log_dir = _app_data_dir()
@@ -34,6 +38,7 @@ def setup_logging() -> None:
         fh = RotatingFileHandler(
             os.path.join(log_dir, "vatican-sniper.log"),
             maxBytes=1_000_000, backupCount=3,
+            encoding="utf-8",   # emoji-safe on Windows (default cp1252 can't encode → ✅ 🎉)
         )
         fh.setFormatter(fmt)
         root.addHandler(fh)

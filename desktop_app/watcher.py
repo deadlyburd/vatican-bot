@@ -238,6 +238,10 @@ class Watcher:
         def _do():
             if w.attempts >= MAX_ATTEMPTS:
                 w.status = "gave up"
+                log.warning(f"[watch {w.id}] gave up after {w.attempts} attempts — {w.date} {w.time}")
+                send_alert(self.config,
+                           f"⚠️ WATCH GAVE UP — {w.date} {w.time} · {w.name or 'Manual'} "
+                           f"(failed {w.attempts}×)")
                 return
             if w.id not in self.watches:
                 return

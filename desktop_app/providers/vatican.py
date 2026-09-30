@@ -96,8 +96,18 @@ class VaticanProvider(BookingProvider):
 
     # ── URL + payload templates ─────────────────────────────────────────────
 
+    @staticmethod
+    def _rome_timezone():
+        """Europe/Rome tz, with a fallback if tzdata isn't installed (Windows)."""
+        try:
+            return ZoneInfo("Europe/Rome")
+        except Exception:
+            from datetime import timezone, timedelta
+            # Rome is UTC+1 (winter) / UTC+2 (summer); use a sane fixed offset.
+            return timezone(timedelta(hours=2))
+
     def entry_url(self, target: BookingTarget, slot: Slot) -> str:
-        rome = ZoneInfo("Europe/Rome")
+        rome = self._rome_timezone()
         d, m, y = slot.date.split("/")
         ts = int(datetime(int(y), int(m), int(d), tzinfo=rome).timestamp() * 1000)
         return f"{VATICAN_BASE}/home/fromtag/{target.visitors}/{ts}/MV-Biglietti/1"
