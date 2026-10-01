@@ -86,11 +86,12 @@ class BookingProvider(abc.ABC):
         raise NotImplementedError
 
     async def book(self, page, target: "BookingTarget", slot: Slot, label: str,
-                   on_hold=None, on_payment=None) -> bool:
+                   on_hold=None, on_payment=None, navigate: bool = True) -> bool:
         """Run the full booking flow on an already-open page. Return True on hold.
 
         on_hold(label) is called once the hold is established; on_payment(label, url)
         is called when a payment redirect is captured. Both are optional.
+        Set navigate=False if the page is already on the deep link (pre-warm).
         """
         raise NotImplementedError
 

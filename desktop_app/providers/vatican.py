@@ -139,7 +139,7 @@ class VaticanProvider(BookingProvider):
     # ── Booking flow (runs on an already-open Playwright page) ──────────────
 
     async def book(self, page, target: BookingTarget, slot: Slot, label: str,
-                   on_hold=None, on_payment=None) -> bool:
+                   on_hold=None, on_payment=None, navigate: bool = True) -> bool:
         tid = slot.ticket_id
         visitors = target.visitors
         slot_time = slot.time
@@ -150,11 +150,12 @@ class VaticanProvider(BookingProvider):
 
         llog(f"→ {slot.date} {slot_time} | {target.customer_name} ({visitors}v)")
 
-        # [1] Visit home first (fresh Cloudflare cookie), then deep link
-        llog(f"[1] {slot.date} {slot_time}")
-        await page.goto(f"{VATICAN_BASE}/home", wait_until="domcontentloaded", timeout=20000)
-        await page.wait_for_timeout(2000)
-        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        if navigate:
+            # [1] Visit home first (fresh Cloudflare cookie), then deep link
+            llog(f"[1] {slot.date} {slot_time}")
+            await page.goto(f"{VATICAN_BASE}/home", wait_until="domcontentloaded", timeout=20000)
+            await page.wait_for_timeout(2000)
+            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
         count = await wait_for(page,
             "document.querySelectorAll(\"[data-cy^='bookTicket_']\").length || 0",
             timeout=25, label="tickets")

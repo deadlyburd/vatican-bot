@@ -27,7 +27,7 @@ from .telemetry import (
 )
 from .watcher import WatchTarget, Watcher, find_time_match, normalize_time
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 
 __all__ = [
     "AppConfig", "BrowserConfig", "BookingConfig", "GoogleConfig",

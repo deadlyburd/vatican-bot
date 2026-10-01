@@ -85,6 +85,17 @@ class TestWatcher(unittest.TestCase):
         self.assertEqual({a.date for a in added}, {"29/10/2026"})
         self.assertEqual({a.time for a in added}, {"09:00"})
 
+    def test_prewarm_flag(self):
+        # prewarm is just a flag on the dataclass (add() would launch a browser,
+        # so we test the flag + serialization directly, not via add()).
+        t = WatchTarget(date="30/10/2026", time="10:00", prewarm=True)
+        self.assertTrue(t.prewarm)
+        d = t.to_dict()
+        self.assertIn("prewarm", d)
+        self.assertTrue(d["prewarm"])
+        # default is False
+        self.assertFalse(WatchTarget(date="30/10/2026", time="10:00").prewarm)
+
 
 class TestWatchTargetToDict(unittest.TestCase):
     def test_no_slot(self):

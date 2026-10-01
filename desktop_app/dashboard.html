@@ -103,6 +103,8 @@ th{color:var(--muted);font-weight:600}
           <input id="wVisitors" type="number" min="1" max="6" value="2" style="width:100%"></div>
         <div><label>Bookings (groups at this time)</label>
           <input id="wGroups" type="number" min="1" value="1" style="width:100%"></div>
+        <div><label>Pre-warm browser (instant click when slot opens)</label>
+          <input id="wPrewarm" type="checkbox" style="margin-top:6px"></div>
         <div><label>Customer name</label>
           <input id="wName" placeholder="Mario Rossi" style="width:100%"></div>
         <div><label>Email (optional)</label>
@@ -120,6 +122,8 @@ th{color:var(--muted);font-weight:600}
         <div><label>Date</label><input id="mDate" type="date" style="width:100%"></div>
         <div><label>Visitors (max 6 per booking)</label><input id="mVisitors" type="number" min="1" max="6" value="2" style="width:100%"></div>
         <div><label>Bookings per time (groups)</label><input id="mGroups" type="number" min="1" value="1" style="width:100%"></div>
+        <div><label>Pre-warm browser (instant click when slot opens)</label>
+          <input type="checkbox" id="mPrewarm" style="margin-top:6px"></div>
         <div><label>Customer name</label><input id="mName" placeholder="Mario Rossi" style="width:100%"></div>
         <div><label>Email (optional)</label><input id="mEmail" placeholder="mario@example.com" style="width:100%"></div>
       </div>
@@ -178,6 +182,8 @@ th{color:var(--muted);font-weight:600}
           <input id="stagger" type="number" min="0" style="width:100%"></div>
         <div><label>Default visitors</label>
           <input id="defaultVisitors" type="number" min="1" style="width:100%"></div>
+        <div><label>Watch poll interval (seconds)</label>
+          <input id="pollInterval" type="number" min="1" step="0.5" style="width:100%"></div>
       </div>
     </div>
     <div class="panel">
@@ -239,6 +245,7 @@ async function addWatch(){
     times:[time],
     visitors:parseInt(document.getElementById("wVisitors").value)||2,
     groups:groups,
+    prewarm:document.getElementById("wPrewarm").checked,
     name:document.getElementById("wName").value.trim(),
     email:document.getElementById("wEmail").value.trim(),
   };
@@ -278,6 +285,7 @@ function render(){
   document.getElementById("maxConcurrent").value=cfg.booking.max_concurrent;
   document.getElementById("stagger").value=cfg.booking.stagger_same_date_seconds;
   document.getElementById("defaultVisitors").value=cfg.booking.default_visitors;
+  document.getElementById("pollInterval").value=cfg.booking.poll_interval_seconds||3;
   document.getElementById("machineName").value=cfg.telemetry.machine_name||"";
   document.getElementById("tgToken").value=cfg.telemetry.telegram_bot_token||"";
   document.getElementById("tgChat").value=cfg.telemetry.telegram_chat_id||"";
@@ -292,6 +300,7 @@ function collectConfig(){
   cfg.booking.max_concurrent=parseInt(document.getElementById("maxConcurrent").value)||4;
   cfg.booking.stagger_same_date_seconds=parseInt(document.getElementById("stagger").value)||0;
   cfg.booking.default_visitors=parseInt(document.getElementById("defaultVisitors").value)||2;
+  cfg.booking.poll_interval_seconds=parseFloat(document.getElementById("pollInterval").value)||3;
   cfg.telemetry.machine_name=document.getElementById("machineName").value.trim();
   cfg.telemetry.telegram_bot_token=document.getElementById("tgToken").value.trim();
   cfg.telemetry.telegram_chat_id=document.getElementById("tgChat").value.trim();
@@ -477,6 +486,7 @@ async function addMultiWatch(){
     times:times,
     visitors:parseInt(document.getElementById("mVisitors").value)||2,
     groups:parseInt(document.getElementById("mGroups").value)||1,
+    prewarm:document.getElementById("mPrewarm").checked,
     name:document.getElementById("mName").value.trim(),
     email:document.getElementById("mEmail").value.trim(),
   };

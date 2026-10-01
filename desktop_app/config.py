@@ -100,6 +100,7 @@ class BookingConfig:
     max_concurrent: int = 4
     stagger_same_date_seconds: int = 120
     default_visitors: int = 2
+    poll_interval_seconds: float = 3.0   # how often the watcher checks for open slots
 
     @classmethod
     def from_dict(cls, d):
@@ -108,6 +109,7 @@ class BookingConfig:
             max_concurrent=int(d.get("max_concurrent", 4)),
             stagger_same_date_seconds=int(d.get("stagger_same_date_seconds", 120)),
             default_visitors=int(d.get("default_visitors", 2)),
+            poll_interval_seconds=float(d.get("poll_interval_seconds", 3.0)),
         )
 
 

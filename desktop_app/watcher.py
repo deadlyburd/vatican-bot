@@ -24,14 +24,14 @@ from slot_finder import RateLimitError  # noqa: E402
 
 from .config import AppConfig
 from .providers import BookingProvider, Slot, default_registry
-from .runner import run_booking
+from .runner import detect_browser, run_booking
 from .schema import BookingTarget, parse_date
 from .telemetry import send_alert
 
 log = logging.getLogger("sniper")
 
-POLL_INTERVAL = 20       # seconds between slot checks (normal)
-MAX_BACKOFF = 4          # exponential backoff cap: 20s * 2^4 = 320s
+POLL_INTERVAL = 3        # default seconds between slot checks (overridden by config.booking.poll_interval_seconds)
+MAX_BACKOFF = 4          # exponential backoff cap: base * 2^4
 RETRY_DELAY = 300        # seconds to wait before re-arming a failed booking
 MAX_ATTEMPTS = 3         # give up after this many booking attempts per watch
 
@@ -47,6 +47,7 @@ class WatchTarget:
     status: str = "watching"
     slot: Optional[Slot] = None
     attempts: int = 0    # booking attempts so far
+    prewarm: bool = False  # keep a browser warm on the page, ready to click instantly
 
     def to_dict(self) -> dict:
         """JSON-safe representation."""
@@ -59,6 +60,7 @@ class WatchTarget:
             "email": self.email,
             "status": self.status,
             "attempts": self.attempts,
+            "prewarm": self.prewarm,
             "slot": None if self.slot is None else {
                 "date": self.slot.date,
                 "time": self.slot.time,
@@ -105,25 +107,35 @@ class Watcher:
         # offset port/profile indices to avoid clashing with sheet-based runs (0..N)
         self._idx = itertools.count(100)
         self._backoff = 0  # current exponential backoff level
+        # pre-warm: a persistent asyncio loop that keeps warm browsers alive
+        self._warm_pages: dict = {}     # watch_id -> (playwright, context, page)
+        self._warm_loop = None
+        self._warm_thread: Optional[threading.Thread] = None
 
     # ── API ──────────────────────────────────────────────────────────────
 
     def add(self, w: WatchTarget) -> WatchTarget:
         self.watches[w.id] = w
         self.start()
+        if w.prewarm:
+            self._prewarm(w)
         return w
 
     def add_multi(self, date: str, times: List[str], visitors: int = 2,
-                  name: str = "", email: str = "", groups: int = 1) -> List[WatchTarget]:
+                  name: str = "", email: str = "", groups: int = 1,
+                  prewarm: bool = False) -> List[WatchTarget]:
         """Add watches for the given times, `groups` bookings per time (same slot)."""
         added = []
         for t in times:
             for _ in range(max(1, int(groups))):
                 w = WatchTarget(date=date, time=normalize_time(t), visitors=visitors,
-                                name=name, email=email)
+                                name=name, email=email, prewarm=prewarm)
                 self.watches[w.id] = w
                 added.append(w)
         self.start()
+        for w in added:
+            if w.prewarm:
+                self._prewarm(w)
         return added
 
     def remove(self, wid: str) -> bool:
@@ -175,7 +187,11 @@ class Watcher:
                         w.slot = match
                         w.attempts += 1
                         log.info(f"[watch {w.id}] FOUND {w.date} {w.time} — booking now")
-                        threading.Thread(target=self._book_thread, args=(w, match), daemon=True).start()
+                        if w.prewarm and w.id in self._warm_pages:
+                            # book on the already-warm page (no launch delay)
+                            self._run_on_warm_loop(self._book_warm(w, match))
+                        else:
+                            threading.Thread(target=self._book_thread, args=(w, match), daemon=True).start()
                     else:
                         w.status = f"watching {w.date} {normalize_time(w.time)}"
 
@@ -184,7 +200,8 @@ class Watcher:
                 self._backoff = min(self._backoff + 1, MAX_BACKOFF)
             else:
                 self._backoff = 0
-            interval = POLL_INTERVAL * (2 ** self._backoff)
+            base = self.config.booking.poll_interval_seconds or POLL_INTERVAL
+            interval = base * (2 ** self._backoff)
             if rate_limited:
                 log.info(f"[watcher] rate-limited — backing off to {interval}s")
             self._stop.wait(interval)
@@ -196,9 +213,9 @@ class Watcher:
             w.status = f"failed: {e}"
             log.exception(f"[watch {w.id}] booking error")
 
-    async def _book_async(self, w: WatchTarget, slot: Slot) -> None:
+    def _make_target(self, w: WatchTarget) -> BookingTarget:
         iso = parse_date(w.date)
-        target = BookingTarget(
+        return BookingTarget(
             booking_id=w.id,
             activity_date=iso or w.date,
             visitors=w.visitors,
@@ -209,6 +226,7 @@ class Watcher:
             source=None,  # no sheet to write back to
         )
 
+    def _make_callbacks(self, w: WatchTarget, target: BookingTarget):
         def on_hold(label):
             w.status = "holding"
             if self.config.telemetry.notify_holds:
@@ -218,6 +236,11 @@ class Watcher:
             w.status = "paid"
             send_alert(self.config, f"💳 WATCH PAID — {w.date} {w.time} · {url[:60]}")
 
+        return on_hold, on_payment
+
+    async def _book_async(self, w: WatchTarget, slot: Slot) -> None:
+        target = self._make_target(w)
+        on_hold, on_payment = self._make_callbacks(w, target)
         idx = next(self._idx)
         ok = await run_booking(
             self.provider, target, slot, idx,
@@ -232,6 +255,110 @@ class Watcher:
             if self.config.telemetry.notify_failures:
                 send_alert(self.config, f"🔴 WATCH FAIL — {w.date} {w.time} · {target.customer_name}")
             self._rearm(w)
+
+    # ── Pre-warm (browser already open on the page, no launch delay) ──────
+
+    def _ensure_warm_loop(self) -> None:
+        if self._warm_thread and self._warm_thread.is_alive():
+            return
+        self._warm_thread = threading.Thread(target=self._warm_loop_main, daemon=True)
+        self._warm_thread.start()
+
+    def _warm_loop_main(self) -> None:
+        self._warm_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._warm_loop)
+        self._warm_loop.run_forever()
+
+    def _run_on_warm_loop(self, coro) -> None:
+        self._ensure_warm_loop()
+        asyncio.run_coroutine_threadsafe(coro, self._warm_loop)
+
+    def _prewarm(self, w: WatchTarget) -> None:
+        """Launch a browser + navigate to the deep link, keep it warm."""
+        if w.id in self._warm_pages:
+            return
+        self._run_on_warm_loop(self._launch_warm(w))
+
+    async def _launch_warm(self, w: WatchTarget) -> None:
+        from playwright.async_api import async_playwright
+
+        target = self._make_target(w)
+        placeholder = Slot(date=target.date_dmy, time=w.time, slot_id="", ticket_id="")
+        url = self.provider.entry_url(target, placeholder)
+        browser = detect_browser(self.config.browser.path)
+        pw = context = page = None
+        try:
+            pw = await async_playwright().start()
+            context = await pw.chromium.launch_persistent_context(
+                user_data_dir=os.path.join(os.path.expanduser("~"), f"vatican_warm_{w.id}"),
+                executable_path=browser,
+                headless=False,
+                args=["--no-first-run", "--no-default-browser-check",
+                      "--disable-blink-features=AutomationControlled", "--no-sandbox",
+                      "--window-size=1000,750"],
+                locale="it-IT", timezone_id="Europe/Rome", viewport=None,
+            )
+            page = context.pages[0] if context.pages else await context.new_page()
+            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            self._warm_pages[w.id] = (pw, context, page)
+            w.status = f"prewarmed {w.date} {normalize_time(w.time)}"
+            log.info(f"[watch {w.id}] prewarm ready — browser waiting on the page")
+            # keep warm + refresh periodically so availability is fresh when the slot opens
+            elapsed = 0
+            while w.id in self.watches and w.status not in ("booking", "holding", "paid", "gave up"):
+                await asyncio.sleep(5)
+                elapsed += 5
+                if elapsed >= 30:
+                    elapsed = 0
+                    try:
+                        await page.reload(wait_until="domcontentloaded", timeout=30000)
+                    except Exception:
+                        pass
+        except Exception as e:  # noqa: BLE001
+            log.warning(f"[watch {w.id}] prewarm failed: {e}")
+        finally:
+            self._warm_pages.pop(w.id, None)
+            if context:
+                try:
+                    await context.close()
+                except Exception:
+                    pass
+            if pw:
+                try:
+                    await pw.stop()
+                except Exception:
+                    pass
+
+    async def _book_warm(self, w: WatchTarget, slot: Slot) -> None:
+        entry = self._warm_pages.get(w.id)
+        if not entry:
+            threading.Thread(target=self._book_thread, args=(w, slot), daemon=True).start()
+            return
+        pw, context, page = entry
+        target = self._make_target(w)
+        on_hold, on_payment = self._make_callbacks(w, target)
+        try:
+            ok = await self.provider.book(page, target, slot, f"W-{w.id[:4]}",
+                                          on_hold=on_hold, on_payment=on_payment,
+                                          navigate=False)
+            if not ok:
+                w.status = "failed"
+                if self.config.telemetry.notify_failures:
+                    send_alert(self.config, f"🔴 WATCH FAIL — {w.date} {w.time} · {target.customer_name}")
+                self._rearm(w)
+        except Exception as e:  # noqa: BLE001
+            w.status = f"failed: {e}"
+            log.exception(f"[watch {w.id}] warm booking error")
+        finally:
+            self._warm_pages.pop(w.id, None)
+            try:
+                await context.close()
+            except Exception:
+                pass
+            try:
+                await pw.stop()
+            except Exception:
+                pass
 
     def _rearm(self, w: WatchTarget) -> None:
         """Wait RETRY_DELAY then re-arm the watch (unless it gave up or was removed)."""
