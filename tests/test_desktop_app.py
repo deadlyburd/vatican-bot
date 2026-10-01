@@ -228,6 +228,22 @@ class TestConfig(unittest.TestCase):
             cfg = load_config(os.path.join(d, "nope.json"))
         self.assertIsInstance(cfg, AppConfig)
 
+    def test_poll_proxies_roundtrip_and_migration(self):
+        from dataclasses import asdict
+        from desktop_app.config import ProxyConfig
+        cfg = default_config()
+        cfg.booking.poll_proxies = [
+            ProxyConfig(host="31.58.9.4", port=6077, username="u", password="p"),
+            ProxyConfig(host="45.38.107.97", port=6014, username="u", password="p"),
+        ]
+        c2 = AppConfig.from_dict(asdict(cfg))
+        self.assertEqual(len(c2.booking.poll_proxies), 2)
+        self.assertEqual(c2.booking.poll_proxies[0].host, "31.58.9.4")
+        # old single poll_proxy migrates to a 1-item list
+        c3 = AppConfig.from_dict({"booking": {"poll_proxy": {"host": "1.2.3.4", "port": 8080}}})
+        self.assertEqual(len(c3.booking.poll_proxies), 1)
+        self.assertEqual(c3.booking.poll_proxies[0].host, "1.2.3.4")
+
 
 if __name__ == "__main__":
     unittest.main()

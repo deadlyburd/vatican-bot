@@ -187,15 +187,11 @@ th{color:var(--muted);font-weight:600}
       </div>
     </div>
     <div class="panel">
-      <h2>Poll proxy (datacenter IP for API checks only)</h2>
-      <div class="small muted">Routes the slot-checking API calls through a datacenter IP so
-        your real IP stays clean for the actual booking. Leave host empty to poll directly.</div>
-      <div class="grid2" style="margin-top:10px">
-        <div><label>Host</label><input id="pollProxyHost" placeholder="1.2.3.4" style="width:100%"></div>
-        <div><label>Port</label><input id="pollProxyPort" type="number" placeholder="8080" style="width:100%"></div>
-        <div><label>Username (optional)</label><input id="pollProxyUser" style="width:100%"></div>
-        <div><label>Password (optional)</label><input id="pollProxyPass" type="password" style="width:100%"></div>
-      </div>
+      <h2>Poll proxies (datacenter IPs for API checks — rotated)</h2>
+      <div class="small muted">One proxy per line: <code>host:port</code> or <code>host:port:username:password</code>.
+        The app rotates through them each check so no single IP gets rate-limited. Leave empty to poll directly.</div>
+      <textarea id="pollProxies" rows="7" style="width:100%;margin-top:10px;font-family:monospace"
+        placeholder="31.58.9.4:6077:user:pass&#10;45.38.107.97:6014:user:pass"></textarea>
     </div>
     <div class="panel">
       <h2>Telemetry (Telegram alerts)</h2>
@@ -236,6 +232,13 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
 
 async function api(path, method="GET", body){const o={method,headers:{"Content-Type":"application/json"}};
   if(body)o.body=JSON.stringify(body);const r=await fetch(path,o);return r.json();}
+
+function parseProxyLine(line){
+  const parts=line.split(":");
+  if(parts.length===2) return {host:parts[0],port:parseInt(parts[1])||8080,username:"",password:"",enabled:true};
+  if(parts.length===4) return {host:parts[0],port:parseInt(parts[1])||8080,username:parts[2],password:parts[3],enabled:true};
+  return null;
+}
 
 async function checkCreds(){
   const el=document.getElementById("credsStatus");if(!el)return;
@@ -297,10 +300,8 @@ function render(){
   document.getElementById("stagger").value=cfg.booking.stagger_same_date_seconds;
   document.getElementById("defaultVisitors").value=cfg.booking.default_visitors;
   document.getElementById("pollInterval").value=cfg.booking.poll_interval_seconds||3;
-  document.getElementById("pollProxyHost").value=cfg.booking.poll_proxy?.host||"";
-  document.getElementById("pollProxyPort").value=cfg.booking.poll_proxy?.port||"";
-  document.getElementById("pollProxyUser").value=cfg.booking.poll_proxy?.username||"";
-  document.getElementById("pollProxyPass").value=cfg.booking.poll_proxy?.password||"";
+  document.getElementById("pollProxies").value=(cfg.booking.poll_proxies||[]).map(p=>
+    p.host?`${p.host}:${p.port}`+(p.username?`:${p.username}:${p.password}`:""):"").filter(Boolean).join("\n");
   document.getElementById("machineName").value=cfg.telemetry.machine_name||"";
   document.getElementById("tgToken").value=cfg.telemetry.telegram_bot_token||"";
   document.getElementById("tgChat").value=cfg.telemetry.telegram_chat_id||"";
@@ -316,11 +317,8 @@ function collectConfig(){
   cfg.booking.stagger_same_date_seconds=parseInt(document.getElementById("stagger").value)||0;
   cfg.booking.default_visitors=parseInt(document.getElementById("defaultVisitors").value)||2;
   cfg.booking.poll_interval_seconds=parseFloat(document.getElementById("pollInterval").value)||3;
-  cfg.booking.poll_proxy={host:document.getElementById("pollProxyHost").value.trim(),
-    port:parseInt(document.getElementById("pollProxyPort").value)||8080,
-    username:document.getElementById("pollProxyUser").value.trim(),
-    password:document.getElementById("pollProxyPass").value,
-    enabled:true};
+  cfg.booking.poll_proxies=document.getElementById("pollProxies").value.split("\n")
+    .map(l=>l.trim()).filter(Boolean).map(parseProxyLine).filter(Boolean);
   cfg.telemetry.machine_name=document.getElementById("machineName").value.trim();
   cfg.telemetry.telegram_bot_token=document.getElementById("tgToken").value.trim();
   cfg.telemetry.telegram_chat_id=document.getElementById("tgChat").value.trim();

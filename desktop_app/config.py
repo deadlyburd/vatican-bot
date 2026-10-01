@@ -109,17 +109,20 @@ class BookingConfig:
     stagger_same_date_seconds: int = 120
     default_visitors: int = 2
     poll_interval_seconds: float = 3.0   # how often the watcher checks for open slots
-    poll_proxy: ProxyConfig = field(default_factory=ProxyConfig)  # datacenter IP for API checks (empty = direct)
+    poll_proxies: List[ProxyConfig] = field(default_factory=list)  # datacenter IPs for API checks (rotated)
 
     @classmethod
     def from_dict(cls, d):
         d = d or {}
+        proxies = d.get("poll_proxies")
+        if proxies is None and d.get("poll_proxy"):
+            proxies = [d.get("poll_proxy")]  # migrate old single-proxy config
         return cls(
             max_concurrent=int(d.get("max_concurrent", 4)),
             stagger_same_date_seconds=int(d.get("stagger_same_date_seconds", 120)),
             default_visitors=int(d.get("default_visitors", 2)),
             poll_interval_seconds=float(d.get("poll_interval_seconds", 3.0)),
-            poll_proxy=ProxyConfig.from_dict(d.get("poll_proxy")),
+            poll_proxies=[ProxyConfig.from_dict(p) for p in (proxies or [])],
         )
 
 

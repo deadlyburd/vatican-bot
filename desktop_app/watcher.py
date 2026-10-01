@@ -107,6 +107,7 @@ class Watcher:
         # offset port/profile indices to avoid clashing with sheet-based runs (0..N)
         self._idx = itertools.count(100)
         self._backoff = 0  # current exponential backoff level
+        self._poll_idx = 0  # round-robin counter for the datacenter poll proxies
         # pre-warm: a persistent asyncio loop that keeps warm browsers alive
         self._warm_pages: dict = {}     # watch_id -> (playwright, context, page)
         self._warm_loop = None
@@ -165,9 +166,14 @@ class Watcher:
                 and w.attempts < MAX_ATTEMPTS
             ]
 
+            # rotate through the datacenter poll proxies so no single IP gets throttled
+            proxies = [p for p in self.config.booking.poll_proxies if p.host]
+            poll_proxy = ""
+            if proxies:
+                poll_proxy = proxies[self._poll_idx % len(proxies)].url()
+                self._poll_idx += 1
+
             # poll each unique (date, visitors) once, then check all its times
-            poll_proxy = (self.config.booking.poll_proxy.url()
-                          if self.config.booking.poll_proxy.host else "")
             for (date, visitors), ws in group_by_date_visitors(active).items():
                 try:
                     slots = self.provider.find_slots(date, visitors, poll_proxy=poll_proxy)
