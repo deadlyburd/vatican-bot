@@ -187,6 +187,17 @@ th{color:var(--muted);font-weight:600}
       </div>
     </div>
     <div class="panel">
+      <h2>Poll proxy (datacenter IP for API checks only)</h2>
+      <div class="small muted">Routes the slot-checking API calls through a datacenter IP so
+        your real IP stays clean for the actual booking. Leave host empty to poll directly.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label>Host</label><input id="pollProxyHost" placeholder="1.2.3.4" style="width:100%"></div>
+        <div><label>Port</label><input id="pollProxyPort" type="number" placeholder="8080" style="width:100%"></div>
+        <div><label>Username (optional)</label><input id="pollProxyUser" style="width:100%"></div>
+        <div><label>Password (optional)</label><input id="pollProxyPass" type="password" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="panel">
       <h2>Telemetry (Telegram alerts)</h2>
       <div class="small muted">The app messages you on Telegram when it starts, holds a
         booking, or errors — so you know which machines are running and when one fails.</div>
@@ -286,6 +297,10 @@ function render(){
   document.getElementById("stagger").value=cfg.booking.stagger_same_date_seconds;
   document.getElementById("defaultVisitors").value=cfg.booking.default_visitors;
   document.getElementById("pollInterval").value=cfg.booking.poll_interval_seconds||3;
+  document.getElementById("pollProxyHost").value=cfg.booking.poll_proxy?.host||"";
+  document.getElementById("pollProxyPort").value=cfg.booking.poll_proxy?.port||"";
+  document.getElementById("pollProxyUser").value=cfg.booking.poll_proxy?.username||"";
+  document.getElementById("pollProxyPass").value=cfg.booking.poll_proxy?.password||"";
   document.getElementById("machineName").value=cfg.telemetry.machine_name||"";
   document.getElementById("tgToken").value=cfg.telemetry.telegram_bot_token||"";
   document.getElementById("tgChat").value=cfg.telemetry.telegram_chat_id||"";
@@ -301,6 +316,11 @@ function collectConfig(){
   cfg.booking.stagger_same_date_seconds=parseInt(document.getElementById("stagger").value)||0;
   cfg.booking.default_visitors=parseInt(document.getElementById("defaultVisitors").value)||2;
   cfg.booking.poll_interval_seconds=parseFloat(document.getElementById("pollInterval").value)||3;
+  cfg.booking.poll_proxy={host:document.getElementById("pollProxyHost").value.trim(),
+    port:parseInt(document.getElementById("pollProxyPort").value)||8080,
+    username:document.getElementById("pollProxyUser").value.trim(),
+    password:document.getElementById("pollProxyPass").value,
+    enabled:true};
   cfg.telemetry.machine_name=document.getElementById("machineName").value.trim();
   cfg.telemetry.telegram_bot_token=document.getElementById("tgToken").value.trim();
   cfg.telemetry.telegram_chat_id=document.getElementById("tgChat").value.trim();

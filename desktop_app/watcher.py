@@ -166,9 +166,11 @@ class Watcher:
             ]
 
             # poll each unique (date, visitors) once, then check all its times
+            poll_proxy = (self.config.booking.poll_proxy.url()
+                          if self.config.booking.poll_proxy.host else "")
             for (date, visitors), ws in group_by_date_visitors(active).items():
                 try:
-                    slots = self.provider.find_slots(date, visitors)
+                    slots = self.provider.find_slots(date, visitors, poll_proxy=poll_proxy)
                 except RateLimitError:
                     rate_limited = True
                     for w in ws:

@@ -79,7 +79,7 @@ class BookingProvider(abc.ABC):
         t = (product_title or "").lower()
         return any(k.lower() in t for k in self.keywords)
 
-    def find_slots(self, date_dmy: str, visitors: int) -> List[Slot]:
+    def find_slots(self, date_dmy: str, visitors: int, poll_proxy: str = "") -> List[Slot]:
         raise NotImplementedError
 
     def entry_url(self, target: "BookingTarget", slot: Slot) -> str:

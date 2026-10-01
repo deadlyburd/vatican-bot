@@ -83,6 +83,14 @@ class ProxyConfig:
     password: str = ""
     enabled: bool = True
 
+    def url(self) -> str:
+        auth = f"{self.username}:{self.password}@" if self.username else ""
+        return f"http://{auth}{self.host}:{self.port}"
+
+    def requests_proxy(self) -> dict:
+        u = self.url()
+        return {"http": u, "https": u}
+
     @classmethod
     def from_dict(cls, d):
         d = d or {}
@@ -101,6 +109,7 @@ class BookingConfig:
     stagger_same_date_seconds: int = 120
     default_visitors: int = 2
     poll_interval_seconds: float = 3.0   # how often the watcher checks for open slots
+    poll_proxy: ProxyConfig = field(default_factory=ProxyConfig)  # datacenter IP for API checks (empty = direct)
 
     @classmethod
     def from_dict(cls, d):
@@ -110,6 +119,7 @@ class BookingConfig:
             stagger_same_date_seconds=int(d.get("stagger_same_date_seconds", 120)),
             default_visitors=int(d.get("default_visitors", 2)),
             poll_interval_seconds=float(d.get("poll_interval_seconds", 3.0)),
+            poll_proxy=ProxyConfig.from_dict(d.get("poll_proxy")),
         )
 
 

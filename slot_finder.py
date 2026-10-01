@@ -85,9 +85,11 @@ class SlotFinder:
     Finds available Vatican time slots using only search + timeavail APIs.
     """
 
-    def __init__(self):
+    def __init__(self, proxy: str = ""):
         self._session = requests.Session()
         self._session.headers.update(HEADERS)
+        if proxy:
+            self._session.proxies = {"http": proxy, "https": proxy}
         self._cache: Dict[str, list] = {}  # date_str → slots
         self._cache_time: Dict[str, float] = {}
 

@@ -66,17 +66,17 @@ class VaticanProvider(BookingProvider):
 
     # ── Slot discovery ──────────────────────────────────────────────────────
 
-    def _slot_finder(self):
+    def _slot_finder(self, proxy: str = ""):
         # slot_finder lives at repo root; ensure it's importable even when packaged.
         root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         if root not in sys.path:
             sys.path.insert(0, root)
         from slot_finder import SlotFinder
-        return SlotFinder()
+        return SlotFinder(proxy=proxy)
 
-    def find_slots(self, date_dmy: str, visitors: int) -> List[Slot]:
+    def find_slots(self, date_dmy: str, visitors: int, poll_proxy: str = "") -> List[Slot]:
         from slot_finder import AvailableSlot
-        raw: List[AvailableSlot] = self._slot_finder().find_slots(
+        raw: List[AvailableSlot] = self._slot_finder(proxy=poll_proxy).find_slots(
             date_dmy, visitors, use_cache=False
         )
         return [self._from_available(s) for s in raw]
