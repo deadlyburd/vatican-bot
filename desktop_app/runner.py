@@ -119,7 +119,6 @@ def build_chrome_cmd(
         f"--user-data-dir={profile_dir}",
         "--no-first-run", "--no-default-browser-check",
         "--disable-blink-features=AutomationControlled",
-        "--no-sandbox", "--disable-dev-shm-usage",
         "--window-size=1000,750",
         # clamp to a 6×4 grid so windows always stay on-screen (no y=8050)
         f"--window-position={50 + (idx % 6) * 180},{50 + ((idx // 6) % 4) * 180}",
