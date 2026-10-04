@@ -24,7 +24,7 @@ from slot_finder import RateLimitError  # noqa: E402
 
 from .config import AppConfig
 from .providers import BookingProvider, Slot, default_registry
-from .runner import detect_browser, run_booking
+from .runner import STEALTH_JS, detect_browser, run_booking
 from .schema import BookingTarget, parse_date
 from .telemetry import send_alert
 
@@ -324,11 +324,13 @@ class Watcher:
                 user_data_dir=os.path.join(os.path.expanduser("~"), f"vatican_warm_{w.id}"),
                 executable_path=browser,
                 headless=False,
+                ignore_default_args=["--enable-automation"],
                 args=["--no-first-run", "--no-default-browser-check",
-                      "--disable-blink-features=AutomationControlled", "--no-sandbox",
+                      "--disable-blink-features=AutomationControlled",
                       "--window-size=1000,750"],
                 locale="it-IT", timezone_id="Europe/Rome", viewport=None,
             )
+            await context.add_init_script(STEALTH_JS)
             page = context.pages[0] if context.pages else await context.new_page()
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             self._warm_pages[w.id] = (pw, context, page)

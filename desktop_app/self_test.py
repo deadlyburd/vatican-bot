@@ -41,14 +41,18 @@ def run_self_test() -> bool:
 
     profile = tempfile.mkdtemp(prefix="vatican_selftest_")
     try:
+        from .runner import STEALTH_JS
         with sync_playwright() as p:
             ctx = p.chromium.launch_persistent_context(
                 user_data_dir=profile,
                 executable_path=browser,
                 headless=False,
-                args=["--no-first-run", "--no-default-browser-check", "--no-sandbox"],
+                ignore_default_args=["--enable-automation"],
+                args=["--no-first-run", "--no-default-browser-check",
+                      "--disable-blink-features=AutomationControlled"],
                 viewport=None,
             )
+            ctx.add_init_script(STEALTH_JS)
             page = ctx.pages[0] if ctx.pages else ctx.new_page()
             page.goto("about:blank")
             _log("SELF-TEST OK: playwright driver + CDP + browser all working")

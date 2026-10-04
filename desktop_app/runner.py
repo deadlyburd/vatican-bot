@@ -18,6 +18,12 @@ from .proxies import Proxy
 
 log = logging.getLogger("sniper")
 
+# Runs before any page script: hides the Playwright automation fingerprint from
+# Cloudflare's "verify you're not a robot" check.
+STEALTH_JS = """
+Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+"""
+
 def _browser_candidates() -> List[str]:
     """Platform-specific browser executables, in preference order."""
     home = os.path.expanduser("~")
@@ -193,11 +199,15 @@ async def run_booking(
         user_data_dir=profile_dir,
         executable_path=browser_path,
         headless=False,
+        # Remove Playwright's automation flag — it makes Cloudflare serve the
+        # "verify you're not a robot" challenge.
+        ignore_default_args=["--enable-automation"],
         args=[
             "--no-first-run", "--no-default-browser-check",
             "--disable-blink-features=AutomationControlled",
-            "--no-sandbox", "--disable-dev-shm-usage",
             "--window-size=1000,750",
+            # NOTE: deliberately NOT using --no-sandbox / --disable-dev-shm-usage
+            # — those are automation signals that trigger the Cloudflare challenge.
         ],
         locale="it-IT",
         timezone_id="Europe/Rome",
@@ -210,6 +220,7 @@ async def run_booking(
         async with async_playwright() as p:
             log.info(f"[{label}] launching browser via Playwright...")
             context = await p.chromium.launch_persistent_context(**launch_kwargs)
+            await context.add_init_script(STEALTH_JS)
             log.info(f"[{label}] browser launched — opening page")
             page = context.pages[0] if context.pages else await context.new_page()
             log.info(f"[{label}] navigating to Vatican")
