@@ -63,6 +63,13 @@ th{color:var(--muted);font-weight:600}
   border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
 .timegrid label:has(input:checked){border-color:var(--accent);background:#1c2a44}
 .timegrid input{margin:0}
+/* Ticket-type pill selector */
+.pill-row{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--panel2);
+  color:var(--muted);font-size:13px;cursor:pointer;user-select:none}
+.pill.active{border-color:var(--accent);background:#1c2a44;color:var(--text);font-weight:600}
+.guided-only{display:none}
+.guided-only.show{display:block}
 </style>
 </head>
 <body>
@@ -110,6 +117,24 @@ th{color:var(--muted);font-weight:600}
         <div><label>Email (optional)</label>
           <input id="wEmail" placeholder="mario@example.com" style="width:100%"></div>
       </div>
+      <div style="margin-top:10px">
+        <label>Ticket type</label>
+        <div class="pill-row" style="margin-top:4px">
+          <span class="pill active" id="wTypeStd"  onclick="setWatchType('standard')">🎫 Standard entry</span>
+          <span class="pill"        id="wTypeGuide" onclick="setWatchType('guided')">🗣 Guided tour</span>
+        </div>
+      </div>
+      <div class="guided-only" id="wLangRow" style="margin-top:10px">
+        <label>Tour language</label>
+        <select id="wLang" style="width:180px;margin-top:4px">
+          <option value="ENG">🇬🇧 English</option>
+          <option value="ITA">🇮🇹 Italian</option>
+          <option value="ESP">🇪🇸 Spanish</option>
+          <option value="FRA">🇫🇷 French</option>
+          <option value="DEU">🇩🇪 German</option>
+          <option value="POR">🇵🇹 Portuguese</option>
+        </select>
+      </div>
       <div class="row" style="margin-top:12px">
         <button class="primary" onclick="addWatch()">Watch this slot</button>
       </div>
@@ -126,6 +151,24 @@ th{color:var(--muted);font-weight:600}
           <input type="checkbox" id="mPrewarm" style="margin-top:6px"></div>
         <div><label>Customer name</label><input id="mName" placeholder="Mario Rossi" style="width:100%"></div>
         <div><label>Email (optional)</label><input id="mEmail" placeholder="mario@example.com" style="width:100%"></div>
+      </div>
+      <div style="margin-top:10px">
+        <label>Ticket type</label>
+        <div class="pill-row" style="margin-top:4px">
+          <span class="pill active" id="mTypeStd"   onclick="setMultiType('standard')">🎫 Standard entry</span>
+          <span class="pill"        id="mTypeGuide"  onclick="setMultiType('guided')">🗣 Guided tour</span>
+        </div>
+      </div>
+      <div class="guided-only" id="mLangRow" style="margin-top:10px">
+        <label>Tour language</label>
+        <select id="mLang" style="width:180px;margin-top:4px">
+          <option value="ENG">🇬🇧 English</option>
+          <option value="ITA">🇮🇹 Italian</option>
+          <option value="ESP">🇪🇸 Spanish</option>
+          <option value="FRA">🇫🇷 French</option>
+          <option value="DEU">🇩🇪 German</option>
+          <option value="POR">🇵🇹 Portuguese</option>
+        </select>
       </div>
       <div class="row" style="margin-top:10px">
         <button class="ghost" onclick="multiAll(true)">Select all</button>
@@ -221,9 +264,10 @@ th{color:var(--muted);font-weight:600}
 <div id="toast" class="toast hidden"></div>
 
 <script>
-const CANONICAL = ["booking_id","activity_date","visitors","customer_name","customer_email","product_title","status"];
+const CANONICAL = ["booking_id","activity_date","visitors","customer_name","customer_email","product_title","status","ticket_type","language"];
 const FIELD_LABELS = {booking_id:"Booking ID",activity_date:"Date",visitors:"Visitors",
-  customer_name:"Customer name",customer_email:"Email",product_title:"Product",status:"Status"};
+  customer_name:"Customer name",customer_email:"Email",product_title:"Product",status:"Status",
+  ticket_type:"Ticket type",language:"Language"};
 let cfg = null;         // AppConfig mirror
 let connected = null;   // last connect result
 
@@ -262,6 +306,8 @@ async function addWatch(){
     prewarm:document.getElementById("wPrewarm").checked,
     name:document.getElementById("wName").value.trim(),
     email:document.getElementById("wEmail").value.trim(),
+    ticket_type:document.getElementById("wTypeGuide").classList.contains("active")?"guided":"standard",
+    language:document.getElementById("wLang").value||"ENG",
   };
   const r=await api("/api/watch/add-multi","POST",body);
   if(r.error){toast(r.error);return;}
@@ -329,6 +375,8 @@ function collectConfig(){
     s.sheet_id=document.getElementById(`sheet-id-${i}`).value;
     s.tab=document.getElementById(`sheet-tab-${i}`).value;
     s.date_format=document.getElementById(`sheet-fmt-${i}`).value;
+    s.default_ticket_type=document.getElementById(`sheet-ttype-${i}`).value||"standard";
+    s.default_language=document.getElementById(`sheet-lang-${i}`).value||"ENG";
     CANONICAL.forEach(f=>{const v=document.getElementById(`map-${i}-${f}`).value;
       if(v)s.column_map[f]=v; else delete s.column_map[f];});
   });
@@ -361,7 +409,19 @@ function connectResultHTML(){
     <select id="ctab" style="width:120px">${tabOpts}</select>
     <select id="cfmt" style="width:140px"><option value="auto">date: auto</option>
       <option value="%Y-%m-%d">date: YYYY-MM-DD</option><option value="%d/%m/%Y">date: DD/MM/YYYY</option>
-      <option value="%m/%d/%Y">date: MM/DD/YYYY</option></select></div></div>
+      <option value="%m/%d/%Y">date: MM/DD/YYYY</option></select>
+    <select id="cttype" style="width:160px">
+      <option value="standard">🎫 Standard entry</option>
+      <option value="guided">🗣 Guided tour</option>
+    </select>
+    <select id="clang" style="width:150px">
+      <option value="ENG">🇬🇧 English</option>
+      <option value="ITA">🇮🇹 Italian</option>
+      <option value="ESP">🇪🇸 Spanish</option>
+      <option value="FRA">🇫🇷 French</option>
+      <option value="DEU">🇩🇪 German</option>
+      <option value="POR">🇵🇹 Portuguese</option>
+    </select></div></div>
     <div class="map-grid">${mapRows}</div>
     <div class="row" style="margin-top:12px">
       <button class="primary" onclick="addConnectedSheet()">Add sheet</button>
@@ -375,6 +435,8 @@ function addConnectedSheet(){
   CANONICAL.forEach(f=>{const v=document.getElementById(`cmap-${f}`).value;if(v)cm[f]=v;});
   cfg.sheets.push({name:document.getElementById("cname").value,sheet_id:r.sheet_id,
     tab:document.getElementById("ctab").value,date_format:document.getElementById("cfmt").value,
+    default_ticket_type:document.getElementById("cttype").value||"standard",
+    default_language:document.getElementById("clang").value||"ENG",
     column_map:cm,vatican_keywords:["vatican","sistine","vaticani","musei"],
     status_values:["PENDING","CONFIRMED"]});
   document.getElementById("connectResult").classList.add("hidden");
@@ -409,6 +471,8 @@ function sheetHTML(s,i){
     return `<div class="map-item"><label>${FIELD_LABELS[f]}</label>
       <select id="map-${i}-${f}" style="width:100%">${opts.join("")}</select></div>`;
   }).join("");
+  const defType=s.default_ticket_type||"standard";
+  const defLang=s.default_language||"ENG";
   return `<div class="card"><div class="sheet-head"><b>${s.name||("Sheet "+(i+1))}</b>
     <button class="ghost" onclick="removeSheet(${i})">Remove</button></div>
     <div class="grid2" style="margin-top:10px">
@@ -421,6 +485,20 @@ function sheetHTML(s,i){
         <option value="%d/%m/%Y" ${s.date_format==="%d/%m/%Y"?"selected":""}>DD/MM/YYYY</option>
         <option value="%m/%d/%Y" ${s.date_format==="%m/%d/%Y"?"selected":""}>MM/DD/YYYY</option>
       </select></div>
+      <div><label>Default ticket type (rows with no Ticket type column)</label>
+        <select id="sheet-ttype-${i}" style="width:100%">
+          <option value="standard" ${defType==="standard"?"selected":""}>🎫 Standard entry</option>
+          <option value="guided"   ${defType==="guided"?"selected":""}>🗣 Guided tour</option>
+        </select></div>
+      <div><label>Default tour language (guided rows with no Language column)</label>
+        <select id="sheet-lang-${i}" style="width:100%">
+          <option value="ENG" ${defLang==="ENG"?"selected":""}>🇬🇧 English</option>
+          <option value="ITA" ${defLang==="ITA"?"selected":""}>🇮🇹 Italian</option>
+          <option value="ESP" ${defLang==="ESP"?"selected":""}>🇪🇸 Spanish</option>
+          <option value="FRA" ${defLang==="FRA"?"selected":""}>🇫🇷 French</option>
+          <option value="DEU" ${defLang==="DEU"?"selected":""}>🇩🇪 German</option>
+          <option value="POR" ${defLang==="POR"?"selected":""}>🇵🇹 Portuguese</option>
+        </select></div>
     </div>
     <div class="map-grid">${mapRows}</div></div>`;
 }
@@ -507,11 +585,25 @@ async function addMultiWatch(){
     prewarm:document.getElementById("mPrewarm").checked,
     name:document.getElementById("mName").value.trim(),
     email:document.getElementById("mEmail").value.trim(),
+    ticket_type:document.getElementById("mTypeGuide").classList.contains("active")?"guided":"standard",
+    language:document.getElementById("mLang").value||"ENG",
   };
   const r=await api("/api/watch/add-multi","POST",body);
   if(r.error){toast(r.error);return;}
   toast("Watching "+r.added+" times on "+date);
   refreshWatches();
+}
+
+// ── Ticket-type pill toggle helpers ─────────────────────────────────────────
+function setWatchType(type){
+  document.getElementById("wTypeStd").classList.toggle("active",type==="standard");
+  document.getElementById("wTypeGuide").classList.toggle("active",type==="guided");
+  document.getElementById("wLangRow").classList.toggle("show",type==="guided");
+}
+function setMultiType(type){
+  document.getElementById("mTypeStd").classList.toggle("active",type==="standard");
+  document.getElementById("mTypeGuide").classList.toggle("active",type==="guided");
+  document.getElementById("mLangRow").classList.toggle("show",type==="guided");
 }
 
 loadConfig();

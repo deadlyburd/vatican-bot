@@ -15,7 +15,7 @@ import sys
 from dataclasses import dataclass, field, asdict
 from typing import Dict, List
 
-from .schema import DEFAULT_COLUMN_MAP, DEFAULT_VATICAN_KEYWORDS
+from .schema import DEFAULT_COLUMN_MAP, DEFAULT_VATICAN_KEYWORDS, DEFAULT_GUIDED_KEYWORDS
 
 APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -52,7 +52,13 @@ class SheetConfig:
     date_format: str = "auto"                              # "auto" or strptime fmt e.g. "%d/%m/%Y"
     column_map: Dict[str, str] = field(default_factory=dict)  # canonical field -> sheet header
     vatican_keywords: List[str] = field(default_factory=lambda: list(DEFAULT_VATICAN_KEYWORDS))
+    guided_keywords: List[str] = field(default_factory=lambda: list(DEFAULT_GUIDED_KEYWORDS))
     status_values: List[str] = field(default_factory=lambda: ["PENDING", "CONFIRMED"])
+    # Default ticket type for rows that have no ticket_type column mapped.
+    # "standard" = MV-Biglietti, "guided" = MV-Visite-Guidate
+    default_ticket_type: str = "standard"
+    # Default language for guided tours when no language column is mapped.
+    default_language: str = "ENG"
     # write-back column headers (empty = use column_map["status"])
     write_status_column: str = ""
     write_payment_column: str = ""
@@ -68,7 +74,10 @@ class SheetConfig:
             date_format=d.get("date_format", "auto"),
             column_map=dict(d.get("column_map") or {}),
             vatican_keywords=list(d.get("vatican_keywords") or DEFAULT_VATICAN_KEYWORDS),
+            guided_keywords=list(d.get("guided_keywords") or DEFAULT_GUIDED_KEYWORDS),
             status_values=list(d.get("status_values") or ["PENDING", "CONFIRMED"]),
+            default_ticket_type=d.get("default_ticket_type", "standard"),
+            default_language=d.get("default_language", "ENG"),
             write_status_column=d.get("write_status_column", ""),
             write_payment_column=d.get("write_payment_column", ""),
             write_confirmation_column=d.get("write_confirmation_column", ""),

@@ -237,10 +237,15 @@ class Handler(BaseHTTPRequestHandler):
         email = data.get("email", "")
         groups = int(data.get("groups", 1))
         prewarm = bool(data.get("prewarm", False))
+        ticket_type = data.get("ticket_type", "standard")
+        language = data.get("language", "ENG")
         if not date or not times:
             _send_json(self, {"error": "date and at least one time are required"}, 400)
             return
-        watches = _get_watcher().add_multi(date, times, visitors, name, email, groups, prewarm)
+        watches = _get_watcher().add_multi(
+            date, times, visitors, name, email, groups, prewarm,
+            ticket_type=ticket_type, language=language,
+        )
         _send_json(self, {"ok": True, "added": len(watches),
                           "watches": [w.to_dict() for w in watches]})
 

@@ -17,6 +17,8 @@ from typing import List, Optional
 CANONICAL_FIELDS = [
     "booking_id", "activity_date", "visitors",
     "customer_name", "customer_email", "product_title", "status",
+    # Ticket type fields (optional — safe to leave unmapped for standard tickets)
+    "ticket_type", "language",
 ]
 
 # Default mapping = the existing CRM sheet's column names.
@@ -28,9 +30,16 @@ DEFAULT_COLUMN_MAP = {
     "customer_email": "customerEmail",
     "product_title": "productTitle",
     "status": "status",
+    # ticket_type / language intentionally not mapped by default (standard tickets)
 }
 
+# Valid ticket_type values (case-insensitive matching applied on ingest)
+TICKET_TYPE_STANDARD = "standard"
+TICKET_TYPE_GUIDED   = "guided"
+VALID_TICKET_TYPES   = {TICKET_TYPE_STANDARD, TICKET_TYPE_GUIDED}
+
 DEFAULT_VATICAN_KEYWORDS = ["vatican", "sistine", "vaticani", "musei"]
+DEFAULT_GUIDED_KEYWORDS  = ["guided", "tour guidato", "visite guidate", "visita guidata", "guided tour"]
 
 DATE_FORMATS = [
     "%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y",
@@ -50,8 +59,25 @@ class BookingTarget:
     customer_email: str
     status: str
     product_title: str
+    # ── Ticket type ─────────────────────────────────────────────────────────
+    # "standard"  → MV-Biglietti (default, backwards-compatible)
+    # "guided"    → MV-Visite-Guidate  (requires language)
+    ticket_type: str = "standard"
+    # Language code for guided tours: ENG, ITA, ESP, FRA, DEU, POR, …
+    # Ignored (and left empty) for standard tickets.
+    language: str = ""
+    # ────────────────────────────────────────────────────────────────────────
     slot: Optional[object] = None   # filled by the slot finder at booking time
     source: Optional[dict] = None   # {"sheet_id": ..., "tab": ...} for write-back
+
+    @property
+    def is_guided(self) -> bool:
+        return self.ticket_type.lower().strip() == "guided"
+
+    @property
+    def tag(self) -> str:
+        """Vatican API search tag."""
+        return "MV-Visite-Guidate" if self.is_guided else "MV-Biglietti"
 
     @property
     def date_dmy(self) -> str:
@@ -100,6 +126,10 @@ FIELD_ALIASES = {
     "product_title": ["producttitle", "product title", "product", "activity",
                       "tour", "experience", "ticket type", "item", "service"],
     "status": ["status", "booking status", "state"],
+    "ticket_type": ["tickettype", "ticket type", "type", "ticket kind",
+                    "tour type", "product type"],
+    "language": ["language", "lang", "tour language", "guide language",
+                 "lingua", "sprache"],
 }
 
 

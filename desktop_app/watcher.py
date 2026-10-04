@@ -48,6 +48,10 @@ class WatchTarget:
     slot: Optional[Slot] = None
     attempts: int = 0    # booking attempts so far
     prewarm: bool = False  # keep a browser warm on the page, ready to click instantly
+    # Ticket type: "standard" (MV-Biglietti) or "guided" (MV-Visite-Guidate)
+    ticket_type: str = "standard"
+    # Language code for guided tours (ignored for standard tickets)
+    language: str = "ENG"
 
     def to_dict(self) -> dict:
         """JSON-safe representation."""
@@ -61,6 +65,8 @@ class WatchTarget:
             "status": self.status,
             "attempts": self.attempts,
             "prewarm": self.prewarm,
+            "ticket_type": self.ticket_type,
+            "language": self.language,
             "slot": None if self.slot is None else {
                 "date": self.slot.date,
                 "time": self.slot.time,
@@ -124,13 +130,15 @@ class Watcher:
 
     def add_multi(self, date: str, times: List[str], visitors: int = 2,
                   name: str = "", email: str = "", groups: int = 1,
-                  prewarm: bool = False) -> List[WatchTarget]:
+                  prewarm: bool = False, ticket_type: str = "standard",
+                  language: str = "ENG") -> List[WatchTarget]:
         """Add watches for the given times, `groups` bookings per time (same slot)."""
         added = []
         for t in times:
             for _ in range(max(1, int(groups))):
                 w = WatchTarget(date=date, time=normalize_time(t), visitors=visitors,
-                                name=name, email=email, prewarm=prewarm)
+                                name=name, email=email, prewarm=prewarm,
+                                ticket_type=ticket_type, language=language)
                 self.watches[w.id] = w
                 added.append(w)
         self.start()
@@ -175,8 +183,16 @@ class Watcher:
 
             # poll each unique (date, visitors) once, then check all its times
             for (date, visitors), ws in group_by_date_visitors(active).items():
+                # All watches in the group share the same date+visitors.
+                # Use the ticket_type/language from the first watch in the group.
+                first = ws[0]
                 try:
-                    slots = self.provider.find_slots(date, visitors, poll_proxy=poll_proxy)
+                    slots = self.provider.find_slots(
+                        date, visitors,
+                        poll_proxy=poll_proxy,
+                        ticket_type=first.ticket_type,
+                        language=first.language,
+                    )
                 except RateLimitError:
                     rate_limited = True
                     for w in ws:
@@ -223,6 +239,11 @@ class Watcher:
 
     def _make_target(self, w: WatchTarget) -> BookingTarget:
         iso = parse_date(w.date)
+        product = (
+            "Musei Vaticani - Visita Guidata"
+            if w.ticket_type.lower() == "guided"
+            else "Musei Vaticani - Biglietti d'ingresso"
+        )
         return BookingTarget(
             booking_id=w.id,
             activity_date=iso or w.date,
@@ -230,7 +251,9 @@ class Watcher:
             customer_name=w.name or "Manual Booking",
             customer_email=w.email or f"manual-{w.id}@example.com",
             status="CONFIRMED",
-            product_title="Musei Vaticani - Biglietti d'ingresso",
+            product_title=product,
+            ticket_type=w.ticket_type,
+            language=w.language,
             source=None,  # no sheet to write back to
         )
 

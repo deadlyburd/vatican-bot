@@ -45,6 +45,34 @@ EXCLUDED = [
     'palazzo', 'didattiche', 'scuole', 'pellegrinaggio',
 ]
 
+# Supported guided tour languages and their Vatican API codes
+GUIDED_LANGUAGES = {
+    "english": "ENG",
+    "eng":     "ENG",
+    "en":      "ENG",
+    "italian": "ITA",
+    "ita":     "ITA",
+    "it":      "ITA",
+    "spanish": "ESP",
+    "esp":     "ESP",
+    "es":      "ESP",
+    "french":  "FRA",
+    "fra":     "FRA",
+    "fr":      "FRA",
+    "german":  "DEU",
+    "deu":     "DEU",
+    "de":      "DEU",
+    "portuguese": "POR",
+    "por":     "POR",
+    "pt":      "POR",
+}
+
+def normalize_guided_language(lang: str) -> str:
+    """Normalise any user-supplied language string to Vatican API 3-letter code."""
+    if not lang:
+        return "ENG"
+    return GUIDED_LANGUAGES.get(lang.lower().strip(), lang.upper().strip())
+
 # Realistic Rome phone prefixes for random data
 ROME_PREFIXES = ['06', '333', '338', '339', '347', '328', '349', '340']
 
@@ -180,6 +208,69 @@ class SlotFinder:
         logger.info(f"No available slots found in {max_days} days from {start_date}")
         return []
 
+    def find_slots_guided(
+        self,
+        target_date: str,
+        visitors: int = 2,
+        language: str = "ENG",
+        use_cache: bool = True,
+    ) -> List[AvailableSlot]:
+        """
+        Find available guided tour slots for a given date.
+
+        Args:
+            target_date: DD/MM/YYYY or YYYY-MM-DD (auto-detected)
+            visitors:    Number of visitors
+            language:    Language code or name — e.g. 'ENG', 'ITA', 'english'.
+                         Normalised automatically via ``normalize_guided_language``.
+            use_cache:   If True, re-use cached results younger than 60 s.
+
+        Returns:
+            List of AvailableSlot (guided-tour tickets only).
+        """
+        target_date = self._normalize_date(target_date)
+        lang_code   = normalize_guided_language(language)
+        cache_key   = f"guided_{target_date}_{visitors}_{lang_code}"
+
+        if use_cache and cache_key in self._cache:
+            age = time.time() - self._cache_time.get(cache_key, 0)
+            if age < 60:
+                logger.debug(f"Using cached guided slots for {target_date} ({age:.0f}s)")
+                return self._cache[cache_key]
+
+        ticket = self._search_ticket_guided(target_date, visitors, lang_code)
+        if not ticket:
+            logger.info(f"No guided tour ticket for {target_date} / {lang_code}")
+            return []
+
+        slots = self._timeavail_slots_guided(target_date, visitors, ticket, lang_code)
+        self._cache[cache_key]      = slots
+        self._cache_time[cache_key] = time.time()
+        return slots
+
+    def find_all_guided_languages(
+        self,
+        target_date: str,
+        visitors: int = 2,
+    ) -> Dict[str, List[AvailableSlot]]:
+        """
+        Scan every known language for guided tours on a date.
+
+        Returns:
+            Dict mapping language code → list of AvailableSlot.
+            Only languages with at least one slot are included.
+        """
+        target_date = self._normalize_date(target_date)
+        results: Dict[str, List[AvailableSlot]] = {}
+        # Deduplicated list of unique API codes
+        unique_codes = list(dict.fromkeys(GUIDED_LANGUAGES.values()))
+        for code in unique_codes:
+            slots = self.find_slots_guided(target_date, visitors, language=code, use_cache=False)
+            if slots:
+                results[code] = slots
+            time.sleep(0.5)   # polite gap
+        return results
+
     def find_vatican_ticket_for_date(
         self, target_date: str, visitors: int
     ) -> Optional[Dict]:
@@ -314,6 +405,141 @@ class SlotFinder:
             logger.error(f"Timeavail error: {e}")
             return []
 
+    def _search_ticket_guided(
+        self, target_date: str, visitors: int, lang_code: str
+    ) -> Optional[Dict]:
+        """
+        Call search/resultPerTag with tag=MV-Visite-Guidate and return the best
+        matching guided-tour ticket for the requested language.
+        """
+        try:
+            r = self._session.get(
+                f"{VATICAN_BASE}/api/search/resultPerTag",
+                params={
+                    "lang":        "it",
+                    "visitorNum":  str(visitors),
+                    "visitDate":   target_date,
+                    "area":        "1",
+                    "who":         "",
+                    "page":        "0",
+                    "tag":         "MV-Visite-Guidate",
+                },
+                timeout=15,
+            )
+
+            if r.status_code in (429, 403):
+                raise RateLimitError(f"Search API rate-limited ({r.status_code})")
+            if r.status_code != 200:
+                logger.warning(f"Guided search API returned {r.status_code}")
+                return None
+
+            data   = r.json()
+            visits = data.get("visits", [])
+            if not visits:
+                return None
+
+            # Filter by language match + availability
+            lang_lower = lang_code.lower()
+            candidates = []
+            for v in visits:
+                avail = v.get("availability", "")
+                if avail in ("SOLD_OUT", "NOT_ALLOWED"):
+                    continue
+                name_lower = v.get("name", "").lower()
+                # Match language tag in name (e.g. "ENG", "inglese", "english")
+                lang_aliases = {
+                    "eng": ["eng", "english", "inglese"],
+                    "ita": ["ita", "italian", "italiano"],
+                    "esp": ["esp", "spanish", "espanol", "spagnolo"],
+                    "fra": ["fra", "french", "français", "francese"],
+                    "deu": ["deu", "german", "deutsch", "tedesco"],
+                    "por": ["por", "portuguese", "português", "portoghese"],
+                }.get(lang_lower, [lang_lower])
+                if any(a in name_lower for a in lang_aliases):
+                    candidates.append(v)
+
+            if candidates:
+                ticket = candidates[0]
+                logger.info(f"Guided ticket ({lang_code}): {ticket.get('name')} id={ticket.get('id')}")
+                return ticket
+
+            # Fallback: return first available guided tour (any language)
+            for v in visits:
+                if v.get("availability") not in ("SOLD_OUT", "NOT_ALLOWED"):
+                    logger.info(
+                        f"Guided ticket fallback: {v.get('name')} id={v.get('id')}"
+                    )
+                    return v
+
+            return None
+
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Guided search API error: {e}")
+            return None
+
+    def _timeavail_slots_guided(
+        self, target_date: str, visitors: int, ticket: Dict, lang_code: str
+    ) -> List[AvailableSlot]:
+        """
+        Call visit/timeavail with visitLang set to the guided-tour language code.
+        """
+        try:
+            r = self._session.get(
+                f"{VATICAN_BASE}/api/visit/timeavail",
+                params={
+                    "lang":        "it",
+                    "visitLang":   lang_code,   # ← key difference vs standard tickets
+                    "visitTypeId": str(ticket["id"]),
+                    "visitorNum":  str(visitors),
+                    "visitDate":   target_date,
+                },
+                timeout=15,
+            )
+
+            if r.status_code in (429, 403):
+                raise RateLimitError(f"Timeavail guided rate-limited ({r.status_code})")
+            if r.status_code == 500:
+                return []
+            if r.status_code != 200:
+                logger.warning(f"Timeavail guided returned {r.status_code}")
+                return []
+
+            data      = r.json()
+            timetable = data.get("timetable", [])
+            ticket_name = f"{ticket.get('name', 'Guided Tour')} [{lang_code}]"
+            ticket_id   = str(ticket.get("id", ""))
+
+            slots = []
+            for t in timetable:
+                availability = t.get("availability", "")
+                if availability in ("SOLD_OUT", "NOT_ALLOWED", "UNAVAILABLE"):
+                    continue
+                residual = t.get("residual")
+                if residual is not None and residual <= 0 and availability == "LOW_AVAILABILITY":
+                    continue
+                price = t.get("price", 0) or 0
+                if isinstance(price, dict):
+                    price = price.get("value", 0) or 0
+                slots.append(AvailableSlot(
+                    date=target_date,
+                    time=t.get("time", ""),
+                    slot_id=str(t.get("id", "")),
+                    ticket_id=ticket_id,
+                    ticket_name=ticket_name,
+                    visitors=visitors,
+                    price=float(price),
+                    residual=residual or 0,
+                ))
+
+            logger.info(
+                f"Guided timeavail ({lang_code}): {len(slots)} available / {len(timetable)} total"
+            )
+            return slots
+
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Guided timeavail error: {e}")
+            return []
+
     # ── Helpers ──────────────────────────────────────────────────────
 
     @staticmethod
@@ -371,26 +597,56 @@ if __name__ == "__main__":
     import sys
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    finder = SlotFinder()
-    target = sys.argv[1] if len(sys.argv) > 1 else date.today().strftime("%d/%m/%Y")
+    # Usage:
+    #   python slot_finder.py [date] [visitors] [guided|standard] [language]
+    # Examples:
+    #   python slot_finder.py 15/10/2026 2
+    #   python slot_finder.py 15/10/2026 2 guided ENG
+    #   python slot_finder.py 15/10/2026 2 guided all
+
+    finder   = SlotFinder()
+    target   = sys.argv[1] if len(sys.argv) > 1 else date.today().strftime("%d/%m/%Y")
     visitors = int(sys.argv[2]) if len(sys.argv) > 2 else 2
+    mode     = sys.argv[3].lower() if len(sys.argv) > 3 else "standard"
+    language = sys.argv[4] if len(sys.argv) > 4 else "ENG"
 
-    print(f"\n🔍 Slot Finder — {target} | {visitors} visitors\n")
+    print(f"\n🔍 Slot Finder — {target} | {visitors} visitors | mode={mode}\n")
 
-    slots = finder.find_slots(target, visitors)
-
-    if slots:
-        print(f"✅ {len(slots)} available slots:\n")
-        for s in slots:
-            print(f"  ⏰ {s.time} | id={s.slot_id} | ticket={s.ticket_id} | €{s.price}")
+    if mode == "guided":
+        if language.lower() == "all":
+            print("Scanning all guided-tour languages…\n")
+            all_langs = finder.find_all_guided_languages(target, visitors)
+            if not all_langs:
+                print("❌ No guided tour slots found for any language.")
+            else:
+                for code, slots in all_langs.items():
+                    print(f"  🌐 {code}: {len(slots)} slot(s)")
+                    for s in slots[:3]:
+                        print(f"     ⏰ {s.time} | €{s.price} | {s.ticket_name}")
+        else:
+            lang_code = normalize_guided_language(language)
+            slots = finder.find_slots_guided(target, visitors, language=lang_code)
+            if slots:
+                print(f"✅ {len(slots)} guided slots ({lang_code}):\n")
+                for s in slots:
+                    print(f"  ⏰ {s.time} | id={s.slot_id} | ticket={s.ticket_id} | €{s.price}")
+            else:
+                print(f"❌ No guided slots for {target} / {lang_code}")
     else:
-        print(f"❌ No available slots for {target}")
+        slots = finder.find_slots(target, visitors)
 
-        # Scan forward
-        print(f"\n📅 Scanning forward for next available...")
-        next_slots = finder.find_next_available(target, max_days=14, visitors=visitors)
-        if next_slots:
-            d = next_slots[0].date
-            print(f"✅ Next available: {d} — {len(next_slots)} slots")
-            for s in next_slots[:5]:
-                print(f"  ⏰ {s.time}")
+        if slots:
+            print(f"✅ {len(slots)} available slots:\n")
+            for s in slots:
+                print(f"  ⏰ {s.time} | id={s.slot_id} | ticket={s.ticket_id} | €{s.price}")
+        else:
+            print(f"❌ No available slots for {target}")
+
+            # Scan forward
+            print(f"\n📅 Scanning forward for next available...")
+            next_slots = finder.find_next_available(target, max_days=14, visitors=visitors)
+            if next_slots:
+                d = next_slots[0].date
+                print(f"✅ Next available: {d} — {len(next_slots)} slots")
+                for s in next_slots[:5]:
+                    print(f"  ⏰ {s.time}")

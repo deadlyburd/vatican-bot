@@ -74,11 +74,36 @@ class VaticanProvider(BookingProvider):
         from slot_finder import SlotFinder
         return SlotFinder(proxy=proxy)
 
-    def find_slots(self, date_dmy: str, visitors: int, poll_proxy: str = "") -> List[Slot]:
+    def find_slots(
+        self,
+        date_dmy: str,
+        visitors: int,
+        poll_proxy: str = "",
+        ticket_type: str = "standard",
+        language: str = "ENG",
+    ) -> List[Slot]:
+        """
+        Find available Vatican slots.
+
+        Args:
+            date_dmy:    Date in DD/MM/YYYY format.
+            visitors:    Number of visitors.
+            poll_proxy:  Optional proxy URL for the API call.
+            ticket_type: ``"standard"`` (MV-Biglietti, default) or
+                         ``"guided"`` (MV-Visite-Guidate).
+            language:    Language code for guided tours — e.g. ``"ENG"``, ``"ITA"``.
+                         Ignored for standard tickets.
+        """
         from slot_finder import AvailableSlot
-        raw: List[AvailableSlot] = self._slot_finder(proxy=poll_proxy).find_slots(
-            date_dmy, visitors, use_cache=False
-        )
+        finder = self._slot_finder(proxy=poll_proxy)
+
+        if ticket_type.lower().strip() == "guided":
+            raw: List[AvailableSlot] = finder.find_slots_guided(
+                date_dmy, visitors, language=language, use_cache=False
+            )
+        else:
+            raw = finder.find_slots(date_dmy, visitors, use_cache=False)
+
         return [self._from_available(s) for s in raw]
 
     @staticmethod
@@ -110,7 +135,9 @@ class VaticanProvider(BookingProvider):
         rome = self._rome_timezone()
         d, m, y = slot.date.split("/")
         ts = int(datetime(int(y), int(m), int(d), tzinfo=rome).timestamp() * 1000)
-        return f"{VATICAN_BASE}/home/fromtag/{target.visitors}/{ts}/MV-Biglietti/1"
+        # Use the tag from the target so guided tours get MV-Visite-Guidate
+        tag = target.tag if hasattr(target, "tag") else "MV-Biglietti"
+        return f"{VATICAN_BASE}/home/fromtag/{target.visitors}/{ts}/{tag}/1"
 
     def keepalive_js(self, slot: Slot, target: BookingTarget) -> str:
         v = target.visitors
