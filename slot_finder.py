@@ -321,11 +321,15 @@ class SlotFinder:
 
                 if is_vatican and is_entry and not excluded:
                     avail = v.get("availability", "")
-                    if avail == "SOLD_OUT" or avail == "NOT_ALLOWED":
-                        logger.info(f"Vatican ticket found but {avail}")
+                    if avail == "NOT_ALLOWED":
+                        logger.info("Vatican ticket NOT_ALLOWED")
                         return None
-
-                    logger.info(f"Found ticket: {v.get('name')} (id={v.get('id')})")
+                    # NOTE: even when the whole date shows SOLD_OUT, return the
+                    # ticket so timeavail can check *individual* time slots —
+                    # the Vatican releases slots per-time without flipping the
+                    # whole date to AVAILABLE. Returning None here would make
+                    # the watcher blind to single-slot openings.
+                    logger.info(f"Found ticket: {v.get('name')} (id={v.get('id')}) availability={avail}")
                     return v
 
             logger.debug(f"No Vatican ticket in {len(visits)} results")
@@ -438,30 +442,32 @@ class SlotFinder:
             if not visits:
                 return None
 
-            # Filter by language match + availability
+            # Language-matched candidates (keep SOLD_OUT ones so timeavail can
+            # still check individual slots — the date can be SOLD_OUT while a
+            # single guided time opens up).
             lang_lower = lang_code.lower()
-            candidates = []
-            for v in visits:
-                avail = v.get("availability", "")
-                if avail in ("SOLD_OUT", "NOT_ALLOWED"):
-                    continue
-                name_lower = v.get("name", "").lower()
-                # Match language tag in name (e.g. "ENG", "inglese", "english")
-                lang_aliases = {
-                    "eng": ["eng", "english", "inglese"],
-                    "ita": ["ita", "italian", "italiano"],
-                    "esp": ["esp", "spanish", "espanol", "spagnolo"],
-                    "fra": ["fra", "french", "français", "francese"],
-                    "deu": ["deu", "german", "deutsch", "tedesco"],
-                    "por": ["por", "portuguese", "português", "portoghese"],
-                }.get(lang_lower, [lang_lower])
-                if any(a in name_lower for a in lang_aliases):
-                    candidates.append(v)
+            lang_aliases = {
+                "eng": ["eng", "english", "inglese"],
+                "ita": ["ita", "italian", "italiano"],
+                "esp": ["esp", "spanish", "espanol", "spagnolo"],
+                "fra": ["fra", "french", "français", "francese"],
+                "deu": ["deu", "german", "deutsch", "tedesco"],
+                "por": ["por", "portuguese", "português", "portoghese"],
+            }.get(lang_lower, [lang_lower])
+            candidates = [
+                v for v in visits
+                if any(a in v.get("name", "").lower() for a in lang_aliases)
+            ]
 
+            # prefer an available language-matched ticket
+            for v in candidates:
+                if v.get("availability") not in ("SOLD_OUT", "NOT_ALLOWED"):
+                    logger.info(f"Guided ticket ({lang_code}): {v.get('name')} id={v.get('id')}")
+                    return v
+            # else return a language-matched SOLD_OUT ticket so timeavail checks slots
             if candidates:
-                ticket = candidates[0]
-                logger.info(f"Guided ticket ({lang_code}): {ticket.get('name')} id={ticket.get('id')}")
-                return ticket
+                logger.info(f"Guided ticket ({lang_code}) SOLD_OUT — per-slot check: {candidates[0].get('name')}")
+                return candidates[0]
 
             # Fallback: return first available guided tour (any language)
             for v in visits:
@@ -471,7 +477,8 @@ class SlotFinder:
                     )
                     return v
 
-            return None
+            # last resort: first guided tour so timeavail can still check slots
+            return visits[0] if visits else None
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Guided search API error: {e}")
