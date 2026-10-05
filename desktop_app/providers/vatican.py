@@ -405,6 +405,27 @@ class VaticanProvider(BookingProvider):
             return False
         llog("  ✅ checkout reached")
 
+        # Diagnostic: report the Cloudflare Turnstile widget state on the checkout page
+        try:
+            ts = await page.evaluate("""
+                (() => {
+                    const inp = document.querySelector('[name="cf-turnstile-response"], input[name*="turnstile"]');
+                    const widget = document.querySelector('.cf-turnstile, [data-sitekey]');
+                    const frames = Array.from(document.querySelectorAll('iframe'))
+                        .filter(f => /challenge|turnstile|cloudflare/i.test(f.src || ''))
+                        .length;
+                    return {
+                        found: !!inp, widget: !!widget, frames,
+                        len: inp ? (inp.value || '').length : 0,
+                        api: typeof window.turnstile,
+                    };
+                })()
+            """)
+            llog(f"  Turnstile: input={ts.get('found')} widget={ts.get('widget')} "
+                 f"cf_frames={ts.get('frames')} token_len={ts.get('len')} api={ts.get('api')}")
+        except Exception:
+            pass
+
         parts = target.customer_name.split()
         first = parts[0] if parts else "Mario"
         last  = " ".join(parts[1:]) if len(parts) > 1 else "Rossi"
