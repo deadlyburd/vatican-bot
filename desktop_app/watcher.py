@@ -10,6 +10,7 @@ import asyncio
 import itertools
 import logging
 import os
+import subprocess
 import sys
 import threading
 import uuid
@@ -24,7 +25,10 @@ from slot_finder import RateLimitError  # noqa: E402
 
 from .config import AppConfig
 from .providers import BookingProvider, Slot, default_registry
-from .runner import STEALTH_JS, detect_browser, run_booking
+from .runner import (
+    STEALTH_JS, build_chrome_cmd, clean_profile_locks, detect_browser,
+    run_booking, seed_profile,
+)
 from .schema import BookingTarget, parse_date
 from .telemetry import send_alert
 
@@ -311,42 +315,44 @@ class Watcher:
         self._run_on_warm_loop(self._launch_warm(w))
 
     async def _launch_warm(self, w: WatchTarget) -> None:
+        import urllib.request
         from playwright.async_api import async_playwright
 
         target = self._make_target(w)
         placeholder = Slot(date=target.date_dmy, time=w.time, slot_id="", ticket_id="")
         url = self.provider.entry_url(target, placeholder)
         browser = detect_browser(self.config.browser.path)
-        pw = context = page = None
+        # unique port per watch (avoid clashing with the 9400+ booking ports)
+        port = 9200 + (abs(hash(w.id)) % 400)
+        profile = os.path.join(os.path.expanduser("~"), f"vatican_warm_{w.id}")
+        os.makedirs(profile, exist_ok=True)
+        clean_profile_locks(profile)
+        if self.config.browser.source_profile:
+            seed_profile(profile, self.config.browser.source_profile)
+
+        # Manual launch with a bare argv — NOT Playwright's launcher (its default
+        # flags trigger Cloudflare). See run_booking for the full explanation.
+        cmd = build_chrome_cmd(browser, port, profile, 0)
+        proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        pw = page = None
         try:
+            for _ in range(40):
+                try:
+                    urllib.request.urlopen(f"http://127.0.0.1:{port}/json/version", timeout=1)
+                    break
+                except Exception:
+                    await asyncio.sleep(0.5)
+            else:
+                log.warning(f"[watch {w.id}] prewarm CDP not ready")
+                return
             pw = await async_playwright().start()
-            context = await pw.chromium.launch_persistent_context(
-                user_data_dir=os.path.join(os.path.expanduser("~"), f"vatican_warm_{w.id}"),
-                executable_path=browser,
-                headless=False,
-                ignore_default_args=["--enable-automation"],
-                args=[
-                    "--no-first-run", "--no-default-browser-check",
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-infobars",
-                    "--disable-background-timer-throttling",
-                    "--disable-backgrounding-occluded-windows",
-                    "--disable-renderer-backgrounding",
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--window-size=1000,750",
-                ],
-                locale="it-IT", timezone_id="Europe/Rome", viewport=None,
-            )
+            browser_obj = await pw.chromium.connect_over_cdp(f"http://127.0.0.1:{port}")
+            context = browser_obj.contexts[0] if browser_obj.contexts else \
+                await browser_obj.new_context(locale="it-IT", timezone_id="Europe/Rome")
             await context.add_init_script(STEALTH_JS)
             page = context.pages[0] if context.pages else await context.new_page()
-            # Patch the already-open about:blank immediately
-            try:
-                await page.evaluate(STEALTH_JS)
-            except Exception:
-                pass
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            self._warm_pages[w.id] = (pw, context, page)
+            self._warm_pages[w.id] = (proc, pw, page)
             w.status = f"prewarmed {w.date} {normalize_time(w.time)}"
             log.info(f"[watch {w.id}] prewarm ready — browser waiting on the page")
             # keep warm + refresh periodically so availability is fresh when the slot opens
@@ -364,23 +370,22 @@ class Watcher:
             log.warning(f"[watch {w.id}] prewarm failed: {e}")
         finally:
             self._warm_pages.pop(w.id, None)
-            if context:
-                try:
-                    await context.close()
-                except Exception:
-                    pass
             if pw:
                 try:
                     await pw.stop()
                 except Exception:
                     pass
+            try:
+                proc.terminate()
+            except Exception:
+                pass
 
     async def _book_warm(self, w: WatchTarget, slot: Slot) -> None:
         entry = self._warm_pages.get(w.id)
         if not entry:
             threading.Thread(target=self._book_thread, args=(w, slot), daemon=True).start()
             return
-        pw, context, page = entry
+        proc, pw, page = entry
         target = self._make_target(w)
         on_hold, on_payment = self._make_callbacks(w, target)
         try:
@@ -398,11 +403,11 @@ class Watcher:
         finally:
             self._warm_pages.pop(w.id, None)
             try:
-                await context.close()
+                await pw.stop()
             except Exception:
                 pass
             try:
-                await pw.stop()
+                proc.terminate()
             except Exception:
                 pass
 

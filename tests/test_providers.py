@@ -75,7 +75,7 @@ class TestVaticanProvider(unittest.TestCase):
         d, m, y = "29/10/2026".split("/")
         ts = int(datetime(int(y), int(m), int(d), tzinfo=rome).timestamp() * 1000)
         self.assertEqual(
-            url, f"https://tickets.museivaticani.va/home/fromtag/2/{ts}/MV-Biglietti/1")
+            url, f"https://tickets.museivaticani.va/home/visit/2/{ts}/1")
 
     def test_from_available(self):
         raw = SimpleNamespace(
