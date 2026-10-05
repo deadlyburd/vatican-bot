@@ -64,6 +64,52 @@ class VaticanProvider(BookingProvider):
     display_name = "Vatican Museums"
     keywords = ["vatican", "sistine", "vaticani", "musei"]
 
+    # ── Human-like interaction helpers ─────────────────────────────────────
+
+    @staticmethod
+    async def _human_move(page, selector: str) -> None:
+        """
+        Move the mouse to an element along a slightly curved path before clicking.
+        Turnstile scores mouse-movement patterns — zero movement = instant bot flag.
+        """
+        import random, math
+        try:
+            el = await page.query_selector(selector)
+            if not el:
+                return
+            box = await el.bounding_box()
+            if not box:
+                return
+            # Target: centre of element with small random offset
+            tx = box["x"] + box["width"]  * (0.3 + random.random() * 0.4)
+            ty = box["y"] + box["height"] * (0.3 + random.random() * 0.4)
+
+            # Start from a plausible current mouse position (previous element area
+            # or a random point in the upper-left viewport quadrant)
+            sx = random.randint(50, 400)
+            sy = random.randint(50, 300)
+
+            # Move in ~8 steps along a slightly curved path
+            steps = random.randint(6, 10)
+            for i in range(1, steps + 1):
+                t  = i / steps
+                # Bezier-like curve: add a slight arc via a control point
+                cx = (sx + tx) / 2 + random.randint(-60, 60)
+                cy = (sy + ty) / 2 + random.randint(-40, 40)
+                x  = (1-t)**2 * sx + 2*(1-t)*t * cx + t**2 * tx
+                y  = (1-t)**2 * sy + 2*(1-t)*t * cy + t**2 * ty
+                await page.mouse.move(x, y)
+                await page.wait_for_timeout(random.randint(18, 55))
+        except Exception:
+            pass  # movement is best-effort; don't fail the booking flow
+
+    @staticmethod
+    async def _human_delay(lo: int = 600, hi: int = 1800) -> None:
+        """Random delay in [lo, hi] ms — simulates human reaction time variance."""
+        import random
+        import asyncio
+        await asyncio.sleep(random.randint(lo, hi) / 1000)
+
     # ── Slot discovery ──────────────────────────────────────────────────────
 
     def _slot_finder(self, proxy: str = ""):
@@ -184,7 +230,8 @@ class VaticanProvider(BookingProvider):
         if navigate:
             llog(f"[1] navigate → {url}")
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await page.wait_for_timeout(2500)
+            # Simulate a human reading the page before doing anything
+            await self._human_delay(2000, 4000)
 
         # Wait for ticket buttons to appear
         count = await wait_for(page,
@@ -197,6 +244,8 @@ class VaticanProvider(BookingProvider):
 
         # ── [2] Click the correct ticket ───────────────────────────────────
         llog(f"[2] click ticket — is_guided={is_guided} tid={tid}")
+        # Move mouse to the ticket card before clicking — Turnstile watches movement
+        await self._human_move(page, f"[data-cy^='bookTicket_']")
         clicked = await page.evaluate(f"""
             (() => {{
                 const isGuided = {'true' if is_guided else 'false'};
@@ -237,7 +286,7 @@ class VaticanProvider(BookingProvider):
             }})()
         """)
         llog(f"  ticket click: {clicked}")
-        await page.wait_for_timeout(1500)
+        await self._human_delay(800, 1600)
 
         # ── [3] Language selection (guided tours only) ─────────────────────
         if is_guided:
@@ -371,7 +420,8 @@ class VaticanProvider(BookingProvider):
 
         # ── [6] PROCEDI → navigates to /home/checkout ─────────────────────
         llog("[6] PROCEDI")
-        # Button is [data-cy='bookVisit'] on the visit page
+        await self._human_move(page, "[data-cy='bookVisit']")
+        await self._human_delay(400, 900)
         try:
             await page.wait_for_selector("[data-cy='bookVisit']", timeout=10000)
             await page.click("[data-cy='bookVisit']")
@@ -410,19 +460,27 @@ class VaticanProvider(BookingProvider):
             ts = await page.evaluate("""
                 (() => {
                     const inp = document.querySelector('[name="cf-turnstile-response"], input[name*="turnstile"]');
-                    const widget = document.querySelector('.cf-turnstile, [data-sitekey]');
-                    const frames = Array.from(document.querySelectorAll('iframe'))
-                        .filter(f => /challenge|turnstile|cloudflare/i.test(f.src || ''))
-                        .length;
+                    const sitekeys = Array.from(document.querySelectorAll('[data-sitekey]'))
+                        .map(e => e.getAttribute('data-sitekey'));
+                    const tsEls = Array.from(document.querySelectorAll('.cf-turnstile'))
+                        .map(e => e.outerHTML.slice(0, 160));
+                    const elById = Array.from(document.querySelectorAll('[id*=turnstile],[id*=cf-chl],[class*=turnstile]'))
+                        .map(e => e.tagName + '#' + e.id + '.' + (e.className || '').toString().slice(0, 40));
                     return {
-                        found: !!inp, widget: !!widget, frames,
-                        len: inp ? (inp.value || '').length : 0,
+                        found: !!inp, len: inp ? (inp.value || '').length : 0,
                         api: typeof window.turnstile,
+                        onload_cb: typeof window.onloadTurnstileCallback,
+                        sitekeys, tsEls,
+                        el_by_id: elById.slice(0, 6),
+                        widget_id: inp ? inp.id : null,
                     };
                 })()
             """)
-            llog(f"  Turnstile: input={ts.get('found')} widget={ts.get('widget')} "
-                 f"cf_frames={ts.get('frames')} token_len={ts.get('len')} api={ts.get('api')}")
+            llog(f"  Turnstile: input={ts.get('found')} token_len={ts.get('len')} "
+                 f"api={ts.get('api')} onload_cb={ts.get('onload_cb')}")
+            llog(f"  Turnstile sitekeys={ts.get('sitekeys')} widget_id={ts.get('widget_id')}")
+            llog(f"  Turnstile elements={ts.get('el_by_id')}")
+            llog(f"  Turnstile containers={ts.get('tsEls')}")
         except Exception:
             pass
 
@@ -493,6 +551,10 @@ class VaticanProvider(BookingProvider):
         # Checkout has two checkboxes via data-cy='acceptChk-1' and 'acceptChk-2'
         # Order: a) tick Terms → b) close modal → c) tick Offers
         llog("[8] GDPR checkboxes")
+
+        # Move mouse to checkbox area — Turnstile watches movement on checkout page
+        await self._human_move(page, "[data-cy='acceptChk-1']")
+        await self._human_delay(500, 1200)
 
         # a) Terms
         await page.evaluate("""

@@ -33,23 +33,41 @@ log = logging.getLogger("sniper")
 #   - Removes Playwright's __pw_ internal markers from window
 STEALTH_JS = """
 (() => {
+    // CRITICAL: only patch the TOP frame. add_init_script runs this in every
+    // frame — including Cloudflare's Turnstile iframe (challenges.cloudflare.com).
+    // Patching that iframe breaks Turnstile's postMessage handshake, so the
+    // "verify you are human" widget never renders. Skip non-top frames.
+    try { if (window.top !== window.self) return; } catch (e) { return; }
+
     // 1. webdriver — DELETE it. Defining it as undefined still leaves the
     //    property present, and `'webdriver' in navigator` is a bot signal.
     try { delete Object.getPrototypeOf(navigator).webdriver; } catch (e) {}
     try { delete navigator.webdriver; } catch (e) {}
 
-    // 2. window.chrome — missing in Playwright CDP contexts
-    if (!window.chrome) {
-        window.chrome = {
-            app: {isInstalled: false, InstallState: {DISABLED:'a',INSTALLED:'b',NOT_INSTALLED:'c'},
-                  RunningState: {CANNOT_RUN:'a',READY_TO_RUN:'b',RUNNING:'c'}},
-            runtime: {OnInstalledReason: {CHROME_UPDATE:'a',INSTALL:'b',SHARED_MODULE_UPDATE:'c',UPDATE:'d'},
-                      PlatformArch: {ARM:'a',ARM64:'b',MIPS:'c',MIPS64:'d',X86_32:'e',X86_64:'f'},
-                      PlatformNaclArch: {ARM:'a',MIPS:'b',MIPS64:'c',X86_32:'d',X86_64:'e'},
-                      PlatformOs: {ANDROID:'a',CROS:'b',LINUX:'c',MAC:'d',OPENBSD:'e',WIN:'f'},
-                      RequestUpdateCheckStatus: {NO_UPDATE:'a',THROTTLED:'b',UPDATE_AVAILABLE:'c'}},
-            csi: function(){}, loadTimes: function(){}
+    // 2. window.chrome — missing in Playwright CDP contexts, or stub in Brave CDP
+    // Must have real-looking runtime with connect/sendMessage stubs
+    if (!window.chrome || !window.chrome.runtime || !window.chrome.runtime.connect) {
+        const _chrome = window.chrome || {};
+        _chrome.app = _chrome.app || {
+            isInstalled: false,
+            InstallState: {DISABLED:'a',INSTALLED:'b',NOT_INSTALLED:'c'},
+            RunningState: {CANNOT_RUN:'a',READY_TO_RUN:'b',RUNNING:'c'}
         };
+        _chrome.runtime = _chrome.runtime || {};
+        // Real Brave has these — stub them so probes don't throw
+        _chrome.runtime.connect          = function() { return {onMessage:{addListener:function(){}},disconnect:function(){}}; };
+        _chrome.runtime.sendMessage      = function() {};
+        _chrome.runtime.onMessage        = {addListener:function(){},removeListener:function(){}};
+        _chrome.runtime.onConnect        = {addListener:function(){},removeListener:function(){}};
+        _chrome.runtime.id               = undefined;  // no extension = undefined, not missing
+        _chrome.runtime.getManifest      = function() { return {}; };
+        _chrome.runtime.getURL           = function(p) { return p; };
+        _chrome.runtime.OnInstalledReason = {CHROME_UPDATE:'a',INSTALL:'b',SHARED_MODULE_UPDATE:'c',UPDATE:'d'};
+        _chrome.runtime.PlatformOs       = {ANDROID:'a',CROS:'b',LINUX:'c',MAC:'d',OPENBSD:'e',WIN:'f'};
+        _chrome.runtime.PlatformArch     = {ARM:'a',ARM64:'b',MIPS:'c',MIPS64:'d',X86_32:'e',X86_64:'f'};
+        _chrome.csi       = _chrome.csi       || function(){};
+        _chrome.loadTimes = _chrome.loadTimes || function(){};
+        window.chrome = _chrome;
     }
 
     // 3. plugins — empty = bot; fake a realistic set
@@ -377,6 +395,12 @@ async def run_booking(
                     pass
 
             page = ctx.pages[0] if ctx.pages else await ctx.new_page()
+            # diagnostic: surface Turnstile/Cloudflare console messages + JS errors
+            page.on("console", lambda m: log.info(f"[{label}] console[{m.type}] {str(m.text)[:180]}")
+                    if any(k in str(m.text).lower()
+                           for k in ("turnstile", "cloudflare", "challenge", "error", "fail", "block"))
+                    else None)
+            page.on("pageerror", lambda e: log.info(f"[{label}] pageerror: {str(e)[:180]}"))
             log.info(f"[{label}] navigating to Vatican")
             return await provider.book(page, target, slot, label,
                                        on_hold=on_hold, on_payment=on_payment)
