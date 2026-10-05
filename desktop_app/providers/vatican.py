@@ -196,17 +196,47 @@ class VaticanProvider(BookingProvider):
         llog(f"  {count} ticket buttons visible")
 
         # ── [2] Click the correct ticket ───────────────────────────────────
-        llog(f"[2] click bookTicket_{tid}")
-        await page.evaluate(f"""
+        llog(f"[2] click ticket — is_guided={is_guided} tid={tid}")
+        clicked = await page.evaluate(f"""
             (() => {{
-                // Try exact data-cy match first
-                const b = document.querySelector("[data-cy='bookTicket_{tid}']");
-                if (b) {{ b.scrollIntoView({{block:'center'}}); b.click(); return 'exact'; }}
-                // Fallback: first available ticket button
+                const isGuided = {'true' if is_guided else 'false'};
+                const tid = '{tid}';
+
+                function cardName(card) {{
+                    const t = card.querySelector('.muvaTicketTitle, [data-cy="ticketName"], h2.visitName');
+                    return (t ? t.innerText : card.innerText).toLowerCase().trim();
+                }}
+
+                // 1. Exact data-cy match
+                const exact = document.querySelector("[data-cy='bookTicket_" + tid + "']");
+                if (exact) {{ exact.scrollIntoView({{block:'center'}}); exact.click(); return 'exact:' + tid; }}
+
+                // 2. Name-based match — guided vs standard
+                for (const card of document.querySelectorAll("[id^='ticket_']")) {{
+                    const btn = card.querySelector("[data-cy^='bookTicket_']");
+                    if (!btn) continue;
+                    const name = cardName(card);
+                    const isGuidedCard = name.includes('visita') || name.includes('guidat') ||
+                                         name.includes('guided') || name.includes('singoli');
+                    const isStandardCard = (name.includes('biglietti') || name.includes('ingresso'))
+                                           && !name.includes('visita');
+                    if (isGuided && isGuidedCard) {{
+                        btn.scrollIntoView({{block:'center'}}); btn.click();
+                        return 'name-guided:' + name.slice(0, 50);
+                    }}
+                    if (!isGuided && isStandardCard) {{
+                        btn.scrollIntoView({{block:'center'}}); btn.click();
+                        return 'name-standard:' + name.slice(0, 50);
+                    }}
+                }}
+
+                // 3. Last resort: first button
                 const first = document.querySelector("[data-cy^='bookTicket_']");
-                if (first) {{ first.scrollIntoView({{block:'center'}}); first.click(); return 'first'; }}
+                if (first) {{ first.scrollIntoView({{block:'center'}}); first.click(); return 'fallback-first'; }}
+                return 'not-found';
             }})()
         """)
+        llog(f"  ticket click: {clicked}")
         await page.wait_for_timeout(1500)
 
         # ── [3] Language selection (guided tours only) ─────────────────────
