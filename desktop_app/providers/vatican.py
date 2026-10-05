@@ -135,7 +135,17 @@ class VaticanProvider(BookingProvider):
         rome = self._rome_timezone()
         d, m, y = slot.date.split("/")
         ts = int(datetime(int(y), int(m), int(d), tzinfo=rome).timestamp() * 1000)
-        # Use the tag from the target so guided tours get MV-Visite-Guidate
+
+        if target.is_guided:
+            # Guided tours use the direct ticket-ID deep-link, not fromtag.
+            # URL: /home/{visitTypeId}/{ts}?lang=it&visitLang={LANG}&visitorNum={N}
+            lang = (target.language or "ENG").upper()
+            return (
+                f"{VATICAN_BASE}/home/{slot.ticket_id}/{ts}"
+                f"?lang=it&visitLang={lang}&visitorNum={target.visitors}"
+            )
+
+        # Standard tickets use the fromtag URL
         tag = target.tag if hasattr(target, "tag") else "MV-Biglietti"
         return f"{VATICAN_BASE}/home/fromtag/{target.visitors}/{ts}/{tag}/1"
 

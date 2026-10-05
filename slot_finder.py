@@ -522,7 +522,9 @@ class SlotFinder:
                 if availability in ("SOLD_OUT", "NOT_ALLOWED", "UNAVAILABLE"):
                     continue
                 residual = t.get("residual")
-                if residual is not None and residual <= 0 and availability == "LOW_AVAILABILITY":
+                # Skip if residual is explicitly 0 — no seats left regardless of
+                # the availability label (Vatican sometimes returns AVAILABLE + residual=0)
+                if residual is not None and residual <= 0:
                     continue
                 price = t.get("price", 0) or 0
                 if isinstance(price, dict):
