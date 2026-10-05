@@ -325,13 +325,28 @@ class Watcher:
                 executable_path=browser,
                 headless=False,
                 ignore_default_args=["--enable-automation"],
-                args=["--no-first-run", "--no-default-browser-check",
-                      "--disable-blink-features=AutomationControlled",
-                      "--window-size=1000,750"],
+                args=[
+                    "--no-first-run", "--no-default-browser-check",
+                    "--disable-blink-features=AutomationControlled",
+                    "--disable-infobars",
+                    "--excludeSwitches=enable-automation",
+                    "--useAutomationExtension=false",
+                    "--disable-background-timer-throttling",
+                    "--disable-backgrounding-occluded-windows",
+                    "--disable-renderer-backgrounding",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--window-size=1000,750",
+                ],
                 locale="it-IT", timezone_id="Europe/Rome", viewport=None,
             )
             await context.add_init_script(STEALTH_JS)
             page = context.pages[0] if context.pages else await context.new_page()
+            # Patch the already-open about:blank immediately
+            try:
+                await page.evaluate(STEALTH_JS)
+            except Exception:
+                pass
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             self._warm_pages[w.id] = (pw, context, page)
             w.status = f"prewarmed {w.date} {normalize_time(w.time)}"

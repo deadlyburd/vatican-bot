@@ -18,10 +18,115 @@ from .proxies import Proxy
 
 log = logging.getLogger("sniper")
 
-# Runs before any page script: hides the Playwright automation fingerprint from
-# Cloudflare's "verify you're not a robot" check.
+# Runs before any page script: patches all navigator/window signals that
+# Cloudflare Turnstile and BotD use to detect Playwright/CDP automation.
+#
+# Covers:
+#   - navigator.webdriver        (the obvious one — but NOT the only one)
+#   - window.chrome              (missing entirely in Playwright contexts)
+#   - navigator.plugins          (empty array is a bot signal)
+#   - navigator.languages        (single-entry array is a bot signal)
+#   - navigator.permissions      (Notification query returns wrong state)
+#   - navigator.connection       (missing in headless)
+#   - window.outerWidth/Height   (0 in headless → Cloudflare checks this)
+#   - WebGL vendor/renderer      (headless GPU string is a known bot signal)
+#   - Removes Playwright's __pw_ internal markers from window
 STEALTH_JS = """
-Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+(() => {
+    // 1. webdriver
+    Object.defineProperty(navigator, 'webdriver', {get: () => undefined, configurable: true});
+
+    // 2. window.chrome — missing in Playwright CDP contexts
+    if (!window.chrome) {
+        window.chrome = {
+            app: {isInstalled: false, InstallState: {DISABLED:'a',INSTALLED:'b',NOT_INSTALLED:'c'},
+                  RunningState: {CANNOT_RUN:'a',READY_TO_RUN:'b',RUNNING:'c'}},
+            runtime: {OnInstalledReason: {CHROME_UPDATE:'a',INSTALL:'b',SHARED_MODULE_UPDATE:'c',UPDATE:'d'},
+                      PlatformArch: {ARM:'a',ARM64:'b',MIPS:'c',MIPS64:'d',X86_32:'e',X86_64:'f'},
+                      PlatformNaclArch: {ARM:'a',MIPS:'b',MIPS64:'c',X86_32:'d',X86_64:'e'},
+                      PlatformOs: {ANDROID:'a',CROS:'b',LINUX:'c',MAC:'d',OPENBSD:'e',WIN:'f'},
+                      RequestUpdateCheckStatus: {NO_UPDATE:'a',THROTTLED:'b',UPDATE_AVAILABLE:'c'}},
+            csi: function(){}, loadTimes: function(){}
+        };
+    }
+
+    // 3. plugins — empty = bot; fake a realistic set
+    if (navigator.plugins.length === 0) {
+        const fakePDF = {0:{type:'application/x-google-chrome-pdf',suffixes:'pdf',description:'Portable Document Format',enabledPlugin:null},
+                         description:'Portable Document Format', filename:'internal-pdf-viewer',
+                         length:1, name:'Chrome PDF Plugin'};
+        Object.defineProperty(navigator, 'plugins', {
+            get: () => {
+                const arr = [fakePDF];
+                arr.item   = i => arr[i];
+                arr.namedItem = n => arr.find(p => p.name === n) || null;
+                arr.refresh = () => {};
+                return arr;
+            }, configurable: true
+        });
+    }
+
+    // 4. languages — single entry is a strong bot signal
+    Object.defineProperty(navigator, 'languages', {
+        get: () => ['it-IT', 'it', 'en-US', 'en'], configurable: true
+    });
+
+    // 5. Notification permissions — headless returns 'denied' immediately
+    const origQuery = window.Notification && Notification.requestPermission;
+    if (window.Permissions && window.Permissions.prototype.query) {
+        const origPermQuery = Permissions.prototype.query;
+        Permissions.prototype.query = function(params) {
+            if (params && params.name === 'notifications') {
+                return Promise.resolve({state: 'prompt', onchange: null});
+            }
+            return origPermQuery.call(this, params);
+        };
+    }
+
+    // 6. window outer dimensions — 0 in headless
+    if (window.outerWidth === 0)  Object.defineProperty(window, 'outerWidth',  {get: () => window.innerWidth  || 1000, configurable: true});
+    if (window.outerHeight === 0) Object.defineProperty(window, 'outerHeight', {get: () => window.innerHeight || 750,  configurable: true});
+
+    // 7. navigator.connection — missing in headless
+    if (!navigator.connection) {
+        Object.defineProperty(navigator, 'connection', {
+            get: () => ({effectiveType: '4g', downlink: 10, rtt: 50, saveData: false}),
+            configurable: true,
+        });
+    }
+
+    // 8. WebGL — headless GPU renderer is a known bot fingerprint
+    const getParam = WebGLRenderingContext.prototype.getParameter;
+    WebGLRenderingContext.prototype.getParameter = function(param) {
+        if (param === 37445) return 'Intel Inc.';        // UNMASKED_VENDOR_WEBGL
+        if (param === 37446) return 'Intel Iris OpenGL Engine';  // UNMASKED_RENDERER_WEBGL
+        return getParam.call(this, param);
+    };
+    if (window.WebGL2RenderingContext) {
+        const getParam2 = WebGL2RenderingContext.prototype.getParameter;
+        WebGL2RenderingContext.prototype.getParameter = function(param) {
+            if (param === 37445) return 'Intel Inc.';
+            if (param === 37446) return 'Intel Iris OpenGL Engine';
+            return getParam2.call(this, param);
+        };
+    }
+
+    // 9. Remove Playwright's internal __pw_ markers from window
+    const pwKeys = Object.getOwnPropertyNames(window).filter(k => k.startsWith('__pw'));
+    pwKeys.forEach(k => { try { delete window[k]; } catch(e) {} });
+
+    // 10. hairline iframe — used by some Cloudflare checks, block detection
+    const origCreateElement = document.createElement.bind(document);
+    document.createElement = function(tag) {
+        const el = origCreateElement(tag);
+        if (tag.toLowerCase() === 'iframe') {
+            Object.defineProperty(el, 'contentWindow', {
+                get: function() { return window; }, configurable: true
+            });
+        }
+        return el;
+    };
+})();
 """
 
 def _browser_candidates() -> List[str]:
@@ -117,12 +222,25 @@ def build_chrome_cmd(
         browser_path,
         f"--remote-debugging-port={port}",
         f"--user-data-dir={profile_dir}",
-        "--no-first-run", "--no-default-browser-check",
+        "--no-first-run",
+        "--no-default-browser-check",
+        # ── Automation signal removal ──────────────────────────────────────
         "--disable-blink-features=AutomationControlled",
+        "--disable-infobars",                        # hides "controlled by automation" bar
+        "--excludeSwitches=enable-automation",       # removes enable-automation CLI flag
+        "--useAutomationExtension=false",            # disables automation extension
+        # ── Realistic browser behaviour ───────────────────────────────────
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding",
+        "--disable-features=TranslateUI",
+        "--no-sandbox",                              # required in PyInstaller/packaged env
+        "--disable-dev-shm-usage",
+        # ── Window ────────────────────────────────────────────────────────
         "--window-size=1000,750",
-        # clamp to a 6×4 grid so windows always stay on-screen (no y=8050)
         f"--window-position={50 + (idx % 6) * 180},{50 + ((idx // 6) % 4) * 180}",
-        f"--lang={lang}", "about:blank",
+        f"--lang={lang}",
+        "about:blank",
     ]
     if proxy is not None:
         flag = proxy.chrome_flag()
@@ -177,14 +295,23 @@ async def run_booking(
     on_hold=None,
     on_payment=None,
 ) -> bool:
-    """Launch one Chromium, connect, run provider.book(). Returns True on hold."""
+    """Launch one Chromium (minimal, human-like argv), connect via CDP, book.
+
+    NOTE: we deliberately launch Brave ourselves instead of using Playwright's
+    launch_persistent_context — Playwright injects ~40 automation flags
+    (--no-sandbox, --disable-dev-shm-usage, --enable-unsafe-swiftshader,
+    --disable-extensions, --use-mock-keychain, …) that make Cloudflare serve the
+    "verify you're not a robot" challenge. A bare argv + connect_over_cdp passes.
+    """
+    import urllib.request
     from playwright.async_api import async_playwright
 
     label = label or f"T{idx + 1:02d}"
+    port = port or (9400 + idx)
     profile_dir = profile_dir or os.path.join(os.path.expanduser("~"), f"vatican_snipe_profile_{idx}")
     browser_path = detect_browser(browser_path)
 
-    log.info(f"[{label}] browser={browser_path} profile={profile_dir}")
+    log.info(f"[{label}] browser={browser_path} port={port} profile={profile_dir}")
     if not browser_path:
         log.error(f"[{label}] no browser found — install Chrome/Brave/Edge")
         return False
@@ -194,34 +321,45 @@ async def run_booking(
     if seed_source:
         seed_profile(profile_dir, seed_source)
 
-    launch_kwargs = dict(
-        user_data_dir=profile_dir,
-        executable_path=browser_path,
-        headless=False,
-        # Remove Playwright's automation flag — it makes Cloudflare serve the
-        # "verify you're not a robot" challenge.
-        ignore_default_args=["--enable-automation"],
-        args=[
-            "--no-first-run", "--no-default-browser-check",
-            "--disable-blink-features=AutomationControlled",
-            "--window-size=1000,750",
-            # NOTE: deliberately NOT using --no-sandbox / --disable-dev-shm-usage
-            # — those are automation signals that trigger the Cloudflare challenge.
-        ],
-        locale="it-IT",
-        timezone_id="Europe/Rome",
-        viewport=None,
-    )
-    if proxy is not None:
-        launch_kwargs["proxy"] = proxy.playwright_proxy()
+    cmd = build_chrome_cmd(browser_path, port, profile_dir, idx, proxy=proxy)
+    log.info(f"[{label}] launching browser (bare argv)...")
+    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log.info(f"[{label}] browser PID={proc.pid}")
 
     try:
+        await asyncio.sleep(2 + idx * 0.2)
+        log.info(f"[{label}] waiting for CDP on port {port}...")
+        for _ in range(40):
+            try:
+                urllib.request.urlopen(f"http://127.0.0.1:{port}/json/version", timeout=1)
+                break
+            except Exception:
+                await asyncio.sleep(0.5)
+        else:
+            log.error(f"[{label}] CDP never became ready on port {port}")
+            return False
+
+        log.info(f"[{label}] CDP ready — connecting...")
         async with async_playwright() as p:
-            log.info(f"[{label}] launching browser via Playwright...")
-            context = await p.chromium.launch_persistent_context(**launch_kwargs)
-            await context.add_init_script(STEALTH_JS)
-            log.info(f"[{label}] browser launched — opening page")
-            page = context.pages[0] if context.pages else await context.new_page()
+            browser = await p.chromium.connect_over_cdp(f"http://127.0.0.1:{port}")
+            ctx = browser.contexts[0] if browser.contexts else await browser.new_context(
+                locale="it-IT", timezone_id="Europe/Rome")
+
+            # Apply stealth on every new page the context creates (covers all
+            # navigations, not just the first one).
+            await ctx.add_init_script(STEALTH_JS)
+
+            # Also patch any pages that are already open (the about:blank we
+            # launched with, and any pre-existing tabs).
+            for existing_page in ctx.pages:
+                try:
+                    await existing_page.add_init_script(STEALTH_JS)
+                    # Run immediately in-page too so the current document is patched
+                    await existing_page.evaluate(STEALTH_JS)
+                except Exception:
+                    pass
+
+            page = ctx.pages[0] if ctx.pages else await ctx.new_page()
             log.info(f"[{label}] navigating to Vatican")
             return await provider.book(page, target, slot, label,
                                        on_hold=on_hold, on_payment=on_payment)
@@ -230,3 +368,8 @@ async def run_booking(
         import traceback
         traceback.print_exc()
         return False
+    finally:
+        try:
+            proc.terminate()
+        except Exception:
+            pass
