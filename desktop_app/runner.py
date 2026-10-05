@@ -33,8 +33,10 @@ log = logging.getLogger("sniper")
 #   - Removes Playwright's __pw_ internal markers from window
 STEALTH_JS = """
 (() => {
-    // 1. webdriver
-    Object.defineProperty(navigator, 'webdriver', {get: () => undefined, configurable: true});
+    // 1. webdriver — DELETE it. Defining it as undefined still leaves the
+    //    property present, and `'webdriver' in navigator` is a bot signal.
+    try { delete Object.getPrototypeOf(navigator).webdriver; } catch (e) {}
+    try { delete navigator.webdriver; } catch (e) {}
 
     // 2. window.chrome — missing in Playwright CDP contexts
     if (!window.chrome) {
