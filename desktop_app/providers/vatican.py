@@ -369,8 +369,9 @@ class VaticanProvider(BookingProvider):
             return False
         await page.wait_for_timeout(2000)
 
-        # ── [6] PROCEDI ────────────────────────────────────────────────────
+        # ── [6] PROCEDI → navigates to /home/checkout ─────────────────────
         llog("[6] PROCEDI")
+        # Button is [data-cy='bookVisit'] on the visit page
         try:
             await page.wait_for_selector("[data-cy='bookVisit']", timeout=10000)
             await page.click("[data-cy='bookVisit']")
@@ -378,11 +379,11 @@ class VaticanProvider(BookingProvider):
             await page.evaluate("document.querySelector(\"[data-cy='bookVisit']\")?.click()")
         await page.wait_for_timeout(5000)
 
-        # Bounce detection: /home/visit/ means we're still on the entry page
+        # Bounce detection: still on /home/visit/ means PROCEDI didn't navigate
         cur = page.url
         for _retry in range(2):
-            if "visit" in cur.lower() and "checkout" not in cur.lower() and "recap" not in cur.lower():
-                llog(f"  ↩ still on entry page ({cur[:60]}) — retrying PROCEDI")
+            if "/visit/" in cur and "checkout" not in cur:
+                llog(f"  ↩ still on visit page — retrying PROCEDI")
                 await page.wait_for_timeout(2000)
                 try:
                     await page.click("[data-cy='bookVisit']")
@@ -468,29 +469,16 @@ class VaticanProvider(BookingProvider):
         llog("  form filled")
 
         # ── [8] GDPR checkboxes — follow exact recording order ─────────────
-        # Order from recording:
-        #   a) Tick Terms (norme generali)    → mat-mdc-checkbox-1
-        #   b) Close the modal that appears   → [data-cy='purchase-rules-close-btn']
-        #   c) Tick reduced-price disclaimer  → mat-mdc-checkbox-6 (aria label with "ridotto")
-        #   d) Tick offers checkbox           → mat-mdc-checkbox-7 (aria label with "offerte")
-        llog("[8] GDPR checkboxes (recording order)")
+        # Checkout has two checkboxes via data-cy='acceptChk-1' and 'acceptChk-2'
+        # Order: a) tick Terms → b) close modal → c) tick Offers
+        llog("[8] GDPR checkboxes")
 
         # a) Terms
         await page.evaluate("""
             (() => {
-                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-                for (const b of boxes) {
-                    if (b.disabled) continue;
-                    let el = b.parentElement, text = '';
-                    for (let i = 0; i < 8 && el; i++) {
-                        const t = (el.innerText||el.textContent||'').replace(/\\s+/g,' ').trim();
-                        if (t.length > 4) { text = t.toLowerCase(); break; }
-                        el = el.parentElement;
-                    }
-                    if ((text.includes('norme generali') || text.includes('accetto le')) && !b.checked) {
-                        b.click(); break;
-                    }
-                }
+                const chk = document.querySelector("[data-cy='acceptChk-1'] input[type='checkbox']")
+                         || document.querySelector("#mat-mdc-checkbox-1-input");
+                if (chk && !chk.checked) chk.click();
             })()
         """)
         await page.wait_for_timeout(800)
@@ -498,7 +486,7 @@ class VaticanProvider(BookingProvider):
         # b) Close the terms modal
         try:
             await page.click("[data-cy='purchase-rules-close-btn']")
-            await page.wait_for_timeout(600)
+            await page.wait_for_timeout(500)
         except Exception:
             try:
                 await page.evaluate("""
@@ -508,47 +496,23 @@ class VaticanProvider(BookingProvider):
                         if (btn) btn.click();
                     })()
                 """)
-                await page.wait_for_timeout(600)
+                await page.wait_for_timeout(500)
             except Exception:
                 pass
 
-        # c) Reduced-price disclaimer
+        # c) Offers checkbox
         await page.evaluate("""
             (() => {
-                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-                for (const b of boxes) {
-                    if (b.disabled || b.checked) continue;
-                    const aria = (b.getAttribute('aria-label')||'').toLowerCase();
-                    const id   = (b.id||'').toLowerCase();
-                    if (aria.includes('ridotto') || aria.includes('reduced') ||
-                        id.includes('checkbox-6')) {
-                        b.click(); break;
-                    }
-                }
+                const chk = document.querySelector("[data-cy='acceptChk-2'] input[type='checkbox']")
+                         || document.querySelector("#mat-mdc-checkbox-3-input");
+                if (chk && !chk.checked) chk.click();
             })()
         """)
         await page.wait_for_timeout(400)
 
-        # d) Offers / marketing checkbox
-        await page.evaluate("""
-            (() => {
-                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-                for (const b of boxes) {
-                    if (b.disabled || b.checked) continue;
-                    const aria = (b.getAttribute('aria-label')||'').toLowerCase();
-                    const id   = (b.id||'').toLowerCase();
-                    if (aria.includes('offerte') || aria.includes('offers') ||
-                        id.includes('checkbox-7')) {
-                        b.click(); break;
-                    }
-                }
-            })()
-        """)
-        await page.wait_for_timeout(400)
-
-        # e) Fallback keeper for any remaining unchecked non-disabled boxes
+        # d) Fallback keeper for any remaining boxes
         await page.evaluate(KEEPER_JS)
-        await page.wait_for_timeout(1500)
+        await page.wait_for_timeout(1000)
 
         cb = await page.evaluate('document.querySelectorAll("input[type=checkbox]:checked").length')
         llog(f"  {cb} checkbox(es) checked")
