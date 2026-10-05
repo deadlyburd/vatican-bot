@@ -171,144 +171,200 @@ class VaticanProvider(BookingProvider):
         visitors = target.visitors
         slot_time = slot.time
         url = self.entry_url(target, slot)
+        is_guided = getattr(target, "is_guided", False)
+        language  = getattr(target, "language", "ENG") or "ENG"
 
         def llog(msg):
             log.info(f"[{label}] {msg}")
 
-        llog(f"→ {slot.date} {slot_time} | {target.customer_name} ({visitors}v)")
+        llog(f"→ {slot.date} {slot_time} | {target.customer_name} ({visitors}v)"
+             + (f" guided/{language}" if is_guided else ""))
 
+        # ── [1] Navigate ───────────────────────────────────────────────────
         if navigate:
-            # [1] Visit home first (fresh Cloudflare cookie), then deep link
-            llog(f"[1] {slot.date} {slot_time}")
-            await page.goto(f"{VATICAN_BASE}/home", wait_until="domcontentloaded", timeout=20000)
-            await page.wait_for_timeout(2000)
+            llog(f"[1] navigate → {url}")
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await page.wait_for_timeout(2500)
+
+        # Wait for ticket buttons to appear
         count = await wait_for(page,
             "document.querySelectorAll(\"[data-cy^='bookTicket_']\").length || 0",
             timeout=25, label="tickets")
         if not count or int(count) == 0:
             llog("❌ no ticket buttons")
             return False
-        llog(f"  {count} ticket buttons")
+        llog(f"  {count} ticket buttons visible")
 
-        # [2] Click ticket
-        llog("[2] ticket click")
+        # ── [2] Click the correct ticket ───────────────────────────────────
+        llog(f"[2] click bookTicket_{tid}")
         await page.evaluate(f"""
             (() => {{
+                // Try exact data-cy match first
                 const b = document.querySelector("[data-cy='bookTicket_{tid}']");
-                if (b) {{ b.click(); return; }}
-                for (const card of document.querySelectorAll('[id^="ticket_"]')) {{
-                    const t = card.innerText.toLowerCase();
-                    if (t.includes('musei vaticani') && (t.includes('ingresso')||t.includes('biglietti'))) {{
-                        const btn = card.querySelector("[data-cy^='bookTicket_']");
-                        if (btn) {{ btn.click(); return; }}
+                if (b) {{ b.scrollIntoView({{block:'center'}}); b.click(); return 'exact'; }}
+                // Fallback: first available ticket button
+                const first = document.querySelector("[data-cy^='bookTicket_']");
+                if (first) {{ first.scrollIntoView({{block:'center'}}); first.click(); return 'first'; }}
+            }})()
+        """)
+        await page.wait_for_timeout(1500)
+
+        # ── [3] Language selection (guided tours only) ─────────────────────
+        if is_guided:
+            llog(f"[3] select language={language}")
+            # Map our language codes to the position in the Vatican dropdown
+            # Recording shows Italian is item 4 (1-indexed) in the dropdown list.
+            LANG_POSITIONS = {
+                "ITA": 4, "ENG": 1, "ESP": 2, "FRA": 3, "DEU": 5, "POR": 6
+            }
+            lang_pos = LANG_POSITIONS.get(language.upper(), 1)
+
+            lang_opened = await wait_for(page,
+                "!!document.querySelector(\"[data-cy='visitLang']\")",
+                timeout=8, label="visitLang dropdown")
+            if lang_opened:
+                try:
+                    await page.click("[data-cy='visitLang']")
+                    await page.wait_for_timeout(600)
+                    # Click nth item in the language dropdown
+                    await page.evaluate(f"""
+                        (() => {{
+                            const items = document.querySelectorAll(
+                                'app-ticket-visit-language [data-cy=\"visitLangSection\"], '
+                                + 'app-ticket-visit-language app-dropdown article section > div'
+                            );
+                            const idx = Math.min({lang_pos} - 1, items.length - 1);
+                            if (items[idx]) {{ items[idx].click(); return idx; }}
+                            // fallback: first item
+                            if (items[0]) items[0].click();
+                        }})()
+                    """)
+                    await page.wait_for_timeout(800)
+                    llog(f"  language selected (pos {lang_pos})")
+                except Exception as e:
+                    llog(f"  ⚠️ language select failed: {e}")
+        else:
+            llog("[3] standard ticket — no language selection")
+
+        # ── [4] Quantity ───────────────────────────────────────────────────
+        llog(f"[4] set quantity={visitors}")
+        await wait_for(page,
+            "!!document.querySelector(\"[data-cy='ticketQuantity']\")",
+            timeout=10, label="qty dropdown")
+
+        # Recording shows two quantity dropdowns (adult + child row).
+        # We click the first one (adults) and set it to `visitors`, leave child at 0.
+        qty_set = await page.evaluate(f"""
+            (() => {{
+                // Try Angular dropdown (data-cy='ticketQuantity')
+                const qtys = document.querySelectorAll("[data-cy='ticketQuantity']");
+                if (qtys.length === 0) return 'none';
+                // Open the first dropdown (adults)
+                qtys[0].click();
+                return 'opened:' + qtys.length;
+            }})()
+        """)
+        llog(f"  qty open: {qty_set}")
+        await page.wait_for_timeout(500)
+
+        # Select the right quantity from the dropdown sections
+        qty_clicked = await page.evaluate(f"""
+            (() => {{
+                const sections = document.querySelectorAll("[data-cy='ticketQuantitySection']");
+                // sections are labelled 1,2,3… find the one matching visitors count
+                for (const s of sections) {{
+                    const t = s.innerText.trim();
+                    if (t === '{visitors}' || t.startsWith('{visitors}')) {{
+                        s.click(); return 'exact:' + t;
                     }}
                 }}
+                // fallback: index-based (visitors-1 because list is 1-indexed)
+                const idx = Math.min({visitors} - 1, sections.length - 1);
+                if (sections[idx]) {{ sections[idx].click(); return 'idx:' + idx; }}
+                return 'none';
             }})()
         """)
-        await page.wait_for_timeout(2000)
+        llog(f"  qty selected: {qty_clicked}")
+        await page.wait_for_timeout(1000)
 
-        # [3] Quantity
-        llog("[3] quantity")
-        await wait_for(page,
-            "!!document.querySelector(\"[data-cy='ticketQuantity']\") || !!document.querySelector('select')",
-            timeout=10, label="qty")
-        set_qty = await page.evaluate(f"""
-            (() => {{
-                const sel = document.querySelector('select');
-                if (sel) {{ sel.value='{visitors}'; sel.dispatchEvent(new Event('change',{{bubbles:true}})); return 'select'; }}
-                return null;
-            }})()
-        """)
-        if not set_qty:
-            try:
-                await page.click("[data-cy='ticketQuantity']")
-                await page.wait_for_timeout(800)
-            except Exception:
-                pass
-            await page.evaluate(f"""
-                (() => {{
-                    const items = Array.from(document.querySelectorAll("[data-cy='ticketQuantitySection']"));
-                    const m = items.find(el => el.innerText.trim()==='{visitors}');
-                    if (m) {{ m.click(); return; }}
-                    if (items.length>={visitors}) items[{visitors}-1].click();
-                    else if (items.length>0) items[items.length-1].click();
-                }})()
-            """)
-        await page.wait_for_timeout(1500)
-        await wait_for(page,
-            "document.querySelectorAll(\"[data-cy='time']\").length||0",
-            timeout=12, label="time cells")
+        # Wait for time slots to appear
+        slot_count = await wait_for(page,
+            "document.querySelectorAll(\"[data-cy='time']\").length || 0",
+            timeout=15, label="time cells")
+        llog(f"  time cells loaded: {slot_count}")
 
-        # [4] Time
-        llog(f"[4] time={slot_time}")
+        # ── [5] Select time slot ───────────────────────────────────────────
+        llog(f"[5] select time={slot_time}")
         hour = int(slot_time.split(":")[0])
         if hour >= 13:
+            # Switch to afternoon tab if needed
             await page.evaluate("""
                 (() => {
                     const tabs = document.querySelectorAll('div.showGTMobile > div > div');
                     for (const t of tabs) {
-                        if (/pomeriggio|afternoon/i.test(t.innerText)) { t.click(); return; }
+                        if (/pomeriggio|afternoon/i.test(t.innerText||'')) { t.click(); return; }
                     }
                     if (tabs.length >= 2) tabs[1].click();
                 })()
             """)
-            await page.wait_for_timeout(1000)
+            await page.wait_for_timeout(800)
 
         ct = await page.evaluate(f"""
             (() => {{
+                // Try exact time match first
                 for (const cell of document.querySelectorAll("[data-cy='time']")) {{
+                    const inner = cell.innerText || '';
+                    if (inner.includes('ESAURITI') || inner.includes('SOLD')) continue;
                     const num = cell.querySelector('.muvaCalendarNumber');
-                    const txt = (num ? num.innerText : cell.innerText).trim().split('\\n')[0];
-                    if (txt==='{slot_time}' && !cell.innerText.includes('ESAURITI')) {{
+                    const txt = (num ? num.innerText : inner).trim().split('\\n')[0].trim();
+                    if (txt === '{slot_time}') {{
                         cell.scrollIntoView({{behavior:'smooth',block:'center'}});
-                        cell.click(); return 'exact:'+txt;
+                        cell.click(); return 'exact:' + txt;
                     }}
                 }}
+                // Fallback: first available cell
                 for (const cell of document.querySelectorAll("[data-cy='time']")) {{
-                    const txt = cell.innerText.trim();
-                    if (!txt.includes('ESAURITI') && !txt.includes('SOLD') && txt.length>0) {{
+                    const inner = cell.innerText || '';
+                    if (!inner.includes('ESAURITI') && !inner.includes('SOLD') && inner.trim()) {{
                         cell.scrollIntoView({{behavior:'smooth',block:'center'}});
-                        cell.click(); return 'any:'+txt.split('\\n')[0];
+                        cell.click(); return 'any:' + inner.trim().split('\\n')[0];
                     }}
                 }}
                 return null;
             }})()
         """)
-        llog(f"  time={ct}")
+        llog(f"  time clicked: {ct}")
         if not ct:
-            llog("❌ no time available")
+            llog("❌ no available time slot found")
             return False
         await page.wait_for_timeout(2000)
 
-        # [5] PROCEDI
-        llog("[5] PROCEDI")
+        # ── [6] PROCEDI ────────────────────────────────────────────────────
+        llog("[6] PROCEDI")
         try:
             await page.wait_for_selector("[data-cy='bookVisit']", timeout=10000)
             await page.click("[data-cy='bookVisit']")
         except Exception:
             await page.evaluate("document.querySelector(\"[data-cy='bookVisit']\")?.click()")
-        await page.wait_for_timeout(6000)
+        await page.wait_for_timeout(5000)
 
+        # Bounce detection: /home/visit/ means we're still on the entry page
         cur = page.url
-        if "recap" in cur.lower():
-            await page.evaluate("document.querySelector(\"[data-cy='bookVisit']\")?.click()")
-            await page.wait_for_timeout(6000)
-            cur = page.url
+        for _retry in range(2):
+            if "visit" in cur.lower() and "checkout" not in cur.lower() and "recap" not in cur.lower():
+                llog(f"  ↩ still on entry page ({cur[:60]}) — retrying PROCEDI")
+                await page.wait_for_timeout(2000)
+                try:
+                    await page.click("[data-cy='bookVisit']")
+                except Exception:
+                    await page.evaluate("document.querySelector(\"[data-cy='bookVisit']\")?.click()")
+                await page.wait_for_timeout(5000)
+                cur = page.url
+            else:
+                break
 
-        # Cloudflare sometimes bounces back to entry — one retry
-        if "fromtag" in cur.lower() or "home" in cur.lower():
-            llog("  ↩ bounced — retrying PROCEDI")
-            await page.wait_for_timeout(3000)
-            try:
-                await page.click("[data-cy='bookVisit']")
-            except Exception:
-                await page.evaluate("document.querySelector(\"[data-cy='bookVisit']\")?.click()")
-            await page.wait_for_timeout(6000)
-            cur = page.url
-
-        # [6] Checkout
-        llog("[6] checkout")
+        # ── [7] Checkout form ──────────────────────────────────────────────
+        llog("[7] checkout")
         form = await wait_for(page,
             "!!document.querySelector(\"[data-cy='managerSurname']\")",
             timeout=20, label="checkout form")
@@ -316,13 +372,11 @@ class VaticanProvider(BookingProvider):
         if not form or "checkout" not in cur.lower():
             llog(f"❌ checkout not reached — {cur[:60]}")
             return False
-        llog("  ✅ checkout!")
+        llog("  ✅ checkout reached")
 
-        # [7] Fill form
-        llog("[7] fill form")
         parts = target.customer_name.split()
         first = parts[0] if parts else "Mario"
-        last = " ".join(parts[1:]) if len(parts) > 1 else "Rossi"
+        last  = " ".join(parts[1:]) if len(parts) > 1 else "Rossi"
         email = target.customer_email or f"booking{target.booking_id}@example.com"
 
         await pfill(page, "[data-cy='managerSurname']", last)
@@ -333,16 +387,19 @@ class VaticanProvider(BookingProvider):
         await pfill(page, "[data-cy='managerPhone']", "3401234567")
 
         try:
-            await page.click("[data-cy='managerSex']"); await page.wait_for_timeout(300)
-            await page.click("[data-cy='managerSexSection']"); await page.wait_for_timeout(300)
+            await page.click("[data-cy='managerSex']")
+            await page.wait_for_timeout(300)
+            await page.click("[data-cy='managerSexSection']")
+            await page.wait_for_timeout(300)
         except Exception:
             pass
         try:
-            await page.click("[data-cy='managerCountry']"); await page.wait_for_timeout(300)
+            await page.click("[data-cy='managerCountry']")
+            await page.wait_for_timeout(300)
             await page.evaluate("""
                 (() => {
                     const items = Array.from(document.querySelectorAll("[data-cy='managerCountrySection']"));
-                    const it = items.find(el => /ital/i.test(el.innerText));
+                    const it = items.find(el => /ital/i.test(el.innerText||''));
                     if (it) it.click(); else if (items[0]) items[0].click();
                 })()
             """)
@@ -354,16 +411,18 @@ class VaticanProvider(BookingProvider):
                 const inp = document.querySelector("[data-cy='dateCalendar']");
                 if (!inp) return;
                 inp.removeAttribute('readonly');
-                inp.focus(); inp.value='15/01/1990';
-                inp.dispatchEvent(new Event('input',{bubbles:true}));
-                inp.dispatchEvent(new Event('change',{bubbles:true}));
-                inp.setAttribute('readonly','true');
+                inp.focus(); inp.value = '15/01/1990';
+                inp.dispatchEvent(new Event('input',  {bubbles:true}));
+                inp.dispatchEvent(new Event('change', {bubbles:true}));
+                inp.setAttribute('readonly', 'true');
             })()
         """)
         await page.wait_for_timeout(300)
         try:
-            await page.click("[data-cy='managerLanguage']"); await page.wait_for_timeout(300)
-            await page.click("[data-cy='managerLanguageSection']"); await page.wait_for_timeout(300)
+            await page.click("[data-cy='managerLanguage']")
+            await page.wait_for_timeout(300)
+            await page.click("[data-cy='managerLanguageSection']")
+            await page.wait_for_timeout(300)
         except Exception:
             pass
         for i in range(visitors):
@@ -378,14 +437,93 @@ class VaticanProvider(BookingProvider):
                 pass
         llog("  form filled")
 
-        # [8] GDPR keeper
-        llog("[8] GDPR keeper")
+        # ── [8] GDPR checkboxes — follow exact recording order ─────────────
+        # Order from recording:
+        #   a) Tick Terms (norme generali)    → mat-mdc-checkbox-1
+        #   b) Close the modal that appears   → [data-cy='purchase-rules-close-btn']
+        #   c) Tick reduced-price disclaimer  → mat-mdc-checkbox-6 (aria label with "ridotto")
+        #   d) Tick offers checkbox           → mat-mdc-checkbox-7 (aria label with "offerte")
+        llog("[8] GDPR checkboxes (recording order)")
+
+        # a) Terms
+        await page.evaluate("""
+            (() => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
+                for (const b of boxes) {
+                    if (b.disabled) continue;
+                    let el = b.parentElement, text = '';
+                    for (let i = 0; i < 8 && el; i++) {
+                        const t = (el.innerText||el.textContent||'').replace(/\s+/g,' ').trim();
+                        if (t.length > 4) { text = t.toLowerCase(); break; }
+                        el = el.parentElement;
+                    }
+                    if ((text.includes('norme generali') || text.includes('accetto le')) && !b.checked) {
+                        b.click(); break;
+                    }
+                }
+            })()
+        """)
+        await page.wait_for_timeout(800)
+
+        # b) Close the terms modal
+        try:
+            await page.click("[data-cy='purchase-rules-close-btn']")
+            await page.wait_for_timeout(600)
+        except Exception:
+            try:
+                await page.evaluate("""
+                    (() => {
+                        const btn = [...document.querySelectorAll('button')]
+                            .find(b => /chiudi|close/i.test(b.textContent||''));
+                        if (btn) btn.click();
+                    })()
+                """)
+                await page.wait_for_timeout(600)
+            except Exception:
+                pass
+
+        # c) Reduced-price disclaimer
+        await page.evaluate("""
+            (() => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
+                for (const b of boxes) {
+                    if (b.disabled || b.checked) continue;
+                    const aria = (b.getAttribute('aria-label')||'').toLowerCase();
+                    const id   = (b.id||'').toLowerCase();
+                    if (aria.includes('ridotto') || aria.includes('reduced') ||
+                        id.includes('checkbox-6')) {
+                        b.click(); break;
+                    }
+                }
+            })()
+        """)
+        await page.wait_for_timeout(400)
+
+        # d) Offers / marketing checkbox
+        await page.evaluate("""
+            (() => {
+                const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
+                for (const b of boxes) {
+                    if (b.disabled || b.checked) continue;
+                    const aria = (b.getAttribute('aria-label')||'').toLowerCase();
+                    const id   = (b.id||'').toLowerCase();
+                    if (aria.includes('offerte') || aria.includes('offers') ||
+                        id.includes('checkbox-7')) {
+                        b.click(); break;
+                    }
+                }
+            })()
+        """)
+        await page.wait_for_timeout(400)
+
+        # e) Fallback keeper for any remaining unchecked non-disabled boxes
         await page.evaluate(KEEPER_JS)
-        await page.wait_for_timeout(2000)
+        await page.wait_for_timeout(1500)
+
         cb = await page.evaluate('document.querySelectorAll("input[type=checkbox]:checked").length')
         llog(f"  {cb} checkbox(es) checked")
 
-        # [9] Keepalive
+        # ── [9] Keepalive ──────────────────────────────────────────────────
         llog("[9] keepalive")
         await page.evaluate(self.keepalive_js(slot, target))
 
@@ -396,7 +534,7 @@ class VaticanProvider(BookingProvider):
             except Exception:
                 pass
 
-        # [10] Watch for Turnstile, then hold forever
+        # ── [10] Watch for Turnstile / ePay, hold forever ─────────────────
         for _ in range(600):
             await page.wait_for_timeout(1000)
             try:
@@ -405,11 +543,11 @@ class VaticanProvider(BookingProvider):
                         const inp = document.querySelector(
                             '[name="cf-turnstile-response"], input[name*="turnstile"]');
                         return inp && inp.value && inp.value.length > 10
-                            ? inp.value.slice(0,15) : null;
+                            ? inp.value.slice(0, 15) : null;
                     })()
                 """)
                 if token:
-                    llog(f"🎉 TURNSTILE: {token}...")
+                    llog(f"🎉 TURNSTILE token: {token}...")
                 if "epay" in page.url:
                     llog(f"💳 EPAY: {page.url[:80]}")
                     if on_payment is not None:
@@ -421,7 +559,7 @@ class VaticanProvider(BookingProvider):
             except Exception:
                 pass
 
-        llog("Entering infinite hold (Playwright keeps the page alive)...")
+        llog("Entering infinite hold (Playwright keeps page alive)...")
         while True:
             await page.wait_for_timeout(30000)
             try:
@@ -429,6 +567,6 @@ class VaticanProvider(BookingProvider):
                     'document.querySelectorAll("input[type=checkbox]:checked").length')
                 llog(f"⏱ keepalive {cb_now} checked | {page.url[:50]}")
             except Exception:
-                llog("⚠️ page check failed")
+                llog("⚠️ page check failed — exiting hold")
                 break
         return True
