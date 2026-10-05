@@ -453,7 +453,7 @@ class VaticanProvider(BookingProvider):
                     if (b.disabled) continue;
                     let el = b.parentElement, text = '';
                     for (let i = 0; i < 8 && el; i++) {
-                        const t = (el.innerText||el.textContent||'').replace(/\s+/g,' ').trim();
+                        const t = (el.innerText||el.textContent||'').replace(/\\s+/g,' ').trim();
                         if (t.length > 4) { text = t.toLowerCase(); break; }
                         el = el.parentElement;
                     }
