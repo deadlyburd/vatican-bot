@@ -95,21 +95,36 @@ STEALTH_JS = """
         });
     }
 
-    // 8. WebGL — headless GPU renderer is a known bot fingerprint
-    const getParam = WebGLRenderingContext.prototype.getParameter;
-    WebGLRenderingContext.prototype.getParameter = function(param) {
-        if (param === 37445) return 'Intel Inc.';        // UNMASKED_VENDOR_WEBGL
-        if (param === 37446) return 'Intel Iris OpenGL Engine';  // UNMASKED_RENDERER_WEBGL
-        return getParam.call(this, param);
-    };
-    if (window.WebGL2RenderingContext) {
-        const getParam2 = WebGL2RenderingContext.prototype.getParameter;
-        WebGL2RenderingContext.prototype.getParameter = function(param) {
-            if (param === 37445) return 'Intel Inc.';
-            if (param === 37446) return 'Intel Iris OpenGL Engine';
-            return getParam2.call(this, param);
-        };
-    }
+    // 8. WebGL — only override if headless GPU renderer is detected.
+    // Brave randomises WebGL itself; only patch if we see the headless signature.
+    try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+            const ext = gl.getExtension('WEBGL_debug_renderer_info');
+            if (ext) {
+                const renderer = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '';
+                const isHeadless = /SwiftShader|llvmpipe|softpipe|ANGLE.*SwiftShader/i.test(renderer);
+                if (isHeadless) {
+                    const getParam = WebGLRenderingContext.prototype.getParameter;
+                    WebGLRenderingContext.prototype.getParameter = function(param) {
+                        if (param === 37445) return 'Intel Inc.';
+                        if (param === 37446) return 'Intel Iris OpenGL Engine';
+                        return getParam.call(this, param);
+                    };
+                    if (window.WebGL2RenderingContext) {
+                        const getParam2 = WebGL2RenderingContext.prototype.getParameter;
+                        WebGL2RenderingContext.prototype.getParameter = function(param) {
+                            if (param === 37445) return 'Intel Inc.';
+                            if (param === 37446) return 'Intel Iris OpenGL Engine';
+                            return getParam2.call(this, param);
+                        };
+                    }
+                }
+                // If real GPU — leave Brave's own randomisation untouched
+            }
+        }
+    } catch(e) {}
 
     // 9. Remove Playwright's internal __pw_ markers from window
     const pwKeys = Object.getOwnPropertyNames(window).filter(k => k.startsWith('__pw'));
@@ -227,8 +242,8 @@ def build_chrome_cmd(
         # ── Automation signal removal ──────────────────────────────────────
         "--disable-blink-features=AutomationControlled",
         "--disable-infobars",                        # hides "controlled by automation" bar
-        "--excludeSwitches=enable-automation",       # removes enable-automation CLI flag
-        "--useAutomationExtension=false",            # disables automation extension
+        # Note: --excludeSwitches and --useAutomationExtension are CDP/DevTools
+        # options, not valid CLI flags — they are silently ignored and omitted.
         # ── Realistic browser behaviour ───────────────────────────────────
         "--disable-background-timer-throttling",
         "--disable-backgrounding-occluded-windows",

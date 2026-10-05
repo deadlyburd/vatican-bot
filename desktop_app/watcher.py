@@ -329,8 +329,6 @@ class Watcher:
                     "--no-first-run", "--no-default-browser-check",
                     "--disable-blink-features=AutomationControlled",
                     "--disable-infobars",
-                    "--excludeSwitches=enable-automation",
-                    "--useAutomationExtension=false",
                     "--disable-background-timer-throttling",
                     "--disable-backgrounding-occluded-windows",
                     "--disable-renderer-backgrounding",
