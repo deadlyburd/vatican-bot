@@ -135,19 +135,9 @@ class VaticanProvider(BookingProvider):
         rome = self._rome_timezone()
         d, m, y = slot.date.split("/")
         ts = int(datetime(int(y), int(m), int(d), tzinfo=rome).timestamp() * 1000)
-
-        if target.is_guided:
-            # Guided tours use the direct ticket-ID deep-link, not fromtag.
-            # URL: /home/{visitTypeId}/{ts}?lang=it&visitLang={LANG}&visitorNum={N}
-            lang = (target.language or "ENG").upper()
-            return (
-                f"{VATICAN_BASE}/home/{slot.ticket_id}/{ts}"
-                f"?lang=it&visitLang={lang}&visitorNum={target.visitors}"
-            )
-
-        # Standard tickets use the fromtag URL
-        tag = target.tag if hasattr(target, "tag") else "MV-Biglietti"
-        return f"{VATICAN_BASE}/home/fromtag/{target.visitors}/{ts}/{tag}/1"
+        # Both standard and guided tours use the same /home/visit/ URL structure.
+        # Area is always 1 (Musei Vaticani).
+        return f"{VATICAN_BASE}/home/visit/{target.visitors}/{ts}/1"
 
     def keepalive_js(self, slot: Slot, target: BookingTarget) -> str:
         v = target.visitors
